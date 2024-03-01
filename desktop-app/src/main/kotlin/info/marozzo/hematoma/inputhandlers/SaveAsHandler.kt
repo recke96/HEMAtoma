@@ -22,10 +22,10 @@ data object SaveAsHandler {
     suspend fun handle(input: EventContract.Input.SaveAs) {
         val (_, event) = getCurrentState()
         sideJob("write-file-${input.path}") {
-            Json.writeToFile(event, input.path, StandardOpenOption.CREATE_NEW).onLeft {
-                flogger.atInfo().log("Error saving to file %s: %s", input.path, it)
-            }
-            postInput(EventContract.Input.SavedAs(input.path))
+            Json.writeToFile(event, input.path, StandardOpenOption.CREATE_NEW).fold(
+                { flogger.atInfo().log("Error saving to file %s: %s", input.path, it) },
+                { postInput(EventContract.Input.SavedAs(input.path)) }
+            )
         }
     }
 
