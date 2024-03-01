@@ -15,6 +15,7 @@ import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
+
 class FluentLoggingInterceptor<Inputs : Any, Events : Any, State : Any> : BallastInterceptor<Inputs, Events, State> {
 
     companion object {
@@ -24,6 +25,7 @@ class FluentLoggingInterceptor<Inputs : Any, Events : Any, State : Any> : Ballas
         private val sideJobKey = MetadataKey.single("sidejob", String::class.java)!!
     }
 
+    @Suppress("detekt:complexity:CyclomaticComplexMethod", "detekt:complexity:LongMethod", "detekt:style:MaxLineLength")
     override fun BallastInterceptorScope<Inputs, Events, State>.start(notifications: Flow<BallastNotification<Inputs, Events, State>>) {
         launch(start = CoroutineStart.UNDISPATCHED) {
             var latestState: State? = null
