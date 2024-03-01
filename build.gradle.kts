@@ -29,10 +29,14 @@ allprojects {
             sarif.required = true
         }
         basePath = rootDir.absolutePath
-        exclude(layout.buildDirectory.toString())
+
+        val projectDir = layout.projectDirectory.asFile
+        exclude {
+            it.file.relativeTo(projectDir).startsWith("build")
+        }
+        finalizedBy(mergeSarif)
     }
     mergeSarif {
         input.from(tasks.withType<Detekt>().map { it.sarifReportFile })
-        mustRunAfter(tasks.withType<Detekt>())
     }
 }
