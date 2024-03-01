@@ -36,5 +36,7 @@ suspend inline fun <reified T> Json.writeToFile(
 
 @OptIn(ExperimentalSerializationApi::class)
 suspend inline fun <reified T> Json.readFromFile(path: Path): Either<String, T> = effect<String, T> {
-    decodeFromStream(path.inputStream(StandardOpenOption.READ))
+    withContext(Dispatchers.IO + CoroutineName("JSON Reader")) {
+        decodeFromStream(path.inputStream(StandardOpenOption.READ))
+    }
 }.catch { raise(it.message ?: "Error reading file $path") }.toEither()
