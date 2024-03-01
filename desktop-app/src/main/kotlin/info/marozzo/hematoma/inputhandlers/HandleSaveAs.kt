@@ -13,8 +13,5 @@ import kotlinx.serialization.json.Json
 
 suspend fun EventInputHandlerScope.handleSaveAs(input: EventContract.Input.SaveAs): Unit {
     val event = getCurrentState().event
-    val result = Json.writeToFile(event, input.path)
-
-
-
+    Json.writeToFile(event, input.path)
 }

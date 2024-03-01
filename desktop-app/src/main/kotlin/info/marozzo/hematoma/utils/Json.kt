@@ -6,8 +6,10 @@
 
 package info.marozzo.hematoma.utils
 
-import arrow.core.raise.Effect
+import arrow.core.Either
+import arrow.core.raise.catch
 import arrow.core.raise.effect
+import arrow.core.raise.toEither
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -26,13 +28,13 @@ suspend inline fun <reified T> Json.writeToFile(
     value: T,
     path: Path,
     vararg options: OpenOption
-): Effect<Nothing, Unit> = effect {
+): Either<String, Unit> = effect<String, Unit> {
     withContext(Dispatchers.IO + CoroutineName("JSON Writer")) {
         encodeToStream(value, path.outputStream(*options))
     }
-}
+}.catch { raise(it.message ?: "Error writing file $path") }.toEither()
 
 @OptIn(ExperimentalSerializationApi::class)
-inline fun <reified T> Json.readFromFile(path: Path): Effect<Nothing, Unit> = effect {
+suspend inline fun <reified T> Json.readFromFile(path: Path): Either<String, T> = effect<String, T> {
     decodeFromStream(path.inputStream(StandardOpenOption.READ))
-}
+}.catch { raise(it.message ?: "Error reading file $path") }.toEither()

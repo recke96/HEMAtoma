@@ -19,7 +19,6 @@ object EventContract {
     data class State(
         val path: Path? = null,
         val event: Event = Event("", Competitors()),
-        val errors: List<String> = emptyList()
     ) {
         companion object
     }
