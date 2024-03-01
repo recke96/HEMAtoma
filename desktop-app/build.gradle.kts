@@ -23,6 +23,9 @@ dependencies {
     implementation(libs.kotlinx.coroutines)
     implementation(libs.kotlinx.coroutines.swing)
     implementation(libs.kotlinx.serialization.json)
+
+    implementation(libs.flogger)
+    runtimeOnly(libs.flogger.backend)
     
     detektPlugins(libs.detekt.compose)
 }

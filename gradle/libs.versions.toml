@@ -11,6 +11,7 @@ arrow = "1.2.1"
 arrow-suspendapp = "0.4.0"
 ballast = "4.1.0"
 file-picker = "3.1.0"
+flogger = "0.8"
 detekt = "1.23.5"
 detekt-compose = "0.3.11"
 
@@ -27,6 +28,8 @@ arrow-optics-ksp = { group = "io.arrow-kt", name = "arrow-optics-ksp-plugin", ve
 arrow-suspendapp = { group = "io.arrow-kt", name = "suspendapp", version.ref = "arrow-suspendapp" }
 ballast-core = { group = "io.github.copper-leaf", name = "ballast-core", version.ref = "ballast" }
 filepicker = { group = "com.darkrockstudios", name = "mpfilepicker", version.ref = "file-picker" }
+flogger = { group = "com.google.flogger", name = "flogger", version.ref = "flogger" }
+flogger-backend = { group = "com.google.flogger", name = "flogger-system-backend", version.ref = "flogger" }
 detekt-compose = { group = "io.nlopez.compose.rules", name = "detekt", version.ref = "detekt-compose" }
 
 [bundles]
