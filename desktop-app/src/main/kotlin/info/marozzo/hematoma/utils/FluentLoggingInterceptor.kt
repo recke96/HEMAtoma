@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 class FluentLoggingInterceptor<Inputs : Any, Events : Any, State : Any> : BallastInterceptor<Inputs, Events, State> {
 
     companion object {
-        private val fluentLogger = FluentLogger.forEnclosingClass()!!
+        private val flogger = FluentLogger.forEnclosingClass()!!
         private val modelNameKey = MetadataKey.single("name", String::class.java)!!
         private val modelTypeKey = MetadataKey.single("type", String::class.java)!!
         private val sideJobKey = MetadataKey.single("sidejob", String::class.java)!!
@@ -30,129 +30,129 @@ class FluentLoggingInterceptor<Inputs : Any, Events : Any, State : Any> : Ballas
 
             notifications.collect { notification ->
                 when (notification) {
-                    is BallastNotification.ViewModelStatusChanged -> fluentLogger.atFine()
+                    is BallastNotification.ViewModelStatusChanged -> flogger.atFine()
                         .with(modelNameKey, hostViewModelName)
                         .with(modelTypeKey, hostViewModelType)
                         .log("View-Model Status changed to %s", notification.status)
 
-                    is BallastNotification.InputQueued -> fluentLogger.atFine()
+                    is BallastNotification.InputQueued -> flogger.atFine()
                         .with(modelNameKey, hostViewModelName)
                         .with(modelTypeKey, hostViewModelType)
                         .log("Input %s queued", notification.input)
 
-                    is BallastNotification.InputAccepted -> fluentLogger.atInfo()
+                    is BallastNotification.InputAccepted -> flogger.atInfo()
                         .with(modelNameKey, hostViewModelName)
                         .with(modelTypeKey, hostViewModelType)
                         .log("Input %s accepted", notification.input)
 
-                    is BallastNotification.InputRejected -> fluentLogger.atInfo()
+                    is BallastNotification.InputRejected -> flogger.atInfo()
                         .with(modelNameKey, hostViewModelName)
                         .with(modelTypeKey, hostViewModelType)
                         .log("Input %s rejected while in state %s", notification.input, notification.stateWhenRejected)
 
-                    is BallastNotification.InputDropped -> fluentLogger.atInfo()
+                    is BallastNotification.InputDropped -> flogger.atInfo()
                         .with(modelNameKey, hostViewModelName)
                         .with(modelTypeKey, hostViewModelType)
                         .log("Input %s dropped", notification.input)
 
-                    is BallastNotification.InputHandledSuccessfully -> fluentLogger.atInfo()
+                    is BallastNotification.InputHandledSuccessfully -> flogger.atInfo()
                         .with(modelNameKey, hostViewModelName)
                         .with(modelTypeKey, hostViewModelType)
                         .log("Input %s handled successfully", notification.input)
 
-                    is BallastNotification.InputCancelled -> fluentLogger.atInfo()
+                    is BallastNotification.InputCancelled -> flogger.atInfo()
                         .with(modelNameKey, hostViewModelName)
                         .with(modelTypeKey, hostViewModelType)
                         .log("Input %s cancelled", notification.input)
 
-                    is BallastNotification.InputHandlerError -> fluentLogger.atWarning()
+                    is BallastNotification.InputHandlerError -> flogger.atWarning()
                         .with(modelNameKey, hostViewModelName)
                         .with(modelTypeKey, hostViewModelType)
                         .withCause(notification.throwable)
                         .log("Error while handling input %s in state %s", notification.input, latestState)
 
-                    is BallastNotification.EventQueued -> fluentLogger.atFine()
+                    is BallastNotification.EventQueued -> flogger.atFine()
                         .with(modelNameKey, hostViewModelName)
                         .with(modelTypeKey, hostViewModelType)
                         .log("Event %s queued", notification.event)
 
-                    is BallastNotification.EventEmitted -> fluentLogger.atInfo()
+                    is BallastNotification.EventEmitted -> flogger.atInfo()
                         .with(modelNameKey, hostViewModelName)
                         .with(modelTypeKey, hostViewModelType)
                         .log("Event %s emitted", notification.event)
 
-                    is BallastNotification.EventHandledSuccessfully -> fluentLogger.atInfo()
+                    is BallastNotification.EventHandledSuccessfully -> flogger.atInfo()
                         .with(modelNameKey, hostViewModelName)
                         .with(modelTypeKey, hostViewModelType)
                         .log("Event %s handled successfully", notification.event)
 
-                    is BallastNotification.EventHandlerError -> fluentLogger.atWarning()
+                    is BallastNotification.EventHandlerError -> flogger.atWarning()
                         .with(modelNameKey, hostViewModelName)
                         .with(modelTypeKey, hostViewModelType)
                         .withCause(notification.throwable)
                         .log("Error while handling event %s in state %s", notification.event, latestState)
 
-                    is BallastNotification.EventProcessingStarted -> fluentLogger.atFine()
+                    is BallastNotification.EventProcessingStarted -> flogger.atFine()
                         .with(modelNameKey, hostViewModelName)
                         .with(modelTypeKey, hostViewModelType)
                         .log("Event processing started")
 
-                    is BallastNotification.EventProcessingStopped -> fluentLogger.atFine()
+                    is BallastNotification.EventProcessingStopped -> flogger.atFine()
                         .with(modelNameKey, hostViewModelName)
                         .with(modelTypeKey, hostViewModelType)
                         .log("Event processing stopped")
 
                     is BallastNotification.StateChanged -> {
                         latestState = notification.state
-                        fluentLogger.atInfo()
+                        flogger.atInfo()
                             .with(modelNameKey, hostViewModelName)
                             .with(modelTypeKey, hostViewModelType)
                             .log("State changed to %s", notification.state)
                     }
 
-                    is BallastNotification.SideJobQueued -> fluentLogger.atFine()
+                    is BallastNotification.SideJobQueued -> flogger.atFine()
                         .with(modelNameKey, hostViewModelName)
                         .with(modelTypeKey, hostViewModelType)
                         .with(sideJobKey, notification.key)
                         .log("Side-Job %s queued", notification.key)
 
-                    is BallastNotification.SideJobStarted -> fluentLogger.atInfo()
+                    is BallastNotification.SideJobStarted -> flogger.atInfo()
                         .with(modelNameKey, hostViewModelName)
                         .with(modelTypeKey, hostViewModelType)
                         .with(sideJobKey, notification.key)
                         .log("Side-Job %s started: %s", notification.key, notification.restartState)
 
-                    is BallastNotification.SideJobCompleted -> fluentLogger.atFine()
+                    is BallastNotification.SideJobCompleted -> flogger.atFine()
                         .with(modelNameKey, hostViewModelName)
                         .with(modelTypeKey, hostViewModelType)
                         .with(sideJobKey, notification.key)
                         .log("Side-Job %s completed successfully", notification.key)
 
-                    is BallastNotification.SideJobCancelled -> fluentLogger.atInfo()
+                    is BallastNotification.SideJobCancelled -> flogger.atInfo()
                         .with(modelNameKey, hostViewModelName)
                         .with(modelTypeKey, hostViewModelType)
                         .with(sideJobKey, notification.key)
                         .log("Side-Job %s cancelled", notification.key)
 
-                    is BallastNotification.SideJobError -> fluentLogger.atWarning()
+                    is BallastNotification.SideJobError -> flogger.atWarning()
                         .with(modelNameKey, hostViewModelName)
                         .with(modelTypeKey, hostViewModelType)
                         .with(sideJobKey, notification.key)
                         .withCause(notification.throwable)
                         .log("Error in side-job %s", notification.key)
 
-                    is BallastNotification.InterceptorAttached -> fluentLogger.atFine()
+                    is BallastNotification.InterceptorAttached -> flogger.atFine()
                         .with(modelNameKey, hostViewModelName)
                         .with(modelTypeKey, hostViewModelType)
                         .log("Interceptor %s attached", notification.interceptor.javaClass)
 
-                    is BallastNotification.InterceptorFailed -> fluentLogger.atWarning()
+                    is BallastNotification.InterceptorFailed -> flogger.atWarning()
                         .with(modelNameKey, hostViewModelName)
                         .with(modelTypeKey, hostViewModelType)
                         .withCause(notification.throwable)
                         .log("Error in interceptor %s", notification.interceptor.javaClass)
 
-                    is BallastNotification.UnhandledError -> fluentLogger.atSevere()
+                    is BallastNotification.UnhandledError -> flogger.atSevere()
                         .with(modelNameKey, hostViewModelName)
                         .with(modelTypeKey, hostViewModelType)
                         .withCause(notification.throwable)

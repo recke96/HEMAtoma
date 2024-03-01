@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.ksp)
@@ -39,4 +41,8 @@ compose.desktop {
 detekt {
     buildUponDefaultConfig = true
     basePath = rootProject.layout.projectDirectory.toString()
+}
+
+tasks.withType<KotlinCompile>().all {
+    kotlinOptions.freeCompilerArgs = listOf("-Xcontext-receivers")
 }

@@ -25,7 +25,9 @@ object EventContract {
 
     sealed interface Input {
         data class OpenFile(val path: Path) : Input
+        data class OpenedFile(val path: Path, val event: Event): Input
         data class SaveAs(val path: Path) : Input
+        data class SavedAs(val path: Path): Input
         data object Save : Input
     }
 }
