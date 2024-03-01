@@ -10,7 +10,7 @@ import com.copperleaf.ballast.*
 import com.copperleaf.ballast.core.BasicViewModel
 import com.copperleaf.ballast.core.FifoInputStrategy
 import com.copperleaf.ballast.core.LoggingInterceptor
-import com.copperleaf.ballast.core.PrintlnLogger
+import info.marozzo.hematoma.utils.FluentBallastLogger
 import kotlinx.coroutines.CoroutineScope
 
 typealias EventEventHandlerScope = EventHandlerScope<EventContract.Input, Nothing, EventContract.State>
@@ -22,7 +22,7 @@ class EventViewModel(scope: CoroutineScope) : BasicViewModel<
         >(
     config = BallastViewModelConfiguration.Builder().apply {
         interceptors += LoggingInterceptor<EventContract.Input, Nothing, EventContract.State>()
-        logger = { PrintlnLogger(it) }
+        logger = { FluentBallastLogger(it) }
         inputStrategy = FifoInputStrategy()
     }.withViewModel(EventContract.State(), EventInputHandler(), "HEMAtoma").build(),
     eventHandler = EventEventHandler(),

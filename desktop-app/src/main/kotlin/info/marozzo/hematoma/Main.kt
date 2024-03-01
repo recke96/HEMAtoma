@@ -18,10 +18,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.awaitApplication
 import arrow.continuations.SuspendApp
+import com.google.common.flogger.FluentLogger
 import info.marozzo.hematoma.components.Header
 
+val logger = FluentLogger.forEnclosingClass()!!
 
 fun main(args: Array<String>) = SuspendApp {
+    logger.atInfo().log("Start HEMAtoma")
     awaitApplication {
         val coroutineScope = rememberCoroutineScope()
         val vm = remember(coroutineScope) { EventViewModel(coroutineScope) }
@@ -31,6 +34,7 @@ fun main(args: Array<String>) = SuspendApp {
             App(state, vm::trySend)
         }
     }
+    logger.atInfo().log("Stopping HEMAtoma")
 }
 
 @Composable
