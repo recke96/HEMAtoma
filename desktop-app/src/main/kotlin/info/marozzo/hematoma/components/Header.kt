@@ -1,0 +1,92 @@
+/*
+ * Copyright Jakob Ecker, 2024
+ * Licensed under the EUPL-1.2-or-later
+ *
+ */
+
+package info.marozzo.hematoma.components
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
+import com.darkrockstudios.libraries.mpfilepicker.FilePicker
+import info.marozzo.hematoma.AcceptFun
+import info.marozzo.hematoma.EventContract
+import java.nio.file.Path
+
+@Composable
+fun Header(state: EventContract.State, accept: AcceptFun, modifier: Modifier = Modifier) {
+    Row(modifier.heightIn(24.dp, 32.dp).fillMaxWidth()) {
+        FileMenu(state.path != null, accept)
+    }
+}
+
+@Composable
+private fun FileMenu(hasPath: Boolean, accept: AcceptFun, modifier: Modifier = Modifier) {
+    val (isOpen, setIsOpen) = remember { mutableStateOf(false) }
+    val dismiss = { setIsOpen(false) }
+    Box(modifier) {
+        Button(onClick = { setIsOpen(!isOpen) }, shape = RoundedCornerShape(0.dp)) {
+            Text("File")
+        }
+        DropdownMenu(isOpen, onDismissRequest = dismiss) {
+            OpenMenuItem(accept, onDone = dismiss)
+            SaveAsMenuItem(accept, onDone = dismiss)
+            SaveMenuItem(hasPath, accept, onDone = dismiss)
+        }
+    }
+}
+
+@Composable
+private fun OpenMenuItem(accept: AcceptFun, modifier: Modifier = Modifier, onDone: () -> Unit = {}) {
+    val userDir = remember { System.getProperty("user.home") }
+    val (showFilePicker, setShowFilePicker) = remember { mutableStateOf(false) }
+
+    DropdownMenuItem(onClick = { setShowFilePicker(true) }, modifier = modifier) {
+        Text("Open")
+    }
+    FilePicker(
+        showFilePicker,
+        initialDirectory = userDir,
+        fileExtensions = listOf("json"),
+        title = "Open Event-File"
+    ) { file ->
+        setShowFilePicker(false)
+        file?.also { accept(EventContract.Input.OpenFile(Path.of(it.path))) }
+        onDone()
+    }
+}
+
+@Composable
+private fun SaveAsMenuItem(accept: AcceptFun, modifier: Modifier = Modifier, onDone: () -> Unit = {}) {
+    val userDir = remember { System.getProperty("user.home") }
+    val (showFilePicker, setShowFilePicker) = remember { mutableStateOf(false) }
+
+    DropdownMenuItem(onClick = { setShowFilePicker(true) }, modifier = modifier) {
+        Text("Save As")
+    }
+    DirectoryPicker(showFilePicker, initialDirectory = userDir, title = "Save Event in") { file ->
+        setShowFilePicker(false)
+        file?.also { accept(EventContract.Input.SaveAs(Path.of(it, "Hack.json"))) }
+        onDone()
+    }
+}
+
+@Composable
+private fun SaveMenuItem(hasPath: Boolean, accept: AcceptFun, modifier: Modifier = Modifier, onDone: () -> Unit = {}) {
+    DropdownMenuItem(onClick = { accept(EventContract.Input.Save); onDone() }, enabled = hasPath, modifier = modifier) {
+        Text("Save")
+    }
+}
