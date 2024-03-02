@@ -4,7 +4,7 @@
  *
  */
 
-package info.marozzo.hematoma.inputhandlers
+package info.marozzo.hematoma.inputhandlers.file
 
 import com.google.common.flogger.FluentLogger
 import info.marozzo.hematoma.EventInputHandlerScope
