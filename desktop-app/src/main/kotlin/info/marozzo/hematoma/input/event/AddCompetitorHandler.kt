@@ -6,12 +6,13 @@
 
 package info.marozzo.hematoma.input.event
 
-import arrow.core.getOrElse
 import com.google.common.flogger.FluentLogger
-import info.marozzo.hematoma.EventInputHandlerScope
 import info.marozzo.hematoma.contract.AddCompetitor
+import info.marozzo.hematoma.contract.ErrorEvent
 import info.marozzo.hematoma.contract.EventState
 import info.marozzo.hematoma.contract.event
+import info.marozzo.hematoma.domain.errors.ValidationError
+import info.marozzo.hematoma.input.EventInputHandlerScope
 
 object AddCompetitorHandler {
 
@@ -19,12 +20,16 @@ object AddCompetitorHandler {
 
     context(EventInputHandlerScope)
     suspend fun handle(input: AddCompetitor) {
-        updateState {
-            EventState.event.modify(it) { evt ->
-                evt.addCompetitor(input.number, input.name)
-                    .onLeft { err -> flogger.atInfo().log("Validation failed while adding competitor: %s", err) }
-                    .getOrElse { evt }
-            }
-        }
+        val event = getCurrentState().event
+        event.addCompetitor(input.number, input.name)
+            .fold(
+                {
+                    errs -> flogger.atInfo().log("Validation failed while adding competitor: %s", errs)
+                    errs.map(ValidationError::message).map(::ErrorEvent).forEach {
+                        postEvent(it)
+                    }
+                },
+                { evt -> updateState { EventState.event.set(it, evt) } }
+            )
     }
 }

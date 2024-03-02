@@ -28,12 +28,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
-import info.marozzo.hematoma.AcceptFun
 import info.marozzo.hematoma.contract.AddCompetitor
 import info.marozzo.hematoma.domain.Competitor
 import info.marozzo.hematoma.domain.CompetitorName
 import info.marozzo.hematoma.domain.Competitors
 import info.marozzo.hematoma.domain.RegistrationNumber
+import info.marozzo.hematoma.input.AcceptFun
 
 @Composable
 fun CompetitorSection(competitors: Competitors, accept: AcceptFun, modifier: Modifier = Modifier) = Column(modifier) {

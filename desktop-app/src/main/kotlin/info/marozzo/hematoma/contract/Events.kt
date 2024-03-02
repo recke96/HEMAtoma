@@ -8,4 +8,4 @@ package info.marozzo.hematoma.contract
 
 sealed interface Event
 
-data class Error(val msg: String) : Event
+data class ErrorEvent(val msg: String) : Event

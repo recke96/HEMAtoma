@@ -7,6 +7,7 @@
 package info.marozzo.hematoma
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
@@ -19,12 +20,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.awaitApplication
+import androidx.compose.ui.zIndex
 import arrow.continuations.SuspendApp
 import com.google.common.flogger.FluentLogger
 import info.marozzo.hematoma.components.CompetitorSection
 import info.marozzo.hematoma.components.Header
 import info.marozzo.hematoma.contract.EventState
 import info.marozzo.hematoma.contract.Save
+import info.marozzo.hematoma.input.AcceptFun
 
 private val logger = FluentLogger.forEnclosingClass()!!
 
@@ -44,8 +47,10 @@ fun main(args: Array<String>) = SuspendApp {
                 false
             }
         }) {
-            SnackbarHost(hostState = snackbar)
-            App(state, vm::trySend)
+            Box(modifier = Modifier.fillMaxSize()) {
+                SnackbarHost(hostState = snackbar, modifier = Modifier.align(Alignment.TopEnd).zIndex(10f))
+                App(state, vm::trySend)
+            }
         }
     }
     logger.atInfo().log("Stopping HEMAtoma")

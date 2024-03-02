@@ -22,11 +22,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
-import info.marozzo.hematoma.AcceptFun
 import info.marozzo.hematoma.contract.EventState
 import info.marozzo.hematoma.contract.OpenFile
 import info.marozzo.hematoma.contract.Save
 import info.marozzo.hematoma.contract.SaveAs
+import info.marozzo.hematoma.input.AcceptFun
 import java.nio.file.Path
 
 @Composable
