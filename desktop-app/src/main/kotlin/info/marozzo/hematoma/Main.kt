@@ -53,7 +53,7 @@ fun main(args: Array<String>) = SuspendApp {
             }
         }) {
             Box(modifier = Modifier.fillMaxSize()) {
-                SnackbarHost(hostState = snackbar, modifier = Modifier.align(Alignment.TopEnd).zIndex(FOREGROUND))
+                SnackbarHost(hostState = snackbar, modifier = Modifier.align(Alignment.BottomEnd).zIndex(FOREGROUND))
                 App(state, vm::trySend)
             }
         }
