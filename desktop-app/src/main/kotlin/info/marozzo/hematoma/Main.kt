@@ -7,22 +7,22 @@
 package info.marozzo.hematoma
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.primarySurface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.awaitApplication
 import arrow.continuations.SuspendApp
 import com.google.common.flogger.FluentLogger
+import info.marozzo.hematoma.components.CompetitorsList
 import info.marozzo.hematoma.components.Header
 import info.marozzo.hematoma.contract.EventState
 
-val logger = FluentLogger.forEnclosingClass()!!
+private val logger = FluentLogger.forEnclosingClass()!!
 
 fun main(args: Array<String>) = SuspendApp {
     logger.atInfo().log("Start HEMAtoma")
@@ -43,8 +43,6 @@ fun main(args: Array<String>) = SuspendApp {
 fun App(state: EventState, accept: AcceptFun) = MaterialTheme {
     Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         Header(state, accept, modifier = Modifier.background(MaterialTheme.colors.primarySurface))
-        Box(Modifier.widthIn(720.dp, 1080.dp).fillMaxHeight()) {
-            BasicText("Hello!")
-        }
+        CompetitorsList(state.event.competitors, modifier = Modifier.fillMaxSize())
     }
 }

@@ -3,7 +3,7 @@
  * Licensed under the EUPL-1.2-or-later
  *
  */
-@file:UseSerializers(PersistentSetSerializer::class)
+@file:UseSerializers(PersistentListSerializer::class)
 
 package info.marozzo.hematoma.domain
 
@@ -14,9 +14,9 @@ import arrow.core.raise.mapOrAccumulate
 import arrow.optics.optics
 import info.marozzo.hematoma.domain.errors.Validated
 import info.marozzo.hematoma.domain.errors.ValidationError
-import info.marozzo.hematoma.serializers.PersistentSetSerializer
-import kotlinx.collections.immutable.PersistentSet
-import kotlinx.collections.immutable.persistentSetOf
+import info.marozzo.hematoma.serializers.PersistentListSerializer
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 
@@ -34,7 +34,7 @@ value class CompetitorId private constructor(private val id: Long) : Comparable<
 
 @JvmInline
 @Serializable
-value class RegistrationNumber private constructor(val number: String) {
+value class RegistrationNumber private constructor(val value: String) {
     companion object {
         operator fun invoke(number: String): Validated<RegistrationNumber> = either {
             ensure(number.isNotBlank()) { ValidationError("Registration number mustn't be blank", "number").nel() }
@@ -45,7 +45,7 @@ value class RegistrationNumber private constructor(val number: String) {
 
 @JvmInline
 @Serializable
-value class CompetitorName private constructor(val name: String) {
+value class CompetitorName private constructor(val value: String) {
     companion object {
         operator fun invoke(name: String): Validated<CompetitorName> = either {
             ensure(name.isNotBlank()) { ValidationError("Competitor name mustn't be blank", "name").nel() }
@@ -62,11 +62,11 @@ data class Competitor(val id: CompetitorId, val registration: RegistrationNumber
 
 @JvmInline
 @Serializable
-value class Competitors private constructor(private val competitors: PersistentSet<Competitor>) :
-    Iterable<Competitor> by competitors {
+value class Competitors private constructor(private val competitors: PersistentList<Competitor>) :
+    List<Competitor> by competitors {
 
     companion object {
-        operator fun invoke() = Competitors(persistentSetOf())
+        operator fun invoke() = Competitors(persistentListOf())
     }
 
     fun add(competitor: Competitor): Validated<Competitors> = either {
