@@ -6,17 +6,12 @@
 
 package info.marozzo.hematoma.inputhandlers.event
 
-import arrow.core.NonEmptyList
-import arrow.core.raise.either
-import arrow.core.raise.zipOrAccumulate
+import arrow.core.getOrElse
 import com.google.common.flogger.FluentLogger
 import info.marozzo.hematoma.EventInputHandlerScope
 import info.marozzo.hematoma.contract.AddCompetitor
 import info.marozzo.hematoma.contract.EventState
 import info.marozzo.hematoma.contract.event
-import info.marozzo.hematoma.domain.CompetitorName
-import info.marozzo.hematoma.domain.RegistrationNumber
-import info.marozzo.hematoma.domain.errors.ValidationError
 
 object AddCompetitorHandler {
 
@@ -24,17 +19,12 @@ object AddCompetitorHandler {
 
     context(EventInputHandlerScope)
     suspend fun handle(input: AddCompetitor) {
-        either<NonEmptyList<ValidationError>, Unit> {
-            zipOrAccumulate(
-                { RegistrationNumber(input.number).bind() },
-                { CompetitorName(input.name).bind() }
-            ) { reg, name ->
-                updateState {
-                    EventState.event.modify(it) { evt ->
-                        evt.addCompetitor(reg, name).bind()
-                    }
-                }
+        updateState {
+            EventState.event.modify(it) { evt ->
+                evt.addCompetitor(input.number, input.name)
+                    .onLeft { err -> flogger.atInfo().log("Validation failed while adding competitor: %s", err) }
+                    .getOrElse { evt }
             }
-        }.onLeft { flogger.atInfo().log("Validation errors for adding a competitor: %s", it) }
+        }
     }
 }

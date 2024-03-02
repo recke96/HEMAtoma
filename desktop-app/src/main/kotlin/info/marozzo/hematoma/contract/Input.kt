@@ -6,7 +6,9 @@
 
 package info.marozzo.hematoma.contract
 
+import info.marozzo.hematoma.domain.CompetitorName
 import info.marozzo.hematoma.domain.Event
+import info.marozzo.hematoma.domain.RegistrationNumber
 import java.nio.file.Path
 
 sealed interface Input
@@ -21,4 +23,4 @@ data object Save : Input
 
 // Event management
 
-data class AddCompetitor(val number: String, val name: String) : Input
+data class AddCompetitor(val number: RegistrationNumber, val name: CompetitorName) : Input
