@@ -13,6 +13,10 @@ import java.nio.file.Path
 
 sealed interface Input
 
+// Navigation
+
+data class Goto(val screen: Screen) : Input
+
 // File operations
 
 data class OpenFile(val path: Path) : Input

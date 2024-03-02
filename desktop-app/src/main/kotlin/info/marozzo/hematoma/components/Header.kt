@@ -11,10 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,7 +38,7 @@ private fun FileMenu(hasPath: Boolean, accept: AcceptFun, modifier: Modifier = M
     val (isOpen, setIsOpen) = remember { mutableStateOf(false) }
     val dismiss = { setIsOpen(false) }
     Box(modifier) {
-        Button(onClick = { setIsOpen(!isOpen) }, shape = RoundedCornerShape(0.dp)) {
+        Button(onClick = { setIsOpen(!isOpen) }, shape = RoundedCornerShape(0.dp), colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primaryVariant)) {
             Text("File")
         }
         DropdownMenu(isOpen, onDismissRequest = dismiss) {

@@ -13,12 +13,14 @@ import info.marozzo.hematoma.input.event.AddCompetitorHandler
 import info.marozzo.hematoma.input.file.OpenFileHandler
 import info.marozzo.hematoma.input.file.SaveAsHandler
 import info.marozzo.hematoma.input.file.SaveHandler
+import info.marozzo.hematoma.input.navigation.GotoHandler
 
 typealias EventInputHandlerScope = InputHandlerScope<Input, Event, EventState>
 typealias AcceptFun = (Input) -> Unit
 
 class EventInputHandler : InputHandler<Input, Event, EventState> {
     override suspend fun EventInputHandlerScope.handleInput(input: Input) = when (input) {
+        is Goto -> GotoHandler.handle(input)
         is OpenFile -> OpenFileHandler.handle(input)
         is OpenedFile -> OpenFileHandler.handle(input)
         is SaveAs -> SaveAsHandler.handle(input)

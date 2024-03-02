@@ -17,6 +17,12 @@ import java.nio.file.Path
 data class EventState(
     val path: Path? = null,
     val event: Event = Event("", Competitors()),
+    val screen: Screen = Screen.Competitors
 ) {
     companion object
+}
+
+enum class Screen {
+    Competitors,
+    Scoring
 }
