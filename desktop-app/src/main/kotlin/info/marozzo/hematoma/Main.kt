@@ -19,13 +19,10 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.awaitApplication
 import arrow.continuations.SuspendApp
 import com.google.common.flogger.FluentLogger
-import info.marozzo.hematoma.components.CompetitorNameInput
-import info.marozzo.hematoma.components.CompetitorsList
+import info.marozzo.hematoma.components.CompetitorSection
 import info.marozzo.hematoma.components.Header
-import info.marozzo.hematoma.contract.AddCompetitor
 import info.marozzo.hematoma.contract.EventState
 import info.marozzo.hematoma.contract.Save
-import info.marozzo.hematoma.domain.RegistrationNumber
 
 private val logger = FluentLogger.forEnclosingClass()!!
 
@@ -53,14 +50,8 @@ fun main(args: Array<String>) = SuspendApp {
 @Composable
 @Suppress("ModifierMissing") // Is the top-level composable and has no use for modifier
 fun App(state: EventState, accept: AcceptFun) = MaterialTheme {
-    val nextReg = remember(state.event.competitors) {
-        RegistrationNumber(
-            state.event.competitors.size.inc().toString()
-        ).getOrNull() ?: error("Can't happen")
-    }
     Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         Header(state, accept, modifier = Modifier.background(MaterialTheme.colors.primarySurface))
-        CompetitorNameInput(number = nextReg, onSubmit = { accept(AddCompetitor(nextReg, it)) })
-        CompetitorsList(state.event.competitors, modifier = Modifier.fillMaxSize())
+        CompetitorSection(state.event.competitors, accept, modifier = Modifier.fillMaxSize())
     }
 }

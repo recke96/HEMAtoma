@@ -22,11 +22,27 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
+import info.marozzo.hematoma.AcceptFun
+import info.marozzo.hematoma.contract.AddCompetitor
 import info.marozzo.hematoma.domain.Competitor
 import info.marozzo.hematoma.domain.CompetitorName
 import info.marozzo.hematoma.domain.Competitors
 import info.marozzo.hematoma.domain.RegistrationNumber
 
+@Composable
+fun CompetitorSection(competitors: Competitors, accept: AcceptFun, modifier: Modifier = Modifier) = Column(modifier) {
+    val nextReg = remember(competitors) {
+        RegistrationNumber(
+            competitors.size.inc().toString()
+        ).getOrNull() ?: error("Can't happen")
+    }
+    CompetitorsList(competitors, modifier = Modifier.fillMaxWidth())
+    CompetitorNameInput(
+        number = nextReg,
+        onSubmit = { accept(AddCompetitor(nextReg, it)) },
+        modifier = Modifier.fillMaxWidth()
+    )
+}
 
 @Composable
 fun CompetitorsList(competitors: Competitors, modifier: Modifier = Modifier) = LazyColumn(modifier) {
