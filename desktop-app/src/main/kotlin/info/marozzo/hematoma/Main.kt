@@ -29,6 +29,7 @@ import info.marozzo.hematoma.contract.EventState
 import info.marozzo.hematoma.contract.Save
 import info.marozzo.hematoma.input.AcceptFun
 
+private const val FOREGROUND = 10f
 private val logger = FluentLogger.forEnclosingClass()!!
 
 fun main(args: Array<String>) = SuspendApp {
@@ -48,7 +49,7 @@ fun main(args: Array<String>) = SuspendApp {
             }
         }) {
             Box(modifier = Modifier.fillMaxSize()) {
-                SnackbarHost(hostState = snackbar, modifier = Modifier.align(Alignment.TopEnd).zIndex(10f))
+                SnackbarHost(hostState = snackbar, modifier = Modifier.align(Alignment.TopEnd).zIndex(FOREGROUND))
                 App(state, vm::trySend)
             }
         }

@@ -3,7 +3,6 @@
  * Licensed under the EUPL-1.2-or-later
  *
  */
-@file:UseSerializers(PersistentListSerializer::class)
 
 package info.marozzo.hematoma.domain
 
@@ -18,7 +17,6 @@ import info.marozzo.hematoma.serializers.PersistentListSerializer
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.UseSerializers
 
 @JvmInline
 @Serializable
@@ -62,8 +60,10 @@ data class Competitor(val id: CompetitorId, val registration: RegistrationNumber
 
 @JvmInline
 @Serializable
-value class Competitors private constructor(private val competitors: PersistentList<Competitor>) :
-    List<Competitor> by competitors {
+value class Competitors private constructor(
+    @Serializable(with = PersistentListSerializer::class)
+    private val competitors: PersistentList<Competitor>
+) : List<Competitor> by competitors {
 
     companion object {
         operator fun invoke() = Competitors(persistentListOf())
