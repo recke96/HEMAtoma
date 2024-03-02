@@ -30,6 +30,7 @@ dependencies {
     runtimeOnly(libs.flogger.backend)
     
     detektPlugins(libs.detekt.compose)
+    detektPlugins(libs.detekt.arrow)
 }
 
 compose.desktop {

@@ -15,6 +15,8 @@ dependencies {
     implementation(libs.kotlinx.coroutines)
     api(libs.kotlinx.serialization)
     api(libs.kotlinx.immutable.collections)
+
+    detektPlugins(libs.detekt.arrow)
 }
 
 detekt {

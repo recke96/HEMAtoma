@@ -14,6 +14,7 @@ file-picker = "3.1.0"
 flogger = "0.8"
 detekt = "1.23.5"
 detekt-compose = "0.3.11"
+detekt-arrow = "0.4.0"
 
 [libraries]
 kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core-jvm", version.ref = "kotlinx-coroutines" }
@@ -31,6 +32,7 @@ filepicker = { group = "com.darkrockstudios", name = "mpfilepicker", version.ref
 flogger = { group = "com.google.flogger", name = "flogger", version.ref = "flogger" }
 flogger-backend = { group = "com.google.flogger", name = "flogger-system-backend", version.ref = "flogger" }
 detekt-compose = { group = "io.nlopez.compose.rules", name = "detekt", version.ref = "detekt-compose" }
+detekt-arrow = { group = "com.wolt.arrow.detekt", name = "rules", version.ref = "detekt-arrow" }
 
 [bundles]
 arrow = ["arrow-core", "arrow-fx-coroutines", "arrow-optics", "arrow-suspendapp"]
