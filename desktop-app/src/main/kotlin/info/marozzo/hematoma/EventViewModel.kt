@@ -6,27 +6,32 @@
 
 package info.marozzo.hematoma
 
+import androidx.compose.material.SnackbarHostState
 import com.copperleaf.ballast.*
 import com.copperleaf.ballast.core.BasicViewModel
 import com.copperleaf.ballast.core.FifoInputStrategy
-import info.marozzo.hematoma.contract.Input
+import info.marozzo.hematoma.contract.Error
+import info.marozzo.hematoma.contract.Event
 import info.marozzo.hematoma.contract.EventState
-import info.marozzo.hematoma.inputhandlers.EventInputHandler
+import info.marozzo.hematoma.contract.Input
+import info.marozzo.hematoma.input.EventInputHandler
 import info.marozzo.hematoma.utils.FluentLoggingInterceptor
+import info.marozzo.hematoma.utils.discard
 import kotlinx.coroutines.CoroutineScope
 
-typealias EventEventHandlerScope = EventHandlerScope<Input, Nothing, EventState>
+typealias EventEventHandlerScope = EventHandlerScope<Input, Event, EventState>
 
-class EventViewModel(scope: CoroutineScope) : BasicViewModel<Input, Nothing, EventState>(
+class EventViewModel(scope: CoroutineScope, snackbar: SnackbarHostState) : BasicViewModel<Input, Event, EventState>(
     config = BallastViewModelConfiguration.Builder().apply {
-        interceptors += FluentLoggingInterceptor<Input, Nothing, EventState>()
+        interceptors += FluentLoggingInterceptor<Input, Event, EventState>()
         inputStrategy = FifoInputStrategy()
     }.withViewModel(EventState(), EventInputHandler(), "HEMAtoma").build(),
-    eventHandler = EventEventHandler(),
+    eventHandler = EventEventHandler(snackbar),
     coroutineScope = scope
 )
 
-class EventEventHandler : EventHandler<Input, Nothing, EventState> {
-    override suspend fun EventEventHandlerScope.handleEvent(event: Nothing) =
-        Unit
+class EventEventHandler(private val snackbar: SnackbarHostState) : EventHandler<Input, Event, EventState> {
+    override suspend fun EventEventHandlerScope.handleEvent(event: Event): Unit = when(event) {
+        is Error -> snackbar.showSnackbar(event.msg).discard()
+    }
 }

@@ -4,7 +4,7 @@
  *
  */
 
-package info.marozzo.hematoma.inputhandlers.event
+package info.marozzo.hematoma.input.event
 
 import arrow.core.getOrElse
 import com.google.common.flogger.FluentLogger

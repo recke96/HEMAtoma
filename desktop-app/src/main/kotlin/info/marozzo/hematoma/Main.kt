@@ -10,6 +10,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.primarySurface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -30,7 +32,8 @@ fun main(args: Array<String>) = SuspendApp {
     logger.atInfo().log("Start HEMAtoma")
     awaitApplication {
         val coroutineScope = rememberCoroutineScope()
-        val vm = remember(coroutineScope) { EventViewModel(coroutineScope) }
+        val snackbar = remember { SnackbarHostState() }
+        val vm = remember(coroutineScope) { EventViewModel(coroutineScope, snackbar) }
         val state by vm.observeStates().collectAsState()
 
         Window(onCloseRequest = this::exitApplication, title = "HEMAtoma", onPreviewKeyEvent = {
@@ -41,6 +44,7 @@ fun main(args: Array<String>) = SuspendApp {
                 false
             }
         }) {
+            SnackbarHost(hostState = snackbar)
             App(state, vm::trySend)
         }
     }

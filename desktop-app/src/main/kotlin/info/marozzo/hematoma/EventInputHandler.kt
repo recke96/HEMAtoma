@@ -7,10 +7,11 @@
 package info.marozzo.hematoma
 
 import com.copperleaf.ballast.InputHandlerScope
-import info.marozzo.hematoma.contract.Input
+import info.marozzo.hematoma.contract.Event
 import info.marozzo.hematoma.contract.EventState
+import info.marozzo.hematoma.contract.Input
 
 
-typealias EventInputHandlerScope = InputHandlerScope<Input, Nothing, EventState>
+typealias EventInputHandlerScope = InputHandlerScope<Input, Event, EventState>
 typealias AcceptFun = (Input) -> Unit
 

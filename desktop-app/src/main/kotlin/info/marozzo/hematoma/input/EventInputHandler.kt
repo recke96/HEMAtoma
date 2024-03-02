@@ -4,17 +4,17 @@
  *
  */
 
-package info.marozzo.hematoma.inputhandlers
+package info.marozzo.hematoma.input
 
 import com.copperleaf.ballast.InputHandler
 import info.marozzo.hematoma.EventInputHandlerScope
 import info.marozzo.hematoma.contract.*
-import info.marozzo.hematoma.inputhandlers.event.AddCompetitorHandler
-import info.marozzo.hematoma.inputhandlers.file.OpenFileHandler
-import info.marozzo.hematoma.inputhandlers.file.SaveAsHandler
-import info.marozzo.hematoma.inputhandlers.file.SaveHandler
+import info.marozzo.hematoma.input.event.AddCompetitorHandler
+import info.marozzo.hematoma.input.file.OpenFileHandler
+import info.marozzo.hematoma.input.file.SaveAsHandler
+import info.marozzo.hematoma.input.file.SaveHandler
 
-class EventInputHandler : InputHandler<Input, Nothing, EventState> {
+class EventInputHandler : InputHandler<Input, Event, EventState> {
     override suspend fun EventInputHandlerScope.handleInput(input: Input) = when (input) {
         is OpenFile -> OpenFileHandler.handle(input)
         is OpenedFile -> OpenFileHandler.handle(input)

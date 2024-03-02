@@ -4,7 +4,7 @@
  *
  */
 
-package info.marozzo.hematoma.inputhandlers.file
+package info.marozzo.hematoma.input.file
 
 import arrow.optics.copy
 import com.google.common.flogger.FluentLogger
