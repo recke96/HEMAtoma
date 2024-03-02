@@ -9,25 +9,24 @@ package info.marozzo.hematoma
 import com.copperleaf.ballast.*
 import com.copperleaf.ballast.core.BasicViewModel
 import com.copperleaf.ballast.core.FifoInputStrategy
+import info.marozzo.hematoma.contract.Input
+import info.marozzo.hematoma.contract.EventState
+import info.marozzo.hematoma.inputhandlers.EventInputHandler
 import info.marozzo.hematoma.utils.FluentLoggingInterceptor
 import kotlinx.coroutines.CoroutineScope
 
-typealias EventEventHandlerScope = EventHandlerScope<EventContract.Input, Nothing, EventContract.State>
+typealias EventEventHandlerScope = EventHandlerScope<Input, Nothing, EventState>
 
-class EventViewModel(scope: CoroutineScope) : BasicViewModel<
-        EventContract.Input,
-        Nothing,
-        EventContract.State
-        >(
+class EventViewModel(scope: CoroutineScope) : BasicViewModel<Input, Nothing, EventState>(
     config = BallastViewModelConfiguration.Builder().apply {
-        interceptors += FluentLoggingInterceptor<EventContract.Input, Nothing, EventContract.State>()
+        interceptors += FluentLoggingInterceptor<Input, Nothing, EventState>()
         inputStrategy = FifoInputStrategy()
-    }.withViewModel(EventContract.State(), EventInputHandler(), "HEMAtoma").build(),
+    }.withViewModel(EventState(), EventInputHandler(), "HEMAtoma").build(),
     eventHandler = EventEventHandler(),
     coroutineScope = scope
 )
 
-class EventEventHandler : EventHandler<EventContract.Input, Nothing, EventContract.State> {
+class EventEventHandler : EventHandler<Input, Nothing, EventState> {
     override suspend fun EventEventHandlerScope.handleEvent(event: Nothing) =
         Unit
 }

@@ -7,7 +7,6 @@
 package info.marozzo.hematoma.domain
 
 import arrow.core.raise.either
-import arrow.core.raise.zipOrAccumulate
 import arrow.optics.optics
 import info.marozzo.hematoma.domain.errors.Validated
 import kotlinx.serialization.Serializable
@@ -17,13 +16,9 @@ import kotlinx.serialization.Serializable
 data class Event(val name: String, val competitors: Competitors) {
     companion object
 
-    fun addCompetitor(name: String): Validated<Event> = either {
+    fun addCompetitor(number: RegistrationNumber, name: CompetitorName): Validated<Event> = either {
         val nextId = competitors.maxOfOrNull(Competitor::id)?.next() ?: CompetitorId.initial()
-        val competitor = zipOrAccumulate(
-            { RegistrationNumber(nextId.toString()).bind() },
-            { CompetitorName(name).bind() },
-            { reg, name -> Competitor(nextId, reg, name) }
-        )
+        val competitor = Competitor(nextId, number, name)
 
         Event.competitors.modify(this@Event) {
             it.add(competitor).bind()

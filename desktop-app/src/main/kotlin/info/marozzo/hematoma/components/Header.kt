@@ -23,11 +23,14 @@ import androidx.compose.ui.unit.dp
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import info.marozzo.hematoma.AcceptFun
-import info.marozzo.hematoma.EventContract
+import info.marozzo.hematoma.contract.EventState
+import info.marozzo.hematoma.contract.OpenFile
+import info.marozzo.hematoma.contract.Save
+import info.marozzo.hematoma.contract.SaveAs
 import java.nio.file.Path
 
 @Composable
-fun Header(state: EventContract.State, accept: AcceptFun, modifier: Modifier = Modifier) {
+fun Header(state: EventState, accept: AcceptFun, modifier: Modifier = Modifier) {
     Row(modifier.heightIn(24.dp, 32.dp).fillMaxWidth()) {
         FileMenu(state.path != null, accept)
     }
@@ -64,7 +67,7 @@ private fun OpenMenuItem(accept: AcceptFun, modifier: Modifier = Modifier, onDon
         title = "Open Event-File"
     ) { file ->
         setShowFilePicker(false)
-        file?.also { accept(EventContract.Input.OpenFile(Path.of(it.path))) }
+        file?.also { accept(OpenFile(Path.of(it.path))) }
         onDone()
     }
 }
@@ -79,14 +82,14 @@ private fun SaveAsMenuItem(accept: AcceptFun, modifier: Modifier = Modifier, onD
     }
     DirectoryPicker(showFilePicker, initialDirectory = userDir, title = "Save Event in") { file ->
         setShowFilePicker(false)
-        file?.also { accept(EventContract.Input.SaveAs(Path.of(it, "Hack.json"))) }
+        file?.also { accept(SaveAs(Path.of(it, "Hack.json"))) }
         onDone()
     }
 }
 
 @Composable
 private fun SaveMenuItem(hasPath: Boolean, accept: AcceptFun, modifier: Modifier = Modifier, onDone: () -> Unit = {}) {
-    DropdownMenuItem(onClick = { accept(EventContract.Input.Save); onDone() }, enabled = hasPath, modifier = modifier) {
+    DropdownMenuItem(onClick = { accept(Save); onDone() }, enabled = hasPath, modifier = modifier) {
         Text("Save")
     }
 }

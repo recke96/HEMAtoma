@@ -20,6 +20,7 @@ import androidx.compose.ui.window.awaitApplication
 import arrow.continuations.SuspendApp
 import com.google.common.flogger.FluentLogger
 import info.marozzo.hematoma.components.Header
+import info.marozzo.hematoma.contract.EventState
 
 val logger = FluentLogger.forEnclosingClass()!!
 
@@ -39,7 +40,7 @@ fun main(args: Array<String>) = SuspendApp {
 
 @Composable
 @Suppress("ModifierMissing") // Is the top-level composable and has no use for modifier
-fun App(state: EventContract.State, accept: AcceptFun) = MaterialTheme {
+fun App(state: EventState, accept: AcceptFun) = MaterialTheme {
     Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         Header(state, accept, modifier = Modifier.background(MaterialTheme.colors.primarySurface))
         Box(Modifier.widthIn(720.dp, 1080.dp).fillMaxHeight()) {
