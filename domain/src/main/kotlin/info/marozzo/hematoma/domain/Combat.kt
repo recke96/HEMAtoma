@@ -38,9 +38,21 @@ value class Score(private val value: Int) : Comparable<Score> {
     }
 
     operator fun plus(other: Score) = Score(value + other.value)
-    operator fun div(other: Score) = value.toDouble() / other.value.toDouble()
+    operator fun div(other: Score) = CUT(value.toDouble() / other.value.toDouble())
     override fun compareTo(other: Score): Int = value.compareTo(other.value)
     override fun toString(): String = "$value\u202FPts"
+}
+
+@JvmInline
+@Serializable
+value class CUT(private val value: Double) : Comparable<CUT> {
+
+    companion object {
+        private const val PERCENT_SCALE = 100.0
+    }
+
+    override fun compareTo(other: CUT): Int = value.compareTo(other.value)
+    override fun toString(): String = if (value.isInfinite()) "\u221E" else "%.2f\u202F%%".format(value * PERCENT_SCALE)
 }
 
 @JvmInline
@@ -82,8 +94,24 @@ data class Combat(
     fun getResults(): CombatResults = when {
         doubleHits >= Hits.three -> CombatResults(Result.doubleHit(a), Result.doubleHit(b))
         else -> CombatResults(
-            Result(a, Matches.one, scoreA, scoreB, doubleHits),
-            Result(b, Matches.one, scoreB, scoreA, doubleHits)
+            Result(
+                a,
+                Matches.one,
+                if (scoreA > scoreB) Matches.one else Matches.none,
+                if (scoreA < scoreB) Matches.one else Matches.none,
+                scoreA,
+                scoreB,
+                doubleHits
+            ),
+            Result(
+                b,
+                Matches.one,
+                if (scoreB > scoreA) Matches.one else Matches.none,
+                if (scoreB < scoreA) Matches.one else Matches.none,
+                scoreB,
+                scoreA,
+                doubleHits
+            )
         )
     }
 
@@ -122,17 +150,22 @@ value class Matches(val value: UInt) : Comparable<Matches> {
 data class Result(
     val competitor: CompetitorId,
     val matches: Matches = Matches.none,
+    val wins: Matches = Matches.none,
+    val losses: Matches = Matches.none,
     val scored: Score = Score(0),
     val conceded: Score = Score(0),
     val doubleHits: Hits = Hits(0U)
 ) {
+    val cut = scored / conceded
+
     companion object {
         fun doubleHit(competitor: CompetitorId) = Result(
             competitor,
-            Matches.one,
-            Score.zero,
-            Score.seven,
-            Hits.three
+            matches = Matches.one,
+            losses = Matches.one,
+            scored = Score.zero,
+            conceded = Score.seven,
+            doubleHits = Hits.three
         )
     }
 
@@ -146,6 +179,8 @@ data class Result(
         Result(
             competitor,
             matches + other.matches,
+            wins + other.wins,
+            losses + other.losses,
             scored + other.scored,
             conceded + other.conceded,
             doubleHits + other.doubleHits
