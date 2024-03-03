@@ -6,15 +6,11 @@
 
 package info.marozzo.hematoma.components
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,17 +33,19 @@ fun Header(state: EventState, accept: AcceptFun, modifier: Modifier = Modifier) 
 }
 
 @Composable
+@OptIn(ExperimentalMaterial3Api::class)
 private fun FileMenu(name: String, hasPath: Boolean, accept: AcceptFun, modifier: Modifier = Modifier) {
-    val (isOpen, setIsOpen) = remember { mutableStateOf(false) }
-    val dismiss = { setIsOpen(false) }
-    Box(modifier) {
+    val (expanded, setExpanded) = remember { mutableStateOf(false) }
+    val dismiss = { setExpanded(false) }
+    ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = setExpanded, modifier) {
         Button(
-            onClick = { setIsOpen(!isOpen) },
+            onClick = { setExpanded(!expanded) },
             shape = RoundedCornerShape(0.dp),
+            modifier = Modifier.menuAnchor(),
         ) {
             Text("File")
         }
-        DropdownMenu(isOpen, onDismissRequest = dismiss) {
+        DropdownMenu(expanded, onDismissRequest = dismiss, modifier = Modifier.exposedDropdownSize(false)) {
             OpenMenuItem(accept, onDone = dismiss)
             SaveAsMenuItem(name, accept, onDone = dismiss)
             SaveMenuItem(hasPath, accept, onDone = dismiss)
