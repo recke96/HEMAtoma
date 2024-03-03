@@ -32,7 +32,6 @@ import info.marozzo.hematoma.contract.AddCombat
 import info.marozzo.hematoma.contract.EventState
 import info.marozzo.hematoma.domain.*
 import info.marozzo.hematoma.input.AcceptFun
-import java.util.*
 
 
 @Composable
@@ -193,8 +192,16 @@ fun CombatRecordListItem(combat: Combat, competitors: Competitors, modifier: Mod
 
 @Composable
 fun CombatTable(tournament: Tournament, competitors: Competitors, modifier: Modifier = Modifier) {
+    val comparator = remember(competitors) {
+        compareBy(Result::cut)
+            .thenComparing(compareByDescending(Result::doubleHits))
+            .thenComparing(Result::wins)
+            .thenComparing { r ->
+                competitors.find { it.id == r.competitor }?.name?.value!!
+            }.reversed()
+    }
     val results = remember(tournament) {
-        tournament.getResults()
+        tournament.getResults().values.sortedWith(comparator)
     }
 
     DataTable(
@@ -220,14 +227,14 @@ fun CombatTable(tournament: Tournament, competitors: Competitors, modifier: Modi
             }
         )
     ) {
-        for ((competitorId, result) in results) {
-            val competitor = competitors.find { it.id == competitorId }!!
+        for (result in results) {
+            val competitor = competitors.find { it.id == result.competitor }!!
             row {
                 cell { Text(competitor.registration.value) }
                 cell { Text(competitor.name.value) }
                 cell { Text(result.scored.toString()) }
                 cell { Text(result.conceded.toString()) }
-                cell { Text("%.2f\u202F%%".format(Locale.GERMAN, result.scored / result.conceded)) }
+                cell { Text(result.cut.toString()) }
                 cell { Text(result.doubleHits.toString()) }
             }
         }
