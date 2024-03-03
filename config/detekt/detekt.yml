@@ -58,6 +58,10 @@ naming:
   FunctionNaming:
     ignoreAnnotated: [ 'Composable', 'Preview' ]
 
+complexity:
+  LongMethod:
+    threshold: 120
+
 style:
   UnusedPrivateMember:
     ignoreAnnotated: [ 'Composable', 'Preview' ]
