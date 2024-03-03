@@ -248,20 +248,20 @@ fun CombatTable(tournament: Tournament, competitors: Competitors, accept: Accept
                 cell { Text("Summary", fontWeight = FontWeight.Bold) }
                 cell {
                     Text(
-                        results.map(Result::scored).reduce(Score::plus).toString(),
+                        results.map(Result::scored).reduceOrNull(Score::plus)?.toString() ?: "",
                         fontWeight = FontWeight.Bold,
                     )
                 }
                 cell {
                     Text(
-                        results.map(Result::conceded).reduce(Score::plus).toString(),
+                        results.map(Result::conceded).reduceOrNull(Score::plus)?.toString() ?: "",
                         fontWeight = FontWeight.Bold,
                     )
                 }
                 cell {}
                 cell {
                     Text(
-                        results.map(Result::doubleHits).reduce(Hits::plus).toString(),
+                        results.map(Result::doubleHits).reduceOrNull(Hits::plus)?.toString() ?: "",
                         fontWeight = FontWeight.Bold,
                     )
                 }
