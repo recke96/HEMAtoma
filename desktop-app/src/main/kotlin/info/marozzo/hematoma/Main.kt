@@ -19,6 +19,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.*
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.awaitApplication
 import androidx.compose.ui.zIndex
@@ -32,6 +34,7 @@ import info.marozzo.hematoma.contract.EventState
 import info.marozzo.hematoma.contract.Save
 import info.marozzo.hematoma.contract.Screen
 import info.marozzo.hematoma.input.AcceptFun
+import java.awt.Dimension
 
 private const val FOREGROUND = 10f
 private val logger = FluentLogger.forEnclosingClass()!!
@@ -52,6 +55,10 @@ fun main(args: Array<String>) = SuspendApp {
                 false
             }
         }) {
+            with(LocalDensity.current) {
+                window.minimumSize = Dimension(1240.dp.roundToPx(), 200.dp.roundToPx())
+            }
+
             Box(modifier = Modifier.fillMaxSize()) {
                 SnackbarHost(hostState = snackbar, modifier = Modifier.align(Alignment.BottomEnd).zIndex(FOREGROUND))
                 App(state, vm::trySend)
