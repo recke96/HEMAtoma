@@ -20,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import arrow.core.Option
@@ -240,6 +241,29 @@ fun CombatTable(tournament: Tournament, competitors: Competitors, accept: Accept
                     cell { Text(result.conceded.toString()) }
                     cell { Text(result.cut.toString()) }
                     cell { Text(result.doubleHits.toString()) }
+                }
+            }
+            row {
+                cell { }
+                cell { Text("Summary", fontWeight = FontWeight.Bold) }
+                cell {
+                    Text(
+                        results.map(Result::scored).reduce(Score::plus).toString(),
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+                cell {
+                    Text(
+                        results.map(Result::conceded).reduce(Score::plus).toString(),
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+                cell {}
+                cell {
+                    Text(
+                        results.map(Result::doubleHits).reduce(Hits::plus).toString(),
+                        fontWeight = FontWeight.Bold,
+                    )
                 }
             }
         }
