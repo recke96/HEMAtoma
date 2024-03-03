@@ -13,7 +13,9 @@ kotlin {
 dependencies {
     implementation(project(":domain"))
 
-    implementation(compose.desktop.currentOs)
+    implementation(compose.desktop.currentOs) {
+        exclude(compose.material)
+    }
     implementation(compose.material3)
     implementation(compose.materialIconsExtended)
     implementation(libs.filepicker)
