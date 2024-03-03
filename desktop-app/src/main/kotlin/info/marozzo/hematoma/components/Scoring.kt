@@ -6,72 +6,30 @@
 
 package info.marozzo.hematoma.components
 
-import androidx.compose.material3.*
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material.Tab
+import androidx.compose.material.TabRow
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.window.PopupProperties
-import info.marozzo.hematoma.domain.Competitor
-import info.marozzo.hematoma.domain.Competitors
 
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
-fun CompetitorSelect(
-    selected: Competitor?,
-    competitors: Competitors,
-    onSelect: (Competitor) -> Unit,
-    modifier: Modifier = Modifier
-) {
+fun ScoringScreen(modifier: Modifier = Modifier) {
+    val (tab, setTab) = remember { mutableStateOf(0) }
 
-    val (expanded, setExpanded) = remember { mutableStateOf(false) }
-    val (input, setInput) = remember(selected) {
-        mutableStateOf(selected?.let { "${it.registration.value}. ${it.name.value}" } ?: "")
-    }
-    val filtered = remember(input, competitors) {
-        competitors.filter {
-            it.registration.value.contains(input) || it.name.value.contains(
-                input,
-                ignoreCase = true
-            )
+    Column(modifier) {
+        TabRow(selectedTabIndex = tab) {
+            Tab(tab == 0, onClick = { setTab(0) }, text =  { Text("Record") })
+            Tab(tab == 1, onClick = { setTab(1) }, text =  { Text("Table") })
         }
-    }
-
-    ExposedDropdownMenuBox(
-        modifier = modifier,
-        expanded = expanded,
-        onExpandedChange = { setExpanded(it) },
-    ) {
-        TextField(
-            modifier = Modifier.menuAnchor(),
-            singleLine = true,
-            value = input,
-            onValueChange = { setInput(it) },
-            label = { Text("Competitor") },
-            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
-            colors = ExposedDropdownMenuDefaults.textFieldColors()
-        )
-
-
-        if (filtered.isNotEmpty()) {
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { setExpanded(false) },
-                properties = PopupProperties(focusable = false),
-                modifier = Modifier.exposedDropdownSize()
-            ) {
-                filtered.forEach {
-                    DropdownMenuItem(
-                        leadingIcon = { Text(it.registration.value) },
-                        text = { Text(it.name.value) },
-                        onClick = {
-                            onSelect(it)
-                            setExpanded(false)
-                        },
-                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                    )
-                }
+        AnimatedContent(tab) {
+            when (it) {
+                0 -> Text("Combat records")
+                1 -> Text("Results table")
             }
         }
     }

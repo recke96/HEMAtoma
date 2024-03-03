@@ -25,13 +25,12 @@ import androidx.compose.ui.zIndex
 import arrow.continuations.SuspendApp
 import com.google.common.flogger.FluentLogger
 import info.marozzo.hematoma.components.CompetitorSection
-import info.marozzo.hematoma.components.CompetitorSelect
 import info.marozzo.hematoma.components.Header
 import info.marozzo.hematoma.components.Navigation
+import info.marozzo.hematoma.components.ScoringScreen
 import info.marozzo.hematoma.contract.EventState
 import info.marozzo.hematoma.contract.Save
 import info.marozzo.hematoma.contract.Screen
-import info.marozzo.hematoma.domain.Competitor
 import info.marozzo.hematoma.input.AcceptFun
 
 private const val FOREGROUND = 10f
@@ -77,11 +76,7 @@ fun App(state: EventState, accept: AcceptFun) = MaterialTheme {
                         modifier = Modifier.fillMaxSize()
                     )
 
-                    Screen.Scoring -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        val (comp, setComp) = remember { mutableStateOf<Competitor?>(null) }
-
-                        CompetitorSelect(comp, state.event.competitors, setComp)
-                    }
+                    Screen.Scoring -> ScoringScreen(modifier = Modifier.fillMaxSize())
                 }
             }
 
