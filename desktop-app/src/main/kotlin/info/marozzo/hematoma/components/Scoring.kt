@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import arrow.core.Option
 import arrow.core.none
@@ -185,7 +186,11 @@ fun CombatRecordListItem(combat: Combat, competitors: Competitors, modifier: Mod
         headlineContent = {
             Text(
                 "${combat.scoreA} : ${combat.scoreB} (${combat.doubleHits})",
-                style = MaterialTheme.typography.bodyLarge
+                style = if (combat.doubleHits < Hits.three)
+                    MaterialTheme.typography.bodyLarge
+                else MaterialTheme.typography.bodyLarge.copy(
+                    textDecoration = TextDecoration.LineThrough
+                )
             )
         }
     )
