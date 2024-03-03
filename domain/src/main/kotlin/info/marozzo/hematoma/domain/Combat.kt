@@ -64,6 +64,8 @@ value class Hits(private val value: UInt) : Comparable<Hits> {
 
     operator fun plus(other: Hits) = Hits(value + other.value)
     override fun compareTo(other: Hits): Int = value.compareTo(other.value)
+
+    override fun toString(): String = "$value"
 }
 
 

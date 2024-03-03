@@ -7,9 +7,14 @@
 package info.marozzo.hematoma.components
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,8 +60,10 @@ fun ScoringScreen(state: EventState, accept: AcceptFun, modifier: Modifier = Mod
 
 @Composable
 fun CombatRecord(competitors: Competitors, tournament: Tournament, accept: AcceptFun, modifier: Modifier = Modifier) {
-    Column(modifier) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top)) {
         CombatInput(competitors, tournament, accept)
+        Divider(thickness = DividerDefaults.Thickness.plus(2.dp))
+        CombatRecordList(tournament.record, competitors)
     }
 }
 
@@ -139,3 +146,41 @@ fun CombatInput(competitors: Competitors, tournament: Tournament, accept: Accept
         }
     }
 }
+
+@Composable
+fun CombatRecordList(combats: Combats, competitors: Competitors, modifier: Modifier = Modifier) {
+    val state = rememberLazyListState()
+    Box(modifier) {
+        LazyColumn(state = state) {
+            items(combats) {
+                CombatRecordListItem(it, competitors, modifier = Modifier.fillMaxWidth())
+            }
+        }
+        VerticalScrollbar(
+            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+            adapter = rememberScrollbarAdapter(state)
+        )
+    }
+}
+
+@Composable
+fun CombatRecordListItem(combat: Combat, competitors: Competitors, modifier: Modifier = Modifier) = Column(modifier) {
+    val a = remember(combat.a, competitors) {
+        competitors.find { it.id == combat.a }!!
+    }
+    val b = remember(combat.b, competitors) {
+        competitors.find { it.id == combat.b }!!
+    }
+    ListItem(
+        overlineContent = { Text("${a.display()} vs. ${b.display()}", style = MaterialTheme.typography.bodySmall) },
+        headlineContent = {
+            Text(
+                "${combat.scoreA} : ${combat.scoreB} (${combat.doubleHits})",
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
+    )
+    Divider()
+}
+
+private fun Competitor.display() = "${registration.value}. ${name.value}"
