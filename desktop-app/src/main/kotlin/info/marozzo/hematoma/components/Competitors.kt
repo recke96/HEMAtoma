@@ -28,6 +28,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.window.PopupProperties
+import arrow.core.Option
+import arrow.core.getOrElse
 import info.marozzo.hematoma.contract.AddCompetitor
 import info.marozzo.hematoma.domain.Competitor
 import info.marozzo.hematoma.domain.CompetitorName
@@ -102,14 +104,15 @@ fun CompetitorNameInput(number: RegistrationNumber, onSubmit: (CompetitorName) -
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun CompetitorSelect(
-    selected: Competitor?,
-    competitors: Competitors,
+    selected: Option<Competitor>,
+    competitors: Iterable<Competitor>,
     onSelect: (Competitor) -> Unit,
+    label: (@Composable () -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val (expanded, setExpanded) = remember { mutableStateOf(false) }
     val (input, setInput) = remember(selected) {
-        mutableStateOf(selected?.let { "${it.registration.value}. ${it.name.value}" } ?: "")
+        mutableStateOf(selected.map { "${it.registration.value}. ${it.name.value}" }.getOrElse { "" })
     }
     val filtered = remember(input, competitors) {
         competitors.filter {
@@ -130,7 +133,8 @@ fun CompetitorSelect(
             singleLine = true,
             value = input,
             onValueChange = { setInput(it) },
-            label = { Text("Competitor") },
+            label = label,
+            isError = selected.isNone(),
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
             colors = ExposedDropdownMenuDefaults.textFieldColors()
         )

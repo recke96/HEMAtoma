@@ -10,6 +10,7 @@ import arrow.core.getOrElse
 import arrow.core.nel
 import arrow.core.raise.either
 import arrow.core.raise.ensure
+import arrow.core.raise.ensureNotNull
 import arrow.core.toOption
 import arrow.optics.optics
 import info.marozzo.hematoma.domain.errors.Validated
@@ -26,6 +27,16 @@ value class Score(private val value: Int) : Comparable<Score> {
     companion object {
         val zero = Score(0)
         val seven = Score(7)
+
+        operator fun invoke(value: String): Validated<Score> = either {
+            val score = ensureNotNull(value.toIntOrNull()) {
+                ValidationError(
+                    "Expected a number, but got $value",
+                    "value"
+                ).nel()
+            }
+            Score(score)
+        }
     }
 
     operator fun plus(other: Score) = Score(value + other.value)
@@ -39,6 +50,16 @@ value class Hits(private val value: UInt) : Comparable<Hits> {
 
     companion object {
         val three = Hits(3U)
+
+        operator fun invoke(value: String): Validated<Hits> = either {
+            val hits = ensureNotNull(value.toUIntOrNull()) {
+                ValidationError(
+                    "Expected a positive number, but got $value",
+                    "value"
+                ).nel()
+            }
+            Hits(hits)
+        }
     }
 
     operator fun plus(other: Hits) = Hits(value + other.value)
