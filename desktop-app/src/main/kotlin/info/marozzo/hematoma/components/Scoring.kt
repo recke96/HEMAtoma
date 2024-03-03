@@ -12,8 +12,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -205,6 +207,7 @@ fun CombatRecordListItem(combat: Combat, competitors: Competitors, modifier: Mod
 
 @Composable
 fun CombatTable(tournament: Tournament, competitors: Competitors, accept: AcceptFun, modifier: Modifier = Modifier) {
+    val state = rememberScrollState()
     val comparator = remember(competitors) {
         compareBy(Result::cut)
             .thenComparing(compareByDescending(Result::doubleHits))
@@ -220,73 +223,79 @@ fun CombatTable(tournament: Tournament, competitors: Competitors, accept: Accept
     Column(modifier, verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top)) {
         CombatInput(competitors, tournament, accept)
         Divider(thickness = DividerDefaults.Thickness.plus(2.dp))
-        DataTable(
-            modifier = Modifier.fillMaxWidth(),
-            columns = listOf(
-                DataColumn(alignment = Alignment.End) {
-                    Text("Nr.", fontWeight = FontWeight.Bold)
-                },
-                DataColumn(alignment = Alignment.Start) {
-                    Text("Name", fontWeight = FontWeight.Bold)
-                },
-                DataColumn(alignment = Alignment.End) {
-                    Text("Scored", fontWeight = FontWeight.Bold)
-                },
-                DataColumn(alignment = Alignment.End) {
-                    Text("Conceded", fontWeight = FontWeight.Bold)
-                },
-                DataColumn(alignment = Alignment.End) {
-                    Text("CUT", fontWeight = FontWeight.Bold)
-                },
-                DataColumn(alignment = Alignment.End) {
-                    Text("Double Hits", fontWeight = FontWeight.Bold)
+        Box {
+            DataTable(
+                modifier = Modifier.fillMaxWidth().verticalScroll(state),
+                columns = listOf(
+                    DataColumn(alignment = Alignment.End) {
+                        Text("Nr.", fontWeight = FontWeight.Bold)
+                    },
+                    DataColumn(alignment = Alignment.Start) {
+                        Text("Name", fontWeight = FontWeight.Bold)
+                    },
+                    DataColumn(alignment = Alignment.End) {
+                        Text("Scored", fontWeight = FontWeight.Bold)
+                    },
+                    DataColumn(alignment = Alignment.End) {
+                        Text("Conceded", fontWeight = FontWeight.Bold)
+                    },
+                    DataColumn(alignment = Alignment.End) {
+                        Text("CUT", fontWeight = FontWeight.Bold)
+                    },
+                    DataColumn(alignment = Alignment.End) {
+                        Text("Double Hits", fontWeight = FontWeight.Bold)
+                    }
+                )
+            ) {
+                for (result in results) {
+                    val competitor = competitors.find { it.id == result.competitor }!!
+                    row {
+                        cell { Text(competitor.registration.value) }
+                        cell { Text(competitor.name.value) }
+                        cell { Text(result.scored.toString()) }
+                        cell { Text(result.conceded.toString()) }
+                        cell { Text(result.cut.toString()) }
+                        cell { Text(result.doubleHits.toString()) }
+                    }
                 }
-            )
-        ) {
-            for (result in results) {
-                val competitor = competitors.find { it.id == result.competitor }!!
                 row {
-                    cell { Text(competitor.registration.value) }
-                    cell { Text(competitor.name.value) }
-                    cell { Text(result.scored.toString()) }
-                    cell { Text(result.conceded.toString()) }
-                    cell { Text(result.cut.toString()) }
-                    cell { Text(result.doubleHits.toString()) }
+                    cell { }
+                    cell { Text("Summary", fontWeight = FontWeight.Bold) }
+                    cell {
+                        val scored = results.map(Result::scored).reduceOrNull(Score::plus)?.toString() ?: ""
+                        Text(
+                            "Tot. $scored",
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+                    cell {
+                        val conceded = results.map(Result::conceded).reduceOrNull(Score::plus)?.toString() ?: ""
+                        Text(
+                            "Tot. $conceded",
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+                    cell {
+                        val avgCut = CUT(results.map(Result::cut).map(CUT::value).average())
+                        Text(
+                            "Avg. $avgCut",
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+                    cell {
+                        val doubleHits =
+                            results.map(Result::doubleHits).reduceOrNull(Hits::plus)?.run(Hits::half)?.toString() ?: ""
+                        Text(
+                            "Tot. $doubleHits",
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
                 }
             }
-            row {
-                cell { }
-                cell { Text("Summary", fontWeight = FontWeight.Bold) }
-                cell {
-                    val scored = results.map(Result::scored).reduceOrNull(Score::plus)?.toString() ?: ""
-                    Text(
-                        "Tot. $scored",
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
-                cell {
-                    val conceded = results.map(Result::conceded).reduceOrNull(Score::plus)?.toString() ?: ""
-                    Text(
-                        "Tot. $conceded",
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
-                cell {
-                    val avgCut = CUT(results.map(Result::cut).map(CUT::value).average())
-                    Text(
-                        "Avg. $avgCut",
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
-                cell {
-                    val doubleHits =
-                        results.map(Result::doubleHits).reduceOrNull(Hits::plus)?.run(Hits::half)?.toString() ?: ""
-                    Text(
-                        "Tot. $doubleHits",
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
-            }
+            VerticalScrollbar(
+                modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+                adapter = rememberScrollbarAdapter(state)
+            )
         }
     }
 }
