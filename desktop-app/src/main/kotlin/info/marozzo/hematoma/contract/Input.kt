@@ -27,4 +27,4 @@ data object Save : Input
 
 // Event management
 
-data class AddCompetitor(val number: RegistrationNumber, val name: CompetitorName) : Input
+data class AddCompetitor(val registration: RegistrationNumber, val name: CompetitorName) : Input
