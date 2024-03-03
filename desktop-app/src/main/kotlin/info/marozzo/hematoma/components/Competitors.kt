@@ -107,8 +107,8 @@ fun CompetitorSelect(
     selected: Option<Competitor>,
     competitors: Iterable<Competitor>,
     onSelect: (Competitor) -> Unit,
+    modifier: Modifier = Modifier,
     label: (@Composable () -> Unit)? = null,
-    modifier: Modifier = Modifier
 ) {
     val (expanded, setExpanded) = remember { mutableStateOf(false) }
     val (input, setInput) = remember(selected) {
