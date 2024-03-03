@@ -11,7 +11,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,7 +44,6 @@ private fun FileMenu(name: String, hasPath: Boolean, accept: AcceptFun, modifier
         Button(
             onClick = { setIsOpen(!isOpen) },
             shape = RoundedCornerShape(0.dp),
-            colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primaryVariant)
         ) {
             Text("File")
         }
@@ -58,9 +60,7 @@ private fun OpenMenuItem(accept: AcceptFun, modifier: Modifier = Modifier, onDon
     val userDir = remember { System.getProperty("user.home") }
     val (showFilePicker, setShowFilePicker) = remember { mutableStateOf(false) }
 
-    DropdownMenuItem(onClick = { setShowFilePicker(true) }, modifier = modifier) {
-        Text("Open")
-    }
+    DropdownMenuItem(text = { Text("Open") }, onClick = { setShowFilePicker(true) }, modifier = modifier)
     FilePicker(
         showFilePicker,
         initialDirectory = userDir,
@@ -78,9 +78,7 @@ private fun SaveAsMenuItem(name: String, accept: AcceptFun, modifier: Modifier =
     val userDir = remember { System.getProperty("user.home") }
     val (showFilePicker, setShowFilePicker) = remember { mutableStateOf(false) }
 
-    DropdownMenuItem(onClick = { setShowFilePicker(true) }, modifier = modifier) {
-        Text("Save As")
-    }
+    DropdownMenuItem(text = { Text("Save As") }, onClick = { setShowFilePicker(true) }, modifier = modifier)
     DirectoryPicker(showFilePicker, initialDirectory = userDir, title = "Save Event in") { file ->
         setShowFilePicker(false)
         file?.also { accept(SaveAs(Path.of(it, "$name.json"))) }
@@ -90,7 +88,10 @@ private fun SaveAsMenuItem(name: String, accept: AcceptFun, modifier: Modifier =
 
 @Composable
 private fun SaveMenuItem(hasPath: Boolean, accept: AcceptFun, modifier: Modifier = Modifier, onDone: () -> Unit = {}) {
-    DropdownMenuItem(onClick = { accept(Save); onDone() }, enabled = hasPath, modifier = modifier) {
-        Text("Save")
-    }
+    DropdownMenuItem(
+        text = { Text("Save") },
+        onClick = { accept(Save); onDone() },
+        enabled = hasPath,
+        modifier = modifier
+    )
 }

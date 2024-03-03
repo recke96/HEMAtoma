@@ -17,9 +17,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ListItem
-import androidx.compose.material.TextField
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -69,11 +66,11 @@ fun CompetitorsList(competitors: Competitors, modifier: Modifier = Modifier) {
 }
 
 @Composable
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 fun CompetitorListItem(competitor: Competitor, modifier: Modifier = Modifier) = Column(modifier) {
-    ListItem(icon = { Text("${competitor.registration.value}.") }) {
-        Text(competitor.name.value)
-    }
+    ListItem(
+        leadingContent = { Text("${competitor.registration.value}.") },
+        headlineContent = { Text(competitor.name.value) })
     Divider()
 }
 

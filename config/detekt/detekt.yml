@@ -67,6 +67,3 @@ style:
     ignoreAnnotated: [ 'Composable', 'Preview' ]
   WildcardImport:
     active: false
-  ForbiddenImport:
-    active: true
-    forbiddenPatterns: 'androidx.compose.material.*'

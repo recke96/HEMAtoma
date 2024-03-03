@@ -12,9 +12,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -65,7 +65,7 @@ fun main(args: Array<String>) = SuspendApp {
 @Suppress("ModifierMissing") // Is the top-level composable and has no use for modifier
 fun App(state: EventState, accept: AcceptFun) = MaterialTheme {
     Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-        Header(state, accept, modifier = Modifier.background(MaterialTheme.colors.primaryVariant))
+        Header(state, accept, modifier = Modifier.background(MaterialTheme.colorScheme.primary))
         Row {
             Navigation(state.screen, accept)
             AnimatedContent(state.screen) { current ->

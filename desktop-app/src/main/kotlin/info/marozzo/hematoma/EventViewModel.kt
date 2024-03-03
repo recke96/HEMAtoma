@@ -6,7 +6,7 @@
 
 package info.marozzo.hematoma
 
-import androidx.compose.material.SnackbarHostState
+import androidx.compose.material3.SnackbarHostState
 import com.copperleaf.ballast.BallastViewModelConfiguration
 import com.copperleaf.ballast.EventHandlerScope
 import com.copperleaf.ballast.build
