@@ -56,6 +56,7 @@ fun ScoringScreen(state: EventState, accept: AcceptFun, modifier: Modifier = Mod
                     1 -> CombatTable(
                         state.event.tournaments.single(),
                         state.event.competitors,
+                        accept,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
@@ -191,7 +192,7 @@ fun CombatRecordListItem(combat: Combat, competitors: Competitors, modifier: Mod
 }
 
 @Composable
-fun CombatTable(tournament: Tournament, competitors: Competitors, modifier: Modifier = Modifier) {
+fun CombatTable(tournament: Tournament, competitors: Competitors, accept: AcceptFun, modifier: Modifier = Modifier) {
     val comparator = remember(competitors) {
         compareBy(Result::cut)
             .thenComparing(compareByDescending(Result::doubleHits))
@@ -204,38 +205,42 @@ fun CombatTable(tournament: Tournament, competitors: Competitors, modifier: Modi
         tournament.getResults().values.sortedWith(comparator)
     }
 
-    DataTable(
-        modifier = modifier,
-        columns = listOf(
-            DataColumn(alignment = Alignment.End) {
-                Text("Nr.")
-            },
-            DataColumn(alignment = Alignment.Start) {
-                Text("Name")
-            },
-            DataColumn(alignment = Alignment.End) {
-                Text("Scored")
-            },
-            DataColumn(alignment = Alignment.End) {
-                Text("Conceded")
-            },
-            DataColumn(alignment = Alignment.End) {
-                Text("CUT")
-            },
-            DataColumn(alignment = Alignment.End) {
-                Text("Double Hits")
-            }
-        )
-    ) {
-        for (result in results) {
-            val competitor = competitors.find { it.id == result.competitor }!!
-            row {
-                cell { Text(competitor.registration.value) }
-                cell { Text(competitor.name.value) }
-                cell { Text(result.scored.toString()) }
-                cell { Text(result.conceded.toString()) }
-                cell { Text(result.cut.toString()) }
-                cell { Text(result.doubleHits.toString()) }
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top)) {
+        CombatInput(competitors, tournament, accept)
+        Divider(thickness = DividerDefaults.Thickness.plus(2.dp))
+        DataTable(
+            modifier = Modifier.fillMaxWidth(),
+            columns = listOf(
+                DataColumn(alignment = Alignment.End) {
+                    Text("Nr.")
+                },
+                DataColumn(alignment = Alignment.Start) {
+                    Text("Name")
+                },
+                DataColumn(alignment = Alignment.End) {
+                    Text("Scored")
+                },
+                DataColumn(alignment = Alignment.End) {
+                    Text("Conceded")
+                },
+                DataColumn(alignment = Alignment.End) {
+                    Text("CUT")
+                },
+                DataColumn(alignment = Alignment.End) {
+                    Text("Double Hits")
+                }
+            )
+        ) {
+            for (result in results) {
+                val competitor = competitors.find { it.id == result.competitor }!!
+                row {
+                    cell { Text(competitor.registration.value) }
+                    cell { Text(competitor.name.value) }
+                    cell { Text(result.scored.toString()) }
+                    cell { Text(result.conceded.toString()) }
+                    cell { Text(result.cut.toString()) }
+                    cell { Text(result.doubleHits.toString()) }
+                }
             }
         }
     }
