@@ -29,21 +29,25 @@ import java.nio.file.Path
 @Composable
 fun Header(state: EventState, accept: AcceptFun, modifier: Modifier = Modifier) {
     Row(modifier.heightIn(24.dp, 32.dp).fillMaxWidth()) {
-        FileMenu(state.path != null, accept)
+        FileMenu(state.event.name, state.path != null, accept)
     }
 }
 
 @Composable
-private fun FileMenu(hasPath: Boolean, accept: AcceptFun, modifier: Modifier = Modifier) {
+private fun FileMenu(name: String, hasPath: Boolean, accept: AcceptFun, modifier: Modifier = Modifier) {
     val (isOpen, setIsOpen) = remember { mutableStateOf(false) }
     val dismiss = { setIsOpen(false) }
     Box(modifier) {
-        Button(onClick = { setIsOpen(!isOpen) }, shape = RoundedCornerShape(0.dp), colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primaryVariant)) {
+        Button(
+            onClick = { setIsOpen(!isOpen) },
+            shape = RoundedCornerShape(0.dp),
+            colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primaryVariant)
+        ) {
             Text("File")
         }
         DropdownMenu(isOpen, onDismissRequest = dismiss) {
             OpenMenuItem(accept, onDone = dismiss)
-            SaveAsMenuItem(accept, onDone = dismiss)
+            SaveAsMenuItem(name, accept, onDone = dismiss)
             SaveMenuItem(hasPath, accept, onDone = dismiss)
         }
     }
@@ -70,7 +74,7 @@ private fun OpenMenuItem(accept: AcceptFun, modifier: Modifier = Modifier, onDon
 }
 
 @Composable
-private fun SaveAsMenuItem(accept: AcceptFun, modifier: Modifier = Modifier, onDone: () -> Unit = {}) {
+private fun SaveAsMenuItem(name: String, accept: AcceptFun, modifier: Modifier = Modifier, onDone: () -> Unit = {}) {
     val userDir = remember { System.getProperty("user.home") }
     val (showFilePicker, setShowFilePicker) = remember { mutableStateOf(false) }
 
@@ -79,7 +83,7 @@ private fun SaveAsMenuItem(accept: AcceptFun, modifier: Modifier = Modifier, onD
     }
     DirectoryPicker(showFilePicker, initialDirectory = userDir, title = "Save Event in") { file ->
         setShowFilePicker(false)
-        file?.also { accept(SaveAs(Path.of(it, "Hack.json"))) }
+        file?.also { accept(SaveAs(Path.of(it, "$name.json"))) }
         onDone()
     }
 }
