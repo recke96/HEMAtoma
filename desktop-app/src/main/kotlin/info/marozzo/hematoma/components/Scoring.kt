@@ -135,23 +135,29 @@ fun CombatInput(competitors: Competitors, tournament: Tournament, accept: Accept
             modifier = Modifier.widthIn(75.dp, 150.dp),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
-        Button(onClick = {
-            option {
-                AddCombat(
-                    tournament.id,
-                    competitorA.map(Competitor::id).bind(),
-                    competitorB.map(Competitor::id).bind(),
-                    ignoreErrors { parsedScoreA.bind() },
-                    ignoreErrors { parsedScoreB.bind() },
-                    ignoreErrors { parsedDoubleHits.bind() }
-                )
-            }.onSome(accept)
-            setCompetitorA(none())
-            setCompetitorB(none())
-            setScoreA("")
-            setScoreB("")
-            setDoubleHits("")
-        }) {
+        Button(
+            enabled = competitorA.isSome()
+                    && competitorB.isSome()
+                    && parsedScoreA.isRight()
+                    && parsedScoreB.isRight()
+                    && parsedDoubleHits.isRight(),
+            onClick = {
+                option {
+                    AddCombat(
+                        tournament.id,
+                        competitorA.map(Competitor::id).bind(),
+                        competitorB.map(Competitor::id).bind(),
+                        ignoreErrors { parsedScoreA.bind() },
+                        ignoreErrors { parsedScoreB.bind() },
+                        ignoreErrors { parsedDoubleHits.bind() }
+                    )
+                }.onSome(accept)
+                setCompetitorA(none())
+                setCompetitorB(none())
+                setScoreA("")
+                setScoreB("")
+                setDoubleHits("")
+            }) {
             Text("Record")
         }
     }
