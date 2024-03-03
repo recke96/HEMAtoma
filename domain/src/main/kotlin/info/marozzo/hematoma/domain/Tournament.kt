@@ -15,8 +15,11 @@ import arrow.core.right
 import arrow.optics.optics
 import info.marozzo.hematoma.domain.errors.Validated
 import info.marozzo.hematoma.domain.errors.ValidationError
+import info.marozzo.hematoma.serializers.PersistentListSerializer
 import info.marozzo.hematoma.serializers.PersistentSetSerializer
+import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentSet
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.serialization.Serializable
 
@@ -62,4 +65,14 @@ data class Tournament(
                 property
             )
         }
+}
+
+@JvmInline
+@Serializable
+value class Tournaments(
+    @Serializable(with = PersistentListSerializer::class)
+    private val value: PersistentList<Tournament> = persistentListOf()
+) : List<Tournament> by value {
+
+    fun add(tournament: Tournament) = Tournaments(value.add(tournament))
 }

@@ -13,7 +13,7 @@ import kotlinx.serialization.Serializable
 
 @optics
 @Serializable
-data class Event(val name: String, val competitors: Competitors) {
+data class Event(val name: String, val competitors: Competitors, val tournaments: Tournaments) {
     companion object
 
     fun addCompetitor(number: RegistrationNumber, name: CompetitorName): Validated<Event> = either {
