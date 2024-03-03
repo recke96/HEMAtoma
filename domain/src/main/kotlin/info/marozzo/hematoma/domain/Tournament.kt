@@ -85,8 +85,6 @@ value class Tournaments(
 ) : List<Tournament> by value {
     companion object
 
-    fun add(tournament: Tournament) = Tournaments(value.add(tournament))
-
     fun registerCompetitor(tournamentId: TournamentId, competitorId: CompetitorId): Validated<Tournaments> = either {
         value.mutate {
             it.replaceAll { tournament ->
