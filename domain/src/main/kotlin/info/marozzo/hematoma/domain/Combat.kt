@@ -45,7 +45,7 @@ value class Score(private val value: Int) : Comparable<Score> {
 
 @JvmInline
 @Serializable
-value class CUT(private val value: Double) : Comparable<CUT> {
+value class CUT(val value: Double) : Comparable<CUT> {
 
     companion object {
         private const val PERCENT_SCALE = 100.0

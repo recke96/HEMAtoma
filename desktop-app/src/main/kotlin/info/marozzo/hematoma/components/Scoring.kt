@@ -224,22 +224,22 @@ fun CombatTable(tournament: Tournament, competitors: Competitors, accept: Accept
             modifier = Modifier.fillMaxWidth(),
             columns = listOf(
                 DataColumn(alignment = Alignment.End) {
-                    Text("Nr.")
+                    Text("Nr.", fontWeight = FontWeight.Bold)
                 },
                 DataColumn(alignment = Alignment.Start) {
-                    Text("Name")
+                    Text("Name", fontWeight = FontWeight.Bold)
                 },
                 DataColumn(alignment = Alignment.End) {
-                    Text("Scored")
+                    Text("Scored", fontWeight = FontWeight.Bold)
                 },
                 DataColumn(alignment = Alignment.End) {
-                    Text("Conceded")
+                    Text("Conceded", fontWeight = FontWeight.Bold)
                 },
                 DataColumn(alignment = Alignment.End) {
-                    Text("CUT")
+                    Text("CUT", fontWeight = FontWeight.Bold)
                 },
                 DataColumn(alignment = Alignment.End) {
-                    Text("Double Hits")
+                    Text("Double Hits", fontWeight = FontWeight.Bold)
                 }
             )
         ) {
@@ -258,21 +258,31 @@ fun CombatTable(tournament: Tournament, competitors: Competitors, accept: Accept
                 cell { }
                 cell { Text("Summary", fontWeight = FontWeight.Bold) }
                 cell {
+                    val scored = results.map(Result::scored).reduceOrNull(Score::plus)?.toString() ?: ""
                     Text(
-                        results.map(Result::scored).reduceOrNull(Score::plus)?.toString() ?: "",
+                        "Tot. $scored",
                         fontWeight = FontWeight.Bold,
                     )
                 }
                 cell {
+                    val conceded = results.map(Result::conceded).reduceOrNull(Score::plus)?.toString() ?: ""
                     Text(
-                        results.map(Result::conceded).reduceOrNull(Score::plus)?.toString() ?: "",
+                        "Tot. $conceded",
                         fontWeight = FontWeight.Bold,
                     )
                 }
-                cell {}
                 cell {
+                    val avgCut = CUT(results.map(Result::cut).map(CUT::value).average())
                     Text(
-                        results.map(Result::doubleHits).reduceOrNull(Hits::plus)?.run(Hits::half)?.toString() ?: "",
+                        "Avg. $avgCut",
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+                cell {
+                    val doubleHits =
+                        results.map(Result::doubleHits).reduceOrNull(Hits::plus)?.run(Hits::half)?.toString() ?: ""
+                    Text(
+                        "Tot. $doubleHits",
                         fontWeight = FontWeight.Bold,
                     )
                 }
