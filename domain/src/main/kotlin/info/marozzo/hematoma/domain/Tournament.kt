@@ -87,11 +87,23 @@ value class Tournaments(
 
     fun add(tournament: Tournament) = Tournaments(value.add(tournament))
 
-    fun register(tournamentId: TournamentId, competitorId: CompetitorId): Validated<Tournaments> = either {
+    fun registerCompetitor(tournamentId: TournamentId, competitorId: CompetitorId): Validated<Tournaments> = either {
         value.mutate {
             it.replaceAll { tournament ->
                 if (tournament.id == tournamentId) {
                     tournament.registerCompetitor(competitorId).bind()
+                } else {
+                    tournament
+                }
+            }
+        }.let(::Tournaments)
+    }
+
+    fun registerCombat(tournamentId: TournamentId, combat: Combat): Validated<Tournaments> = either {
+        value.mutate {
+            it.replaceAll { tournament ->
+                if (tournament.id == tournamentId) {
+                    tournament.registerCombat(combat).bind()
                 } else {
                     tournament
                 }

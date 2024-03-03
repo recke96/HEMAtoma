@@ -6,9 +6,8 @@
 
 package info.marozzo.hematoma.contract
 
-import info.marozzo.hematoma.domain.CompetitorName
+import info.marozzo.hematoma.domain.*
 import info.marozzo.hematoma.domain.Event
-import info.marozzo.hematoma.domain.RegistrationNumber
 import java.nio.file.Path
 
 sealed interface Input
@@ -28,3 +27,11 @@ data object Save : Input
 // Event management
 
 data class AddCompetitor(val registration: RegistrationNumber, val name: CompetitorName) : Input
+data class AddCombat(
+    val tournament: TournamentId,
+    val competitorA: CompetitorId,
+    val competitorB: CompetitorId,
+    val scoreA: Score,
+    val scoreB: Score,
+    val doubleHits: Hits
+) : Input

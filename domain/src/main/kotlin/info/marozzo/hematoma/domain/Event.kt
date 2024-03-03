@@ -6,6 +6,7 @@
 
 package info.marozzo.hematoma.domain
 
+import arrow.core.nel
 import arrow.core.raise.either
 import arrow.core.raise.ensure
 import arrow.core.raise.zipOrAccumulate
@@ -48,8 +49,20 @@ data class Event(val name: String, val competitors: Competitors, val tournaments
             }
         ) { _, _ ->
             Event.tournaments.modify(this@Event) {
-                it.register(tournament, competitor).bind()
+                it.registerCompetitor(tournament, competitor).bind()
             }
+        }
+    }
+
+    fun registerCombatForTournament(tournament: TournamentId, combat: Combat): Validated<Event> = either {
+        ensure(tournaments.any { it.id == tournament }) {
+            ValidationError(
+                "No tournament with id $tournament",
+                "tournament"
+            ).nel()
+        }
+        Event.tournaments.modify(this@Event) {
+            it.registerCombat(tournament, combat).bind()
         }
     }
 }

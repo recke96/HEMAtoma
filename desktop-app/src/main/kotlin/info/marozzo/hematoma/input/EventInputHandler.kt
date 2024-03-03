@@ -9,6 +9,7 @@ package info.marozzo.hematoma.input
 import com.copperleaf.ballast.InputHandler
 import com.copperleaf.ballast.InputHandlerScope
 import info.marozzo.hematoma.contract.*
+import info.marozzo.hematoma.input.event.AddCombatHandler
 import info.marozzo.hematoma.input.event.AddCompetitorHandler
 import info.marozzo.hematoma.input.file.OpenFileHandler
 import info.marozzo.hematoma.input.file.SaveAsHandler
@@ -27,5 +28,6 @@ class EventInputHandler : InputHandler<Input, Event, EventState> {
         is SavedAs -> SaveAsHandler.handle(input)
         is Save -> SaveHandler.handle()
         is AddCompetitor -> AddCompetitorHandler.handle(input)
+        is AddCombat -> AddCombatHandler.handle(input)
     }
 }

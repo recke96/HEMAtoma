@@ -19,7 +19,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import arrow.core.Option
 import arrow.core.none
+import arrow.core.raise.option
 import arrow.core.some
+import info.marozzo.hematoma.contract.AddCombat
 import info.marozzo.hematoma.contract.EventState
 import info.marozzo.hematoma.domain.*
 import info.marozzo.hematoma.input.AcceptFun
@@ -117,6 +119,16 @@ fun CombatInput(competitors: Competitors, tournament: Tournament, accept: Accept
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
         Button(onClick = {
+            option {
+                AddCombat(
+                    tournament.id,
+                    competitorA.map(Competitor::id).bind(),
+                    competitorB.map(Competitor::id).bind(),
+                    ignoreErrors { parsedScoreA.bind() },
+                    ignoreErrors { parsedScoreB.bind() },
+                    ignoreErrors { parsedDoubleHits.bind() }
+                )
+            }.onSome(accept)
             setCompetitorA(none())
             setCompetitorB(none())
             setScoreA("")
