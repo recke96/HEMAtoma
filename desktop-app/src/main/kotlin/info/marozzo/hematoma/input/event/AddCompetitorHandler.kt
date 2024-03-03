@@ -31,7 +31,7 @@ object AddCompetitorHandler {
             }
             // Currently we work with a single tournament, so we add every competitor to this tournament
             val tournament = ensureNotNull(original.tournaments.firstOrNull()) {
-                ValidationError("Exected a single tournament", "input").nel()
+                ValidationError("Expected a single tournament", "input").nel()
             }
             added.registerCompetitorForTournament(newComp.id, tournament.id).bind()
         }.fold(
