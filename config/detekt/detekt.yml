@@ -68,6 +68,5 @@ style:
   WildcardImport:
     active: false
   ForbiddenImport:
-    imports:
-      - value: androidx.compose.material
-        reason: We should use material3
+    active: true
+    forbiddenPatterns: 'androidx.compose.material.*'
