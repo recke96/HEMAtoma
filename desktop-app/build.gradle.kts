@@ -17,6 +17,7 @@ dependencies {
     implementation(compose.material3)
     implementation(compose.materialIconsExtended)
     implementation(libs.filepicker)
+    implementation(libs.datatable)
     
     implementation(libs.bundles.arrow)
     ksp(libs.arrow.optics.ksp)

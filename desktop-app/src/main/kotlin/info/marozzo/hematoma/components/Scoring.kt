@@ -26,10 +26,13 @@ import arrow.core.Option
 import arrow.core.none
 import arrow.core.raise.option
 import arrow.core.some
+import com.seanproctor.datatable.DataColumn
+import com.seanproctor.datatable.material3.DataTable
 import info.marozzo.hematoma.contract.AddCombat
 import info.marozzo.hematoma.contract.EventState
 import info.marozzo.hematoma.domain.*
 import info.marozzo.hematoma.input.AcceptFun
+import java.util.*
 
 
 @Composable
@@ -51,12 +54,17 @@ fun ScoringScreen(state: EventState, accept: AcceptFun, modifier: Modifier = Mod
                         modifier = Modifier.fillMaxSize()
                     )
 
-                    1 -> Text("Results table")
+                    1 -> CombatTable(
+                        state.event.tournaments.single(),
+                        state.event.competitors,
+                        modifier = Modifier.fillMaxSize()
+                    )
                 }
             }
         }
     }
 }
+
 
 @Composable
 fun CombatRecord(competitors: Competitors, tournament: Tournament, accept: AcceptFun, modifier: Modifier = Modifier) {
@@ -181,6 +189,49 @@ fun CombatRecordListItem(combat: Combat, competitors: Competitors, modifier: Mod
         }
     )
     Divider()
+}
+
+@Composable
+fun CombatTable(tournament: Tournament, competitors: Competitors, modifier: Modifier = Modifier) {
+    val results = remember(tournament) {
+        tournament.getResults()
+    }
+
+    DataTable(
+        modifier = modifier,
+        columns = listOf(
+            DataColumn(alignment = Alignment.End) {
+                Text("Nr.")
+            },
+            DataColumn(alignment = Alignment.Start) {
+                Text("Name")
+            },
+            DataColumn(alignment = Alignment.End) {
+                Text("Scored")
+            },
+            DataColumn(alignment = Alignment.End) {
+                Text("Conceded")
+            },
+            DataColumn(alignment = Alignment.End) {
+                Text("CUT")
+            },
+            DataColumn(alignment = Alignment.End) {
+                Text("Double Hits")
+            }
+        )
+    ) {
+        for ((competitorId, result) in results) {
+            val competitor = competitors.find { it.id == competitorId }!!
+            row {
+                cell { Text(competitor.registration.value) }
+                cell { Text(competitor.name.value) }
+                cell { Text(result.scored.toString()) }
+                cell { Text(result.conceded.toString()) }
+                cell { Text("%.2f\u202F%%".format(Locale.GERMAN, result.scored / result.conceded)) }
+                cell { Text(result.doubleHits.toString()) }
+            }
+        }
+    }
 }
 
 private fun Competitor.display() = "${registration.value}. ${name.value}"

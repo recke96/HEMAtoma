@@ -6,12 +6,10 @@
 
 package info.marozzo.hematoma.domain
 
-import arrow.core.getOrElse
 import arrow.core.nel
 import arrow.core.raise.either
 import arrow.core.raise.ensure
 import arrow.core.raise.ensureNotNull
-import arrow.core.toOption
 import arrow.optics.optics
 import info.marozzo.hematoma.domain.errors.Validated
 import info.marozzo.hematoma.domain.errors.ValidationError
@@ -40,6 +38,7 @@ value class Score(private val value: Int) : Comparable<Score> {
     }
 
     operator fun plus(other: Score) = Score(value + other.value)
+    operator fun div(other: Score) = value.toDouble() / other.value.toDouble()
     override fun compareTo(other: Score): Int = value.compareTo(other.value)
     override fun toString(): String = "$value\u202FPts"
 }
@@ -80,10 +79,15 @@ data class Combat(
 ) {
     companion object
 
-    fun getResults(): Pair<Result, Result> = when {
-        doubleHits >= Hits.three -> Result.doubleHitResult(a) to Result.doubleHitResult(b)
-        else -> Result(a, Matches.one, scoreA, scoreB, doubleHits) to Result(b, Matches.one, scoreB, scoreA, doubleHits)
+    fun getResults(): CombatResults = when {
+        doubleHits >= Hits.three -> CombatResults(Result.doubleHit(a), Result.doubleHit(b))
+        else -> CombatResults(
+            Result(a, Matches.one, scoreA, scoreB, doubleHits),
+            Result(b, Matches.one, scoreB, scoreA, doubleHits)
+        )
     }
+
+    data class CombatResults(val a: Result, val b: Result) : Iterable<Result> by persistentListOf(a, b)
 }
 
 @JvmInline
@@ -98,16 +102,6 @@ value class Combats private constructor(
     }
 
     fun add(combat: Combat): Combats = Combats(combats.add(combat))
-
-    fun results() = combats
-        .map(Combat::getResults)
-        .flatMap(Pair<Result, Result>::toList)
-        .groupingBy(Result::competitor)
-        .aggregate<Result, CompetitorId, Result> { _, total, result, _ ->
-            total.toOption().flatMap {
-                it.plus(result).getOrNone()
-            }.getOrElse { result }
-        }
 }
 
 @JvmInline
@@ -133,7 +127,7 @@ data class Result(
     val doubleHits: Hits = Hits(0U)
 ) {
     companion object {
-        fun doubleHitResult(competitor: CompetitorId) = Result(
+        fun doubleHit(competitor: CompetitorId) = Result(
             competitor,
             Matches.one,
             Score.zero,

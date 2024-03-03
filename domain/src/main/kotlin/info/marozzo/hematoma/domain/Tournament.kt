@@ -6,6 +6,7 @@
 
 package info.marozzo.hematoma.domain
 
+import arrow.core.getOrElse
 import arrow.core.nel
 import arrow.core.raise.Raise
 import arrow.core.raise.either
@@ -53,6 +54,18 @@ data class Tournament(
     val record: Combats = Combats()
 ) {
     companion object
+
+    fun getResults(): ImmutableMap<CompetitorId, Result> {
+        // Used so that even competitors which have no record yet are in the result
+        val zeroResults = registered.asSequence().map(::Result)
+        val combatResults = record.asSequence().flatMap(Combat::getResults)
+
+        return zeroResults.plus(combatResults)
+            .groupingBy(Result::competitor)
+            .aggregateTo(persistentMapOf<CompetitorId, Result>().builder()) { _, total, result, _ ->
+                total?.let { total.plus(result).getOrElse { total } } ?: result
+            }.build()
+    }
 
     fun registerCompetitor(competitor: CompetitorId): Validated<Tournament> =
         Tournament.registered.modify(this) { it.add(competitor) }.right()
