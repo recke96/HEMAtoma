@@ -20,7 +20,7 @@ data class EventState(
     val event: Event = Event(
         "Event", Competitors(), Tournaments(
             persistentListOf(
-                Tournament(TournamentName("Tournament").getOrNull()!!)
+                Tournament(TournamentId.initial(), TournamentName("Tournament").getOrNull()!!)
             )
         )
     ),

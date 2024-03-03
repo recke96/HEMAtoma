@@ -17,11 +17,20 @@ import info.marozzo.hematoma.domain.errors.Validated
 import info.marozzo.hematoma.domain.errors.ValidationError
 import info.marozzo.hematoma.serializers.PersistentListSerializer
 import info.marozzo.hematoma.serializers.PersistentSetSerializer
-import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.PersistentSet
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.*
 import kotlinx.serialization.Serializable
+
+@JvmInline
+@Serializable
+value class TournamentId private constructor(private val id: Long) {
+
+    companion object {
+        fun initial() = TournamentId(0L)
+        fun next(ids: Iterable<TournamentId>) = ids.maxByOrNull(TournamentId::id)?.next() ?: initial()
+    }
+
+    fun next() = TournamentId(id + 1L)
+}
 
 @JvmInline
 @Serializable
@@ -37,6 +46,7 @@ value class TournamentName private constructor(val value: String) {
 @optics
 @Serializable
 data class Tournament(
+    val id: TournamentId,
     val name: TournamentName,
     @Serializable(with = PersistentSetSerializer::class)
     val registered: PersistentSet<CompetitorId> = persistentSetOf(),
@@ -73,6 +83,19 @@ value class Tournaments(
     @Serializable(with = PersistentListSerializer::class)
     private val value: PersistentList<Tournament> = persistentListOf()
 ) : List<Tournament> by value {
+    companion object
 
     fun add(tournament: Tournament) = Tournaments(value.add(tournament))
+
+    fun register(tournamentId: TournamentId, competitorId: CompetitorId): Validated<Tournaments> = either {
+        value.mutate {
+            it.replaceAll { tournament ->
+                if (tournament.id == tournamentId) {
+                    tournament.registerCompetitor(competitorId).bind()
+                } else {
+                    tournament
+                }
+            }
+        }.let(::Tournaments)
+    }
 }

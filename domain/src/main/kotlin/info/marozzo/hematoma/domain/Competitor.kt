@@ -20,13 +20,13 @@ import kotlinx.serialization.Serializable
 
 @JvmInline
 @Serializable
-value class CompetitorId private constructor(private val id: Long) : Comparable<CompetitorId> {
+value class CompetitorId private constructor(private val id: Long) {
 
     companion object {
         fun initial() = CompetitorId(0L)
+        fun next(ids: Iterable<CompetitorId>) = ids.maxByOrNull(CompetitorId::id)?.next() ?: initial()
     }
 
-    override fun compareTo(other: CompetitorId): Int = id.compareTo(other.id)
     fun next() = CompetitorId(id + 1L)
 }
 
