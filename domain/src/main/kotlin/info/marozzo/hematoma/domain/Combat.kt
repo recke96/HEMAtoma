@@ -73,6 +73,7 @@ value class Hits(private val value: UInt) : Comparable<Hits> {
         }
     }
 
+    fun half() = Hits(value / 2U)
     operator fun plus(other: Hits) = Hits(value + other.value)
     override fun compareTo(other: Hits): Int = value.compareTo(other.value)
 

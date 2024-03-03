@@ -266,7 +266,7 @@ fun CombatTable(tournament: Tournament, competitors: Competitors, accept: Accept
                 cell {}
                 cell {
                     Text(
-                        results.map(Result::doubleHits).reduceOrNull(Hits::plus)?.toString() ?: "",
+                        results.map(Result::doubleHits).reduceOrNull(Hits::plus)?.run(Hits::half)?.toString() ?: "",
                         fontWeight = FontWeight.Bold,
                     )
                 }
