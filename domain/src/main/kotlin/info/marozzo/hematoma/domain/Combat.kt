@@ -13,8 +13,6 @@ import arrow.core.raise.ensureNotNull
 import arrow.optics.optics
 import info.marozzo.hematoma.domain.errors.Validated
 import info.marozzo.hematoma.domain.errors.ValidationError
-import info.marozzo.hematoma.serializers.PersistentListSerializer
-import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.Serializable
 
@@ -121,20 +119,6 @@ data class Combat(
     }
 
     data class CombatResults(val a: Result, val b: Result) : Iterable<Result> by persistentListOf(a, b)
-}
-
-@JvmInline
-@Serializable
-value class Combats private constructor(
-    @Serializable(with = PersistentListSerializer::class)
-    private val combats: PersistentList<Combat>
-) : List<Combat> by combats {
-
-    companion object {
-        operator fun invoke() = Combats(persistentListOf())
-    }
-
-    fun add(combat: Combat): Combats = Combats(combats.add(combat))
 }
 
 @JvmInline

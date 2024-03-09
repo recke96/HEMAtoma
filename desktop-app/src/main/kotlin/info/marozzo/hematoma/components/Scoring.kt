@@ -177,7 +177,11 @@ fun CombatInput(
 }
 
 @Composable
-fun CombatRecordList(combats: Combats, competitors: ImmutableList<Competitor>, modifier: Modifier = Modifier) {
+fun CombatRecordList(
+    combats: ImmutableList<Combat>,
+    competitors: ImmutableList<Competitor>,
+    modifier: Modifier = Modifier
+) {
     val state = rememberLazyListState()
     Box(modifier) {
         LazyColumn(state = state) {

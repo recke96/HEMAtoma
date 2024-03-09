@@ -51,7 +51,7 @@ data class Tournament(
     val name: TournamentName,
     @Serializable(with = PersistentSetSerializer::class)
     val registered: PersistentSet<CompetitorId> = persistentSetOf(),
-    val record: Combats = Combats()
+    val record: PersistentList<Combat> = persistentListOf()
 ) {
     companion object
 
