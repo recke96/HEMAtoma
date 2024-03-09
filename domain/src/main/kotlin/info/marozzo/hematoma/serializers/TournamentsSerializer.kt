@@ -19,9 +19,8 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
 @OptIn(ExperimentalSerializationApi::class)
-class TournamentsSerializer(tournamentSerializer: KSerializer<Tournament>) :
-    KSerializer<PersistentMap<TournamentId, Tournament>> {
-    private val delegate = ListSerializer(tournamentSerializer)
+class TournamentsSerializer : KSerializer<PersistentMap<TournamentId, Tournament>> {
+    private val delegate = ListSerializer(Tournament.serializer())
 
     override val descriptor: SerialDescriptor =
         SerialDescriptor("info.marozzo.hematoma.domain.Tournaments", delegate.descriptor)
