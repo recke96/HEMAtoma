@@ -14,6 +14,8 @@ import arrow.optics.optics
 import arrow.optics.typeclasses.Index
 import info.marozzo.hematoma.domain.errors.Validated
 import info.marozzo.hematoma.domain.errors.ValidationError
+import info.marozzo.hematoma.serializers.CompetitorsSerializer
+import info.marozzo.hematoma.serializers.TournamentsSerializer
 import info.marozzo.hematoma.util.persistentMap
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.serialization.Serializable
@@ -35,7 +37,9 @@ value class EventName private constructor(private val value: String) {
 @Serializable
 data class Event(
     val name: EventName,
+    @Serializable(with = CompetitorsSerializer::class)
     val competitors: PersistentMap<CompetitorId, Competitor>,
+    @Serializable(with = TournamentsSerializer::class)
     val tournaments: PersistentMap<TournamentId, Tournament>
 ) {
     internal companion object
