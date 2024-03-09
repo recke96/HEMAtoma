@@ -30,12 +30,16 @@ import arrow.core.getOrElse
 import info.marozzo.hematoma.contract.AddCompetitor
 import info.marozzo.hematoma.domain.Competitor
 import info.marozzo.hematoma.domain.CompetitorName
-import info.marozzo.hematoma.domain.Competitors
 import info.marozzo.hematoma.domain.RegistrationNumber
 import info.marozzo.hematoma.input.AcceptFun
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
-fun CompetitorSection(competitors: Competitors, accept: AcceptFun, modifier: Modifier = Modifier) = Column(modifier) {
+fun CompetitorSection(
+    competitors: ImmutableList<Competitor>,
+    accept: AcceptFun, modifier:
+    Modifier = Modifier
+) = Column(modifier) {
     val nextReg = remember(competitors) {
         RegistrationNumber(
             competitors.size.inc().toString()
@@ -50,7 +54,7 @@ fun CompetitorSection(competitors: Competitors, accept: AcceptFun, modifier: Mod
 }
 
 @Composable
-fun CompetitorsList(competitors: Competitors, modifier: Modifier = Modifier) {
+fun CompetitorsList(competitors: ImmutableList<Competitor>, modifier: Modifier = Modifier) {
     val state = rememberLazyListState()
     Box(modifier) {
         LazyColumn(state = state) {
@@ -66,12 +70,11 @@ fun CompetitorsList(competitors: Competitors, modifier: Modifier = Modifier) {
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
 fun CompetitorListItem(competitor: Competitor, modifier: Modifier = Modifier) = Column(modifier) {
     ListItem(
         leadingContent = { Text("${competitor.registration.value}.") },
         headlineContent = { Text(competitor.name.value) })
-    Divider()
+    HorizontalDivider()
 }
 
 @Composable

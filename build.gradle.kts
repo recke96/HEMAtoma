@@ -1,6 +1,7 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektPlugin
 import io.gitlab.arturbosch.detekt.report.ReportMergeTask
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     alias(libs.plugins.kotlin.jvm) apply false
@@ -38,5 +39,9 @@ allprojects {
     }
     mergeSarif {
         input.from(tasks.withType<Detekt>().map { it.sarifReportFile })
+    }
+
+    tasks.withType<KotlinCompile>().all {
+        kotlinOptions.freeCompilerArgs = listOf("-Xcontext-receivers")
     }
 }

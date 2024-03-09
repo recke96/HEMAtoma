@@ -18,7 +18,7 @@ import java.nio.file.Path
 data class EventState(
     val path: Path? = null,
     val event: Event = Event(
-        "Event", Competitors(), Tournaments(
+        "Event", persistentListOf(), Tournaments(
             persistentListOf(
                 Tournament(TournamentId.initial(), TournamentName("Tournament").getOrNull()!!)
             )

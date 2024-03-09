@@ -13,11 +13,12 @@ import arrow.core.raise.zipOrAccumulate
 import arrow.optics.optics
 import info.marozzo.hematoma.domain.errors.Validated
 import info.marozzo.hematoma.domain.errors.ValidationError
+import kotlinx.collections.immutable.PersistentList
 import kotlinx.serialization.Serializable
 
 @optics
 @Serializable
-data class Event(val name: String, val competitors: Competitors, val tournaments: Tournaments) {
+data class Event(val name: String, val competitors: PersistentList<Competitor>, val tournaments: Tournaments) {
     companion object
 
     fun addCompetitor(number: RegistrationNumber, name: CompetitorName): Validated<Event> = either {
@@ -25,7 +26,7 @@ data class Event(val name: String, val competitors: Competitors, val tournaments
         val competitor = Competitor(nextId, number, name)
 
         Event.competitors.modify(this@Event) {
-            it.add(competitor).bind()
+            it.addCompetitor(competitor).bind()
         }
     }
 

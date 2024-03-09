@@ -9,13 +9,12 @@ package info.marozzo.hematoma.domain
 import arrow.core.nel
 import arrow.core.raise.either
 import arrow.core.raise.ensure
-import arrow.core.raise.mapOrAccumulate
+import arrow.core.raise.forEachAccumulating
+import arrow.core.raise.zipOrAccumulate
 import arrow.optics.optics
 import info.marozzo.hematoma.domain.errors.Validated
 import info.marozzo.hematoma.domain.errors.ValidationError
-import info.marozzo.hematoma.serializers.PersistentListSerializer
 import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.Serializable
 
 @JvmInline
@@ -58,34 +57,27 @@ data class Competitor(val id: CompetitorId, val registration: RegistrationNumber
     companion object
 }
 
-@JvmInline
-@Serializable
-value class Competitors private constructor(
-    @Serializable(with = PersistentListSerializer::class)
-    private val competitors: PersistentList<Competitor>
-) : List<Competitor> by competitors {
-
-    companion object {
-        operator fun invoke() = Competitors(persistentListOf())
+fun PersistentList<Competitor>.addCompetitor(competitor: Competitor): Validated<PersistentList<Competitor>> = either {
+    forEachAccumulating(this@addCompetitor) {
+        zipOrAccumulate(
+            {
+                ensure(it.id != competitor.id) {
+                    ValidationError(
+                        "There already is a competitor with id ${competitor.id}",
+                        "competitor"
+                    )
+                }
+            },
+            {
+                ensure(it.registration != competitor.registration) {
+                    ValidationError(
+                        "There already is a competitor with registration ${competitor.registration}",
+                        "competitor"
+                    )
+                }
+            }
+        ) { _, _ -> }
     }
 
-    fun add(competitor: Competitor): Validated<Competitors> = either {
-        mapOrAccumulate(competitors) {
-            ensure(it.id != competitor.id) {
-                ValidationError(
-                    "There already is a competitor with id ${competitor.id}",
-                    "competitor"
-                )
-            }
-            ensure(it.registration != competitor.registration) {
-                ValidationError(
-                    "There already is a competitor with registration ${competitor.registration}",
-                    "competitor"
-                )
-            }
-            competitor
-        }
-
-        Competitors(competitors.add(competitor))
-    }
+    add(competitor)
 }

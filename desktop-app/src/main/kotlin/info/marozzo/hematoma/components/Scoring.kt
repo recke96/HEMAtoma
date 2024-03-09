@@ -36,6 +36,7 @@ import info.marozzo.hematoma.contract.AddCombat
 import info.marozzo.hematoma.contract.EventState
 import info.marozzo.hematoma.domain.*
 import info.marozzo.hematoma.input.AcceptFun
+import kotlinx.collections.immutable.ImmutableList
 
 
 @Composable
@@ -71,16 +72,26 @@ fun ScoringScreen(state: EventState, accept: AcceptFun, modifier: Modifier = Mod
 
 
 @Composable
-fun CombatRecord(competitors: Competitors, tournament: Tournament, accept: AcceptFun, modifier: Modifier = Modifier) {
+fun CombatRecord(
+    competitors: ImmutableList<Competitor>,
+    tournament: Tournament,
+    accept: AcceptFun,
+    modifier: Modifier = Modifier
+) {
     Column(modifier, verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top)) {
         CombatInput(competitors, tournament, accept)
-        Divider(thickness = DividerDefaults.Thickness.plus(2.dp))
+        HorizontalDivider(thickness = DividerDefaults.Thickness.plus(2.dp))
         CombatRecordList(tournament.record, competitors)
     }
 }
 
 @Composable
-fun CombatInput(competitors: Competitors, tournament: Tournament, accept: AcceptFun, modifier: Modifier = Modifier) {
+fun CombatInput(
+    competitors: ImmutableList<Competitor>,
+    tournament: Tournament,
+    accept: AcceptFun,
+    modifier: Modifier = Modifier
+) {
     val competitorsOfTournament = remember(competitors, tournament.registered) {
         competitors.filter { tournament.registered.contains(it.id) }
     }
@@ -166,7 +177,7 @@ fun CombatInput(competitors: Competitors, tournament: Tournament, accept: Accept
 }
 
 @Composable
-fun CombatRecordList(combats: Combats, competitors: Competitors, modifier: Modifier = Modifier) {
+fun CombatRecordList(combats: Combats, competitors: ImmutableList<Competitor>, modifier: Modifier = Modifier) {
     val state = rememberLazyListState()
     Box(modifier) {
         LazyColumn(state = state) {
@@ -182,31 +193,37 @@ fun CombatRecordList(combats: Combats, competitors: Competitors, modifier: Modif
 }
 
 @Composable
-fun CombatRecordListItem(combat: Combat, competitors: Competitors, modifier: Modifier = Modifier) = Column(modifier) {
-    val a = remember(combat.a, competitors) {
-        competitors.find { it.id == combat.a }!!
-    }
-    val b = remember(combat.b, competitors) {
-        competitors.find { it.id == combat.b }!!
-    }
-    ListItem(
-        overlineContent = { Text("${a.display()} vs. ${b.display()}", style = MaterialTheme.typography.bodySmall) },
-        headlineContent = {
-            Text(
-                "${combat.scoreA} : ${combat.scoreB} (${combat.doubleHits})",
-                style = if (combat.doubleHits < Hits.three)
-                    MaterialTheme.typography.bodyLarge
-                else MaterialTheme.typography.bodyLarge.copy(
-                    textDecoration = TextDecoration.LineThrough
-                )
-            )
+fun CombatRecordListItem(combat: Combat, competitors: ImmutableList<Competitor>, modifier: Modifier = Modifier) =
+    Column(modifier) {
+        val a = remember(combat.a, competitors) {
+            competitors.find { it.id == combat.a }!!
         }
-    )
-    Divider()
-}
+        val b = remember(combat.b, competitors) {
+            competitors.find { it.id == combat.b }!!
+        }
+        ListItem(
+            overlineContent = { Text("${a.display()} vs. ${b.display()}", style = MaterialTheme.typography.bodySmall) },
+            headlineContent = {
+                Text(
+                    "${combat.scoreA} : ${combat.scoreB} (${combat.doubleHits})",
+                    style = if (combat.doubleHits < Hits.three)
+                        MaterialTheme.typography.bodyLarge
+                    else MaterialTheme.typography.bodyLarge.copy(
+                        textDecoration = TextDecoration.LineThrough
+                    )
+                )
+            }
+        )
+        HorizontalDivider()
+    }
 
 @Composable
-fun CombatTable(tournament: Tournament, competitors: Competitors, accept: AcceptFun, modifier: Modifier = Modifier) {
+fun CombatTable(
+    tournament: Tournament,
+    competitors: ImmutableList<Competitor>,
+    accept: AcceptFun,
+    modifier: Modifier = Modifier
+) {
     val state = rememberScrollState()
     val comparator = remember(competitors) {
         compareBy(Result::cut)
@@ -222,7 +239,7 @@ fun CombatTable(tournament: Tournament, competitors: Competitors, accept: Accept
 
     Column(modifier, verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top)) {
         CombatInput(competitors, tournament, accept)
-        Divider(thickness = DividerDefaults.Thickness.plus(2.dp))
+        HorizontalDivider(thickness = DividerDefaults.Thickness.plus(2.dp))
         Box {
             DataTable(
                 modifier = Modifier.fillMaxWidth().verticalScroll(state),
