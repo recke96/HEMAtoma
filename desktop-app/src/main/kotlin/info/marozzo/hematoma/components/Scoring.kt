@@ -17,9 +17,7 @@ import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -37,6 +35,7 @@ import info.marozzo.hematoma.contract.EventState
 import info.marozzo.hematoma.domain.*
 import info.marozzo.hematoma.input.AcceptFun
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableMap
 
 
 @Composable
@@ -53,13 +52,13 @@ fun ScoringScreen(state: EventState, accept: AcceptFun, modifier: Modifier = Mod
                 when (it) {
                     0 -> CombatRecord(
                         state.event.competitors,
-                        state.event.tournaments.single(),
+                        state.event.tournaments.values.single(),
                         accept,
                         modifier = Modifier.fillMaxSize()
                     )
 
                     1 -> CombatTable(
-                        state.event.tournaments.single(),
+                        state.event.tournaments.values.single(),
                         state.event.competitors,
                         accept,
                         modifier = Modifier.fillMaxSize()
@@ -73,7 +72,7 @@ fun ScoringScreen(state: EventState, accept: AcceptFun, modifier: Modifier = Mod
 
 @Composable
 fun CombatRecord(
-    competitors: ImmutableList<Competitor>,
+    competitors: ImmutableMap<CompetitorId, Competitor>,
     tournament: Tournament,
     accept: AcceptFun,
     modifier: Modifier = Modifier
@@ -87,13 +86,13 @@ fun CombatRecord(
 
 @Composable
 fun CombatInput(
-    competitors: ImmutableList<Competitor>,
+    competitors: ImmutableMap<CompetitorId, Competitor>,
     tournament: Tournament,
     accept: AcceptFun,
     modifier: Modifier = Modifier
 ) {
     val competitorsOfTournament = remember(competitors, tournament.registered) {
-        competitors.filter { tournament.registered.contains(it.id) }
+        competitors.filterKeys { tournament.registered.contains(it) }.values
     }
     val (competitorA, setCompetitorA) = remember { mutableStateOf<Option<Competitor>>(none()) }
     val (competitorB, setCompetitorB) = remember { mutableStateOf<Option<Competitor>>(none()) }
@@ -179,7 +178,7 @@ fun CombatInput(
 @Composable
 fun CombatRecordList(
     combats: ImmutableList<Combat>,
-    competitors: ImmutableList<Competitor>,
+    competitors: ImmutableMap<CompetitorId, Competitor>,
     modifier: Modifier = Modifier
 ) {
     val state = rememberLazyListState()
@@ -197,14 +196,14 @@ fun CombatRecordList(
 }
 
 @Composable
-fun CombatRecordListItem(combat: Combat, competitors: ImmutableList<Competitor>, modifier: Modifier = Modifier) =
+fun CombatRecordListItem(
+    combat: Combat,
+    competitors: ImmutableMap<CompetitorId, Competitor>,
+    modifier: Modifier = Modifier
+) =
     Column(modifier) {
-        val a = remember(combat.a, competitors) {
-            competitors.find { it.id == combat.a }!!
-        }
-        val b = remember(combat.b, competitors) {
-            competitors.find { it.id == combat.b }!!
-        }
+        val a by remember { derivedStateOf { competitors[combat.a]!! } }
+        val b by remember { derivedStateOf { competitors[combat.b]!! } }
         ListItem(
             overlineContent = { Text("${a.display()} vs. ${b.display()}", style = MaterialTheme.typography.bodySmall) },
             headlineContent = {
@@ -224,7 +223,7 @@ fun CombatRecordListItem(combat: Combat, competitors: ImmutableList<Competitor>,
 @Composable
 fun CombatTable(
     tournament: Tournament,
-    competitors: ImmutableList<Competitor>,
+    competitors: ImmutableMap<CompetitorId, Competitor>,
     accept: AcceptFun,
     modifier: Modifier = Modifier
 ) {
@@ -234,7 +233,7 @@ fun CombatTable(
             .thenComparing(compareByDescending(Result::doubleHits))
             .thenComparing(Result::wins)
             .thenComparing { r ->
-                competitors.find { it.id == r.competitor }?.name?.value!!
+                competitors[r.competitor]?.name?.value ?: ""
             }.reversed()
     }
     val results = remember(tournament) {
@@ -269,7 +268,7 @@ fun CombatTable(
                 )
             ) {
                 for (result in results) {
-                    val competitor = competitors.find { it.id == result.competitor }!!
+                    val competitor = competitors[result.competitor]!!
                     row {
                         cell { Text(competitor.registration.value) }
                         cell { Text(competitor.name.value) }

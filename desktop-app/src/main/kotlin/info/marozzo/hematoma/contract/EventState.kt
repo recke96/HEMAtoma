@@ -10,7 +10,7 @@ import androidx.compose.runtime.Immutable
 import arrow.optics.optics
 import info.marozzo.hematoma.domain.*
 import info.marozzo.hematoma.domain.Event
-import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
 import java.nio.file.Path
 
 @optics
@@ -18,11 +18,11 @@ import java.nio.file.Path
 data class EventState(
     val path: Path? = null,
     val event: Event = Event(
-        "Event", persistentListOf(), Tournaments(
-            persistentListOf(
-                Tournament(TournamentId.initial(), TournamentName("Tournament").getOrNull()!!)
-            )
-        )
+        EventName("Event").getOrNull()!!,
+        persistentMapOf(),
+        TournamentId.initial().let {
+            persistentMapOf(it to Tournament(it, TournamentName("Tournament").getOrNull()!!))
+        }
     ),
     val screen: Screen = Screen.Competitors
 ) {

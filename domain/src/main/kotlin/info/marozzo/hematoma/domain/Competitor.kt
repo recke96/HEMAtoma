@@ -9,12 +9,10 @@ package info.marozzo.hematoma.domain
 import arrow.core.nel
 import arrow.core.raise.either
 import arrow.core.raise.ensure
-import arrow.core.raise.forEachAccumulating
 import arrow.core.raise.zipOrAccumulate
 import arrow.optics.optics
 import info.marozzo.hematoma.domain.errors.Validated
 import info.marozzo.hematoma.domain.errors.ValidationError
-import kotlinx.collections.immutable.PersistentList
 import kotlinx.serialization.Serializable
 
 @JvmInline
@@ -27,6 +25,7 @@ value class CompetitorId private constructor(private val id: Long) {
     }
 
     fun next() = CompetitorId(id + 1L)
+    override fun toString(): String = "CompetitorId[$id]"
 }
 
 @JvmInline
@@ -34,7 +33,7 @@ value class CompetitorId private constructor(private val id: Long) {
 value class RegistrationNumber private constructor(val value: String) {
     companion object {
         operator fun invoke(number: String): Validated<RegistrationNumber> = either {
-            ensure(number.isNotBlank()) { ValidationError("Registration number mustn't be blank", "number").nel() }
+            ensure(number.isNotBlank()) { ValidationError("Registration number mustn't be blank").nel() }
             RegistrationNumber(number)
         }
     }
@@ -45,7 +44,7 @@ value class RegistrationNumber private constructor(val value: String) {
 value class CompetitorName private constructor(val value: String) {
     companion object {
         operator fun invoke(name: String): Validated<CompetitorName> = either {
-            ensure(name.isNotBlank()) { ValidationError("Competitor name mustn't be blank", "name").nel() }
+            ensure(name.isNotBlank()) { ValidationError("Competitor name mustn't be blank").nel() }
             CompetitorName(name)
         }
     }
@@ -54,30 +53,23 @@ value class CompetitorName private constructor(val value: String) {
 @optics
 @Serializable
 data class Competitor(val id: CompetitorId, val registration: RegistrationNumber, val name: CompetitorName) {
-    companion object
+    internal companion object
 }
 
-fun PersistentList<Competitor>.addCompetitor(competitor: Competitor): Validated<PersistentList<Competitor>> = either {
-    forEachAccumulating(this@addCompetitor) {
-        zipOrAccumulate(
-            {
-                ensure(it.id != competitor.id) {
-                    ValidationError(
-                        "There already is a competitor with id ${competitor.id}",
-                        "competitor"
-                    )
-                }
-            },
-            {
-                ensure(it.registration != competitor.registration) {
-                    ValidationError(
-                        "There already is a competitor with registration ${competitor.registration}",
-                        "competitor"
-                    )
-                }
+fun Event.addCompetitor(number: RegistrationNumber, name: CompetitorName): Validated<Event> = either {
+    val nextId = CompetitorId.next(competitors.keys)
+
+    val competitor = zipOrAccumulate(
+        { ensure(!competitors.containsKey(nextId)) { ValidationError("There already exists a competitor $nextId") } },
+        {
+            ensure(competitors.values.none { it.registration == number }) {
+                ValidationError("There already exists a competitor $number")
             }
-        ) { _, _ -> }
-    }
+        }
+    ) { _, _ -> Competitor(nextId, number, name) }
 
-    add(competitor)
+    Event.competitors.modify(this@Event) {
+        it.put(competitor.id, competitor)
+    }
 }
+

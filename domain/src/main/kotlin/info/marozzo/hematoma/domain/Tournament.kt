@@ -12,11 +12,9 @@ import arrow.core.raise.Raise
 import arrow.core.raise.either
 import arrow.core.raise.ensure
 import arrow.core.raise.zipOrAccumulate
-import arrow.core.right
 import arrow.optics.optics
 import info.marozzo.hematoma.domain.errors.Validated
 import info.marozzo.hematoma.domain.errors.ValidationError
-import info.marozzo.hematoma.serializers.PersistentListSerializer
 import info.marozzo.hematoma.serializers.PersistentSetSerializer
 import kotlinx.collections.immutable.*
 import kotlinx.serialization.Serializable
@@ -31,6 +29,7 @@ value class TournamentId private constructor(private val id: Long) {
     }
 
     fun next() = TournamentId(id + 1L)
+    override fun toString(): String = "TournamentId[$id]"
 }
 
 @JvmInline
@@ -38,10 +37,12 @@ value class TournamentId private constructor(private val id: Long) {
 value class TournamentName private constructor(val value: String) {
     companion object {
         operator fun invoke(name: String): Validated<TournamentName> = either {
-            ensure(name.isNotBlank()) { ValidationError("Tournament name mustn't be empty", "name").nel() }
+            ensure(name.isNotBlank()) { ValidationError("Tournament name mustn't be empty").nel() }
             TournamentName(name)
         }
     }
+
+    override fun toString(): String = value
 }
 
 @optics
@@ -53,7 +54,7 @@ data class Tournament(
     val registered: PersistentSet<CompetitorId> = persistentSetOf(),
     val record: PersistentList<Combat> = persistentListOf()
 ) {
-    companion object
+    internal companion object
 
     fun getResults(): ImmutableMap<CompetitorId, Result> {
         // Used so that even competitors which have no record yet are in the result
@@ -67,13 +68,10 @@ data class Tournament(
             }.build()
     }
 
-    fun registerCompetitor(competitor: CompetitorId): Validated<Tournament> =
-        Tournament.registered.modify(this) { it.add(competitor) }.right()
-
     fun registerCombat(combat: Combat): Validated<Tournament> = either {
         zipOrAccumulate(
-            { ensureRegistered(combat.b, "combat") },
-            { ensureRegistered(combat.b, "combat") }
+            { ensureRegistered(combat.b) },
+            { ensureRegistered(combat.b) }
         ) { _, _ ->
             Tournament.record.modify(this@Tournament) {
                 it.add(combat)
@@ -81,44 +79,8 @@ data class Tournament(
         }
     }
 
-    private fun Raise<ValidationError>.ensureRegistered(competitor: CompetitorId, property: String) =
+    private fun Raise<ValidationError>.ensureRegistered(competitor: CompetitorId) =
         ensure(registered.contains(competitor)) {
-            ValidationError(
-                "Competitor $competitor is not registered for tournament ${name.value}",
-                property
-            )
+            ValidationError("Competitor $competitor is not registered for tournament $name")
         }
-}
-
-@JvmInline
-@Serializable
-value class Tournaments(
-    @Serializable(with = PersistentListSerializer::class)
-    private val value: PersistentList<Tournament> = persistentListOf()
-) : List<Tournament> by value {
-    companion object
-
-    fun registerCompetitor(tournamentId: TournamentId, competitorId: CompetitorId): Validated<Tournaments> = either {
-        value.mutate {
-            it.replaceAll { tournament ->
-                if (tournament.id == tournamentId) {
-                    tournament.registerCompetitor(competitorId).bind()
-                } else {
-                    tournament
-                }
-            }
-        }.let(::Tournaments)
-    }
-
-    fun registerCombat(tournamentId: TournamentId, combat: Combat): Validated<Tournaments> = either {
-        value.mutate {
-            it.replaceAll { tournament ->
-                if (tournament.id == tournamentId) {
-                    tournament.registerCombat(combat).bind()
-                } else {
-                    tournament
-                }
-            }
-        }.let(::Tournaments)
-    }
 }

@@ -27,8 +27,7 @@ value class Score(private val value: Int) : Comparable<Score> {
         operator fun invoke(value: String): Validated<Score> = either {
             val score = ensureNotNull(value.toIntOrNull()) {
                 ValidationError(
-                    "Expected a number, but got $value",
-                    "value"
+                    "Expected a number, but got $value"
                 ).nel()
             }
             Score(score)
@@ -67,8 +66,7 @@ value class Hits(private val value: UInt) : Comparable<Hits> {
         operator fun invoke(value: String): Validated<Hits> = either {
             val hits = ensureNotNull(value.toUIntOrNull()) {
                 ValidationError(
-                    "Expected a positive number, but got $value",
-                    "value"
+                    "Expected a positive number, but got $value"
                 ).nel()
             }
             Hits(hits)
@@ -161,8 +159,7 @@ data class Result(
     operator fun plus(other: Result): Validated<Result> = either {
         ensure(competitor == other.competitor) {
             ValidationError(
-                "Can't combine results of different competitors: $competitor, ${other.competitor}",
-                "other"
+                "Can't combine results of different competitors: $competitor, ${other.competitor}"
             ).nel()
         }
         Result(
