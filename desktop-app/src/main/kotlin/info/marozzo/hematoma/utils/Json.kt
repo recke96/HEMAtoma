@@ -28,15 +28,15 @@ suspend inline fun <reified T> Json.writeToFile(
     value: T,
     path: Path,
     vararg options: OpenOption
-): Either<String, Unit> = effect<String, Unit> {
+): Either<Throwable, Unit> = effect<Throwable, Unit> {
     withContext(Dispatchers.IO + CoroutineName("JSON Writer")) {
         encodeToStream(value, path.outputStream(*options))
     }
-}.catch { raise(it.message ?: "Error writing file $path") }.toEither()
+}.catch { raise(it) }.toEither()
 
 @OptIn(ExperimentalSerializationApi::class)
-suspend inline fun <reified T> Json.readFromFile(path: Path): Either<String, T> = effect<String, T> {
+suspend inline fun <reified T> Json.readFromFile(path: Path): Either<Throwable, T> = effect<Throwable, T> {
     withContext(Dispatchers.IO + CoroutineName("JSON Reader")) {
         decodeFromStream(path.inputStream(StandardOpenOption.READ))
     }
-}.catch { raise(it.message ?: "Error reading file $path") }.toEither()
+}.catch { raise(it) }.toEither()

@@ -11,6 +11,7 @@ import com.copperleaf.ballast.BallastInterceptorScope
 import com.copperleaf.ballast.BallastNotification
 import com.google.common.flogger.FluentLogger
 import com.google.common.flogger.MetadataKey
+import info.marozzo.hematoma.contract.ThrowableEvent
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -78,10 +79,20 @@ class FluentLoggingInterceptor<Inputs : Any, Events : Any, State : Any> : Ballas
                         .with(modelTypeKey, hostViewModelType)
                         .log("Event %s queued", notification.event)
 
-                    is BallastNotification.EventEmitted -> flogger.atInfo()
-                        .with(modelNameKey, hostViewModelName)
-                        .with(modelTypeKey, hostViewModelType)
-                        .log("Event %s emitted", notification.event)
+                    is BallastNotification.EventEmitted -> with(notification.event) {
+                        if (this is ThrowableEvent) {
+                            flogger.atWarning()
+                                .withCause(this.throwable)
+                                .with(modelNameKey, hostViewModelName)
+                                .with(modelTypeKey, hostViewModelType)
+                                .log("Throwable-Event %s emitted", notification.event)
+                        } else {
+                            flogger.atInfo()
+                                .with(modelNameKey, hostViewModelName)
+                                .with(modelTypeKey, hostViewModelType)
+                                .log("Event %s emitted", notification.event)
+                        }
+                    }
 
                     is BallastNotification.EventHandledSuccessfully -> flogger.atInfo()
                         .with(modelNameKey, hostViewModelName)

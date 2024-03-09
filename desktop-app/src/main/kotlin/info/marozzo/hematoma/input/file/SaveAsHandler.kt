@@ -24,7 +24,7 @@ data object SaveAsHandler {
             Json.writeToFile(event, input.path, StandardOpenOption.CREATE_NEW).fold(
                 {
                     flogger.atInfo().log("Error saving to file %s: %s", input.path, it)
-                    postEvent(ErrorEvent(it))
+                    postEvent(ThrowableEvent(it))
                 },
                 { postInput(SavedAs(input.path)) }
             )
