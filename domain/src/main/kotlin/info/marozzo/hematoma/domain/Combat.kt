@@ -52,7 +52,11 @@ value class CUT(val value: Double) : Comparable<CUT> {
     }
 
     override fun compareTo(other: CUT): Int = value.compareTo(other.value)
-    override fun toString(): String = if (value.isInfinite()) "\u221E" else "%.2f\u202F%%".format(value * PERCENT_SCALE)
+    override fun toString(): String = when {
+        value.isInfinite() -> "\u221E"
+        value.isNaN() -> ""
+        else -> "%.2f\u202F%%".format(value * PERCENT_SCALE)
+    }
 }
 
 @JvmInline
