@@ -24,11 +24,9 @@ value class Score(private val value: Int) : Comparable<Score> {
         val zero = Score(0)
         val seven = Score(7)
 
-        operator fun invoke(value: String): Validated<Score> = either {
+        fun parse(value: String): Validated<Score> = either {
             val score = ensureNotNull(value.toIntOrNull()) {
-                ValidationError(
-                    "Expected a number, but got $value"
-                ).nel()
+                ValidationError("Expected a number, but got $value").nel()
             }
             Score(score)
         }
@@ -37,7 +35,7 @@ value class Score(private val value: Int) : Comparable<Score> {
     operator fun plus(other: Score) = Score(value + other.value)
     operator fun div(other: Score) = CUT(value.toDouble() / other.value.toDouble())
     override fun compareTo(other: Score): Int = value.compareTo(other.value)
-    override fun toString(): String = "$value\u202FPts"
+    override fun toString(): String = value.toString()
 }
 
 @JvmInline
@@ -63,11 +61,9 @@ value class Hits(private val value: UInt) : Comparable<Hits> {
     companion object {
         val three = Hits(3U)
 
-        operator fun invoke(value: String): Validated<Hits> = either {
+        fun parse(value: String): Validated<Hits> = either {
             val hits = ensureNotNull(value.toUIntOrNull()) {
-                ValidationError(
-                    "Expected a positive number, but got $value"
-                ).nel()
+                ValidationError("Expected a positive number, but got $value").nel()
             }
             Hits(hits)
         }
@@ -77,7 +73,7 @@ value class Hits(private val value: UInt) : Comparable<Hits> {
     operator fun plus(other: Hits) = Hits(value + other.value)
     override fun compareTo(other: Hits): Int = value.compareTo(other.value)
 
-    override fun toString(): String = "$value"
+    override fun toString(): String = value.toString()
 }
 
 

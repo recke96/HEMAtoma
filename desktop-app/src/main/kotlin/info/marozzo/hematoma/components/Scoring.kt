@@ -97,11 +97,11 @@ fun CombatInput(
     val (competitorA, setCompetitorA) = remember { mutableStateOf<Option<Competitor>>(none()) }
     val (competitorB, setCompetitorB) = remember { mutableStateOf<Option<Competitor>>(none()) }
     val (scoreA, setScoreA) = remember { mutableStateOf("") }
-    val parsedScoreA = remember(scoreA) { Score(scoreA) }
+    val parsedScoreA = remember(scoreA) { Score.parse(scoreA) }
     val (scoreB, setScoreB) = remember { mutableStateOf("") }
-    val parsedScoreB = remember(scoreB) { Score(scoreB) }
+    val parsedScoreB = remember(scoreB) { Score.parse(scoreB) }
     val (doubleHits, setDoubleHits) = remember { mutableStateOf("") }
-    val parsedDoubleHits = remember(doubleHits) { Hits(doubleHits) }
+    val parsedDoubleHits = remember(doubleHits) { Hits.parse(doubleHits) }
 
     Row(
         modifier.fillMaxWidth(),

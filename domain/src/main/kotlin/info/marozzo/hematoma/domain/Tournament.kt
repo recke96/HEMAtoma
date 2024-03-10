@@ -15,6 +15,7 @@ import arrow.core.raise.zipOrAccumulate
 import arrow.optics.optics
 import info.marozzo.hematoma.domain.errors.Validated
 import info.marozzo.hematoma.domain.errors.ValidationError
+import info.marozzo.hematoma.serializers.PersistentListSerializer
 import info.marozzo.hematoma.serializers.PersistentSetSerializer
 import kotlinx.collections.immutable.*
 import kotlinx.serialization.Serializable
@@ -52,6 +53,7 @@ data class Tournament(
     val name: TournamentName,
     @Serializable(with = PersistentSetSerializer::class)
     val registered: PersistentSet<CompetitorId> = persistentSetOf(),
+    @Serializable(with = PersistentListSerializer::class)
     val record: PersistentList<Combat> = persistentListOf()
 ) {
     internal companion object
