@@ -14,6 +14,8 @@ import arrow.optics.optics
 import arrow.optics.typeclasses.Index
 import info.marozzo.hematoma.domain.errors.Validated
 import info.marozzo.hematoma.domain.errors.ValidationError
+import info.marozzo.hematoma.domain.scoring.FiorDellaSpadaScoring
+import info.marozzo.hematoma.domain.scoring.Score
 import info.marozzo.hematoma.serializers.CompetitorsSerializer
 import info.marozzo.hematoma.serializers.TournamentsSerializer
 import info.marozzo.hematoma.util.persistentMap
@@ -54,6 +56,15 @@ data class Event(
         ensure(tournaments.containsKey(tournament)) { ValidationError("No tournament with id $tournament").nel() }
         Event.tournaments.index(Index.persistentMap(), tournament).modifyNullable(this@Event) {
             it.registerCombat(combat).bind()
+        } ?: raise(ValidationError("No tournament $tournament").nel())
+    }
+
+    fun setWinningThreshold(tournament: TournamentId, threshold: Score): Validated<Event> = either {
+        ensure(tournaments.containsKey(tournament)) { ValidationError("No tournament with id $tournament").nel() }
+        Event.tournaments.index(Index.persistentMap(), tournament).scoringSettings.modifyNullable(this@Event) {
+            when (it) {
+                is FiorDellaSpadaScoring -> it.copy(winningThreshold = threshold)
+            }
         } ?: raise(ValidationError("No tournament $tournament").nel())
     }
 }

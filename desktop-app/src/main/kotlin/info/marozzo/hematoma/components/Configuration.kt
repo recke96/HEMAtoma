@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.onClick
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
@@ -22,10 +24,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import info.marozzo.hematoma.LocalAccept
 import info.marozzo.hematoma.contract.EventState
+import info.marozzo.hematoma.contract.SetWinningThreshold
 import info.marozzo.hematoma.domain.Tournament
+import info.marozzo.hematoma.domain.TournamentId
 import info.marozzo.hematoma.domain.scoring.FiorDellaSpadaScoring
+import info.marozzo.hematoma.domain.scoring.Score
 import info.marozzo.hematoma.domain.scoring.ScoringSettings
 
 @Composable
@@ -69,20 +77,32 @@ fun TournamentConfigListItem(
         )
         AnimatedVisibility(expanded) {
             Surface {
-                ScoringConfig(tournament.scoringSettings, modifier = Modifier.padding(start = 20.dp).fillMaxWidth())
+                ScoringConfig(
+                    tournament.id,
+                    tournament.scoringSettings,
+                    modifier = Modifier.padding(start = 20.dp).fillMaxWidth()
+                )
             }
         }
     }
 }
 
 @Composable
-fun ScoringConfig(settings: ScoringSettings, modifier: Modifier = Modifier) = when (settings) {
-    is FiorDellaSpadaScoring -> FiorDellaSpadaScoringConfig(settings, modifier)
-}
+fun ScoringConfig(tournamentId: TournamentId, settings: ScoringSettings, modifier: Modifier = Modifier) =
+    when (settings) {
+        is FiorDellaSpadaScoring -> FiorDellaSpadaScoringConfig(tournamentId, settings, modifier)
+    }
 
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
-fun FiorDellaSpadaScoringConfig(settings: FiorDellaSpadaScoring, modifier: Modifier = Modifier) {
+fun FiorDellaSpadaScoringConfig(
+    tournamentId: TournamentId,
+    settings: FiorDellaSpadaScoring,
+    modifier: Modifier = Modifier
+) {
+    val accept = LocalAccept.current
+    val (input, setInput) = remember(settings.winningThreshold) { mutableStateOf(settings.winningThreshold.toString()) }
+    val parsedInput = remember(input) { Score.parse(input) }
     Column(modifier, verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top)) {
         Text("Scoring", style = MaterialTheme.typography.titleSmall)
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start)) {
@@ -92,10 +112,16 @@ fun FiorDellaSpadaScoringConfig(settings: FiorDellaSpadaScoring, modifier: Modif
                 }
             ) {
                 TextField(
-                    settings.winningThreshold.toString(),
-                    onValueChange = {},
+                    input,
+                    onValueChange = setInput,
+                    isError = parsedInput.isLeft(),
                     label = { Text("Winning Threshold") },
-                    placeholder = { Text("Score") }
+                    placeholder = { Text("Score") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions {
+                        accept(SetWinningThreshold(tournamentId, parsedInput.getOrNull()!!))
+                    }
                 )
             }
             TooltipArea(
@@ -110,6 +136,7 @@ fun FiorDellaSpadaScoringConfig(settings: FiorDellaSpadaScoring, modifier: Modif
                     settings.doubleHitThreshold.toString(),
                     onValueChange = {},
                     enabled = false,
+                    singleLine = true,
                     label = { Text("Double-Hit Threshold") }
                 )
             }

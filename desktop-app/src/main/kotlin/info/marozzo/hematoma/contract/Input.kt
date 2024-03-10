@@ -28,6 +28,7 @@ data object Save : Input
 
 // Event management
 
+data class SetWinningThreshold(val tournament: TournamentId, val threshold: Score): Input
 data class AddCompetitor(val registration: RegistrationNumber, val name: CompetitorName) : Input
 data class AddCombat(
     val tournament: TournamentId,
