@@ -11,6 +11,8 @@ import info.marozzo.hematoma.domain.Combat
 import info.marozzo.hematoma.domain.CompetitorId
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.serialization.EncodeDefault
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.math.ceil
@@ -26,7 +28,11 @@ sealed interface ScoringSettings {
 @optics
 @Serializable
 @SerialName("fior-della-spada-scoring")
-data class FiorDellaSpadaScoring(val winningThreshold: Score = DEFAULT_WINNING_THRESHOLD) : ScoringSettings {
+@OptIn(ExperimentalSerializationApi::class)
+data class FiorDellaSpadaScoring(
+    @EncodeDefault
+    val winningThreshold: Score = DEFAULT_WINNING_THRESHOLD
+) : ScoringSettings {
 
     companion object {
         private const val MAX_AWARDED = 3.0
