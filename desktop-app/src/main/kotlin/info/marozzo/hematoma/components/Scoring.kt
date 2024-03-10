@@ -32,7 +32,14 @@ import com.seanproctor.datatable.DataColumn
 import com.seanproctor.datatable.material3.DataTable
 import info.marozzo.hematoma.contract.AddCombat
 import info.marozzo.hematoma.contract.EventState
-import info.marozzo.hematoma.domain.*
+import info.marozzo.hematoma.domain.Combat
+import info.marozzo.hematoma.domain.Competitor
+import info.marozzo.hematoma.domain.CompetitorId
+import info.marozzo.hematoma.domain.Tournament
+import info.marozzo.hematoma.domain.scoring.CUT
+import info.marozzo.hematoma.domain.scoring.Hits
+import info.marozzo.hematoma.domain.scoring.Result
+import info.marozzo.hematoma.domain.scoring.Score
 import info.marozzo.hematoma.input.AcceptFun
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap

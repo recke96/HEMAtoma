@@ -8,6 +8,8 @@ package info.marozzo.hematoma.contract
 
 import info.marozzo.hematoma.domain.*
 import info.marozzo.hematoma.domain.Event
+import info.marozzo.hematoma.domain.scoring.Hits
+import info.marozzo.hematoma.domain.scoring.Score
 import java.nio.file.Path
 
 sealed interface Input
