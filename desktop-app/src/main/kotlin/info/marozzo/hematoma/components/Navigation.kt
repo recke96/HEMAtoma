@@ -19,12 +19,13 @@ import androidx.compose.material3.NavigationRailItem
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import info.marozzo.hematoma.LocalAccept
 import info.marozzo.hematoma.contract.Goto
 import info.marozzo.hematoma.contract.Screen
-import info.marozzo.hematoma.input.AcceptFun
 
 @Composable
-fun Navigation(screen: Screen, accept: AcceptFun, modifier: Modifier = Modifier) {
+fun Navigation(screen: Screen, modifier: Modifier = Modifier) {
+    val accept = LocalAccept.current
     NavigationRail(
         modifier = modifier.widthIn(48.dp, 64.dp).fillMaxHeight(),
     ) {

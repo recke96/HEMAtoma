@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,7 +34,6 @@ import info.marozzo.hematoma.components.ScoringScreen
 import info.marozzo.hematoma.contract.EventState
 import info.marozzo.hematoma.contract.Save
 import info.marozzo.hematoma.contract.Screen
-import info.marozzo.hematoma.input.AcceptFun
 import java.awt.Dimension
 
 private const val FOREGROUND = 10f
@@ -47,21 +47,27 @@ fun main(args: Array<String>) = SuspendApp {
         val vm = remember(coroutineScope) { EventViewModel(coroutineScope, snackbar) }
         val state by vm.observeStates().collectAsState()
 
-        Window(onCloseRequest = this::exitApplication, title = "HEMAtoma", onPreviewKeyEvent = {
-            if (it.isCtrlPressed && it.key == Key.S && it.type == KeyEventType.KeyDown) {
-                vm.trySend(Save)
-                true
-            } else {
-                false
-            }
-        }) {
-            with(LocalDensity.current) {
-                window.minimumSize = Dimension(1240.dp.roundToPx(), 200.dp.roundToPx())
-            }
+        CompositionLocalProvider(LocalAccept provides vm::trySend) {
 
-            Box(modifier = Modifier.fillMaxSize()) {
-                SnackbarHost(hostState = snackbar, modifier = Modifier.align(Alignment.BottomEnd).zIndex(FOREGROUND))
-                App(state, vm::trySend)
+            Window(onCloseRequest = this::exitApplication, title = "HEMAtoma", onPreviewKeyEvent = {
+                if (it.isCtrlPressed && it.key == Key.S && it.type == KeyEventType.KeyDown) {
+                    vm.trySend(Save)
+                    true
+                } else {
+                    false
+                }
+            }) {
+                with(LocalDensity.current) {
+                    window.minimumSize = Dimension(1240.dp.roundToPx(), 200.dp.roundToPx())
+                }
+
+                Box(modifier = Modifier.fillMaxSize()) {
+                    SnackbarHost(
+                        hostState = snackbar,
+                        modifier = Modifier.align(Alignment.BottomEnd).zIndex(FOREGROUND)
+                    )
+                    App(state)
+                }
             }
         }
     }
@@ -70,20 +76,20 @@ fun main(args: Array<String>) = SuspendApp {
 
 @Composable
 @Suppress("ModifierMissing") // Is the top-level composable and has no use for modifier
-fun App(state: EventState, accept: AcceptFun) = MaterialTheme {
+fun App(state: EventState) = MaterialTheme {
     Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-        Header(state, accept, modifier = Modifier.background(MaterialTheme.colorScheme.primary))
+        Header(state, modifier = Modifier.background(MaterialTheme.colorScheme.primary))
         Row {
-            Navigation(state.screen, accept)
+            Navigation(state.screen)
             AnimatedContent(state.screen) { current ->
                 when (current) {
+                    Screen.Configuration -> Text("Configuration")
                     Screen.Competitors -> CompetitorSection(
                         state.event.competitors,
-                        accept,
                         modifier = Modifier.fillMaxSize()
                     )
 
-                    Screen.Scoring -> ScoringScreen(state, accept, modifier = Modifier.fillMaxSize())
+                    Screen.Scoring -> ScoringScreen(state, modifier = Modifier.fillMaxSize())
                 }
             }
 

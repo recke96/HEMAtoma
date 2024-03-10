@@ -37,6 +37,7 @@ data class EventState(
 }
 
 enum class Screen {
+    Configuration,
     Competitors,
     Scoring
 }

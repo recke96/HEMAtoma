@@ -35,17 +35,17 @@ import arrow.core.raise.option
 import arrow.core.some
 import com.seanproctor.datatable.DataColumn
 import com.seanproctor.datatable.material3.DataTable
+import info.marozzo.hematoma.LocalAccept
 import info.marozzo.hematoma.contract.AddCombat
 import info.marozzo.hematoma.contract.EventState
 import info.marozzo.hematoma.domain.*
 import info.marozzo.hematoma.domain.scoring.*
-import info.marozzo.hematoma.input.AcceptFun
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 
 
 @Composable
-fun ScoringScreen(state: EventState, accept: AcceptFun, modifier: Modifier = Modifier) {
+fun ScoringScreen(state: EventState, modifier: Modifier = Modifier) {
     val (tab, setTab) = remember { mutableStateOf(0) }
 
     Column(modifier) {
@@ -59,14 +59,12 @@ fun ScoringScreen(state: EventState, accept: AcceptFun, modifier: Modifier = Mod
                     0 -> CombatRecord(
                         state.event.competitors,
                         state.event.tournaments.values.single(),
-                        accept,
                         modifier = Modifier.fillMaxSize()
                     )
 
                     1 -> ResultsTable(
                         state.event.tournaments.values.single(),
                         state.event.competitors,
-                        accept,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
@@ -80,11 +78,10 @@ fun ScoringScreen(state: EventState, accept: AcceptFun, modifier: Modifier = Mod
 fun CombatRecord(
     competitors: ImmutableMap<CompetitorId, Competitor>,
     tournament: Tournament,
-    accept: AcceptFun,
     modifier: Modifier = Modifier
 ) {
     Column(modifier, verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top)) {
-        CombatInput(competitors, tournament, accept)
+        CombatInput(competitors, tournament)
         HorizontalDivider(thickness = DividerDefaults.Thickness.plus(2.dp))
         CombatRecordList(tournament.record, tournament.scoringSettings, competitors)
     }
@@ -94,9 +91,9 @@ fun CombatRecord(
 fun CombatInput(
     competitors: ImmutableMap<CompetitorId, Competitor>,
     tournament: Tournament,
-    accept: AcceptFun,
     modifier: Modifier = Modifier
 ) {
+    val accept = LocalAccept.current
     val competitorsOfTournament = remember(competitors, tournament.registered) {
         competitors.filterKeys { tournament.registered.contains(it) }.values
     }
@@ -234,7 +231,6 @@ fun CombatRecordListItem(
 fun ResultsTable(
     tournament: Tournament,
     competitors: ImmutableMap<CompetitorId, Competitor>,
-    accept: AcceptFun,
     modifier: Modifier = Modifier
 ) {
     val state = rememberScrollState()
@@ -249,7 +245,7 @@ fun ResultsTable(
     }
 
     Column(modifier, verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top)) {
-        CombatInput(competitors, tournament, accept)
+        CombatInput(competitors, tournament)
         HorizontalDivider(thickness = DividerDefaults.Thickness.plus(2.dp))
         Box {
             DataTable(
