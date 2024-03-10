@@ -14,6 +14,8 @@ import info.marozzo.hematoma.contract.AddCompetitor
 import info.marozzo.hematoma.contract.ErrorEvent
 import info.marozzo.hematoma.contract.EventState
 import info.marozzo.hematoma.contract.event
+import info.marozzo.hematoma.domain.TournamentId
+import info.marozzo.hematoma.domain.addCompetitor
 import info.marozzo.hematoma.domain.errors.ValidationError
 import info.marozzo.hematoma.input.EventInputHandlerScope
 
@@ -26,12 +28,12 @@ object AddCompetitorHandler {
         either {
             val original = getCurrentState().event
             val added = original.addCompetitor(input.registration, input.name).bind()
-            val newComp = ensureNotNull(added.competitors.find { it.registration == input.registration }) {
-                ValidationError("New competitor not found", "input").nel()
+            val newComp = ensureNotNull(added.competitors.values.find { it.registration == input.registration }) {
+                ValidationError("New competitor not found").nel()
             }
             // Currently we work with a single tournament, so we add every competitor to this tournament
-            val tournament = ensureNotNull(original.tournaments.firstOrNull()) {
-                ValidationError("Expected a single tournament", "input").nel()
+            val tournament = ensureNotNull(original.tournaments[TournamentId.initial()]) {
+                ValidationError("Expected a single tournament").nel()
             }
             added.registerCompetitorForTournament(newComp.id, tournament.id).bind()
         }.fold(

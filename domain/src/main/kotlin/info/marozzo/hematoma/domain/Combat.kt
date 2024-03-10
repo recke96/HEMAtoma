@@ -13,8 +13,6 @@ import arrow.core.raise.ensureNotNull
 import arrow.optics.optics
 import info.marozzo.hematoma.domain.errors.Validated
 import info.marozzo.hematoma.domain.errors.ValidationError
-import info.marozzo.hematoma.serializers.PersistentListSerializer
-import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.Serializable
 
@@ -26,12 +24,9 @@ value class Score(private val value: Int) : Comparable<Score> {
         val zero = Score(0)
         val seven = Score(7)
 
-        operator fun invoke(value: String): Validated<Score> = either {
+        fun parse(value: String): Validated<Score> = either {
             val score = ensureNotNull(value.toIntOrNull()) {
-                ValidationError(
-                    "Expected a number, but got $value",
-                    "value"
-                ).nel()
+                ValidationError("Expected a number, but got $value").nel()
             }
             Score(score)
         }
@@ -40,7 +35,7 @@ value class Score(private val value: Int) : Comparable<Score> {
     operator fun plus(other: Score) = Score(value + other.value)
     operator fun div(other: Score) = CUT(value.toDouble() / other.value.toDouble())
     override fun compareTo(other: Score): Int = value.compareTo(other.value)
-    override fun toString(): String = "$value\u202FPts"
+    override fun toString(): String = value.toString()
 }
 
 @JvmInline
@@ -52,7 +47,11 @@ value class CUT(val value: Double) : Comparable<CUT> {
     }
 
     override fun compareTo(other: CUT): Int = value.compareTo(other.value)
-    override fun toString(): String = if (value.isInfinite()) "\u221E" else "%.2f\u202F%%".format(value * PERCENT_SCALE)
+    override fun toString(): String = when {
+        value.isInfinite() -> "\u221E"
+        value.isNaN() -> ""
+        else -> "%.2f\u202F%%".format(value * PERCENT_SCALE)
+    }
 }
 
 @JvmInline
@@ -62,12 +61,9 @@ value class Hits(private val value: UInt) : Comparable<Hits> {
     companion object {
         val three = Hits(3U)
 
-        operator fun invoke(value: String): Validated<Hits> = either {
+        fun parse(value: String): Validated<Hits> = either {
             val hits = ensureNotNull(value.toUIntOrNull()) {
-                ValidationError(
-                    "Expected a positive number, but got $value",
-                    "value"
-                ).nel()
+                ValidationError("Expected a positive number, but got $value").nel()
             }
             Hits(hits)
         }
@@ -77,7 +73,7 @@ value class Hits(private val value: UInt) : Comparable<Hits> {
     operator fun plus(other: Hits) = Hits(value + other.value)
     override fun compareTo(other: Hits): Int = value.compareTo(other.value)
 
-    override fun toString(): String = "$value"
+    override fun toString(): String = value.toString()
 }
 
 
@@ -121,20 +117,6 @@ data class Combat(
 
 @JvmInline
 @Serializable
-value class Combats private constructor(
-    @Serializable(with = PersistentListSerializer::class)
-    private val combats: PersistentList<Combat>
-) : List<Combat> by combats {
-
-    companion object {
-        operator fun invoke() = Combats(persistentListOf())
-    }
-
-    fun add(combat: Combat): Combats = Combats(combats.add(combat))
-}
-
-@JvmInline
-@Serializable
 value class Matches(val value: UInt) : Comparable<Matches> {
 
     companion object {
@@ -173,8 +155,7 @@ data class Result(
     operator fun plus(other: Result): Validated<Result> = either {
         ensure(competitor == other.competitor) {
             ValidationError(
-                "Can't combine results of different competitors: $competitor, ${other.competitor}",
-                "other"
+                "Can't combine results of different competitors: $competitor, ${other.competitor}"
             ).nel()
         }
         Result(

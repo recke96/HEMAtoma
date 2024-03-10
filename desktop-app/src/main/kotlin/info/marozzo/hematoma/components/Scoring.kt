@@ -17,9 +17,7 @@ import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -36,6 +34,8 @@ import info.marozzo.hematoma.contract.AddCombat
 import info.marozzo.hematoma.contract.EventState
 import info.marozzo.hematoma.domain.*
 import info.marozzo.hematoma.input.AcceptFun
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableMap
 
 
 @Composable
@@ -52,13 +52,13 @@ fun ScoringScreen(state: EventState, accept: AcceptFun, modifier: Modifier = Mod
                 when (it) {
                     0 -> CombatRecord(
                         state.event.competitors,
-                        state.event.tournaments.single(),
+                        state.event.tournaments.values.single(),
                         accept,
                         modifier = Modifier.fillMaxSize()
                     )
 
                     1 -> CombatTable(
-                        state.event.tournaments.single(),
+                        state.event.tournaments.values.single(),
                         state.event.competitors,
                         accept,
                         modifier = Modifier.fillMaxSize()
@@ -71,27 +71,37 @@ fun ScoringScreen(state: EventState, accept: AcceptFun, modifier: Modifier = Mod
 
 
 @Composable
-fun CombatRecord(competitors: Competitors, tournament: Tournament, accept: AcceptFun, modifier: Modifier = Modifier) {
+fun CombatRecord(
+    competitors: ImmutableMap<CompetitorId, Competitor>,
+    tournament: Tournament,
+    accept: AcceptFun,
+    modifier: Modifier = Modifier
+) {
     Column(modifier, verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top)) {
         CombatInput(competitors, tournament, accept)
-        Divider(thickness = DividerDefaults.Thickness.plus(2.dp))
+        HorizontalDivider(thickness = DividerDefaults.Thickness.plus(2.dp))
         CombatRecordList(tournament.record, competitors)
     }
 }
 
 @Composable
-fun CombatInput(competitors: Competitors, tournament: Tournament, accept: AcceptFun, modifier: Modifier = Modifier) {
+fun CombatInput(
+    competitors: ImmutableMap<CompetitorId, Competitor>,
+    tournament: Tournament,
+    accept: AcceptFun,
+    modifier: Modifier = Modifier
+) {
     val competitorsOfTournament = remember(competitors, tournament.registered) {
-        competitors.filter { tournament.registered.contains(it.id) }
+        competitors.filterKeys { tournament.registered.contains(it) }.values
     }
     val (competitorA, setCompetitorA) = remember { mutableStateOf<Option<Competitor>>(none()) }
     val (competitorB, setCompetitorB) = remember { mutableStateOf<Option<Competitor>>(none()) }
     val (scoreA, setScoreA) = remember { mutableStateOf("") }
-    val parsedScoreA = remember(scoreA) { Score(scoreA) }
+    val parsedScoreA = remember(scoreA) { Score.parse(scoreA) }
     val (scoreB, setScoreB) = remember { mutableStateOf("") }
-    val parsedScoreB = remember(scoreB) { Score(scoreB) }
+    val parsedScoreB = remember(scoreB) { Score.parse(scoreB) }
     val (doubleHits, setDoubleHits) = remember { mutableStateOf("") }
-    val parsedDoubleHits = remember(doubleHits) { Hits(doubleHits) }
+    val parsedDoubleHits = remember(doubleHits) { Hits.parse(doubleHits) }
 
     Row(
         modifier.fillMaxWidth(),
@@ -166,7 +176,11 @@ fun CombatInput(competitors: Competitors, tournament: Tournament, accept: Accept
 }
 
 @Composable
-fun CombatRecordList(combats: Combats, competitors: Competitors, modifier: Modifier = Modifier) {
+fun CombatRecordList(
+    combats: ImmutableList<Combat>,
+    competitors: ImmutableMap<CompetitorId, Competitor>,
+    modifier: Modifier = Modifier
+) {
     val state = rememberLazyListState()
     Box(modifier) {
         LazyColumn(state = state) {
@@ -182,38 +196,44 @@ fun CombatRecordList(combats: Combats, competitors: Competitors, modifier: Modif
 }
 
 @Composable
-fun CombatRecordListItem(combat: Combat, competitors: Competitors, modifier: Modifier = Modifier) = Column(modifier) {
-    val a = remember(combat.a, competitors) {
-        competitors.find { it.id == combat.a }!!
-    }
-    val b = remember(combat.b, competitors) {
-        competitors.find { it.id == combat.b }!!
-    }
-    ListItem(
-        overlineContent = { Text("${a.display()} vs. ${b.display()}", style = MaterialTheme.typography.bodySmall) },
-        headlineContent = {
-            Text(
-                "${combat.scoreA} : ${combat.scoreB} (${combat.doubleHits})",
-                style = if (combat.doubleHits < Hits.three)
-                    MaterialTheme.typography.bodyLarge
-                else MaterialTheme.typography.bodyLarge.copy(
-                    textDecoration = TextDecoration.LineThrough
+fun CombatRecordListItem(
+    combat: Combat,
+    competitors: ImmutableMap<CompetitorId, Competitor>,
+    modifier: Modifier = Modifier
+) =
+    Column(modifier) {
+        val a by remember { derivedStateOf { competitors[combat.a]!! } }
+        val b by remember { derivedStateOf { competitors[combat.b]!! } }
+        ListItem(
+            overlineContent = { Text("${a.display()} vs. ${b.display()}", style = MaterialTheme.typography.bodySmall) },
+            headlineContent = {
+                Text(
+                    "${combat.scoreA} : ${combat.scoreB} (${combat.doubleHits})",
+                    style = if (combat.doubleHits < Hits.three)
+                        MaterialTheme.typography.bodyLarge
+                    else MaterialTheme.typography.bodyLarge.copy(
+                        textDecoration = TextDecoration.LineThrough
+                    )
                 )
-            )
-        }
-    )
-    Divider()
-}
+            }
+        )
+        HorizontalDivider()
+    }
 
 @Composable
-fun CombatTable(tournament: Tournament, competitors: Competitors, accept: AcceptFun, modifier: Modifier = Modifier) {
+fun CombatTable(
+    tournament: Tournament,
+    competitors: ImmutableMap<CompetitorId, Competitor>,
+    accept: AcceptFun,
+    modifier: Modifier = Modifier
+) {
     val state = rememberScrollState()
     val comparator = remember(competitors) {
         compareBy(Result::cut)
             .thenComparing(compareByDescending(Result::doubleHits))
             .thenComparing(Result::wins)
             .thenComparing { r ->
-                competitors.find { it.id == r.competitor }?.name?.value!!
+                competitors[r.competitor]?.name?.value ?: ""
             }.reversed()
     }
     val results = remember(tournament) {
@@ -222,7 +242,7 @@ fun CombatTable(tournament: Tournament, competitors: Competitors, accept: Accept
 
     Column(modifier, verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top)) {
         CombatInput(competitors, tournament, accept)
-        Divider(thickness = DividerDefaults.Thickness.plus(2.dp))
+        HorizontalDivider(thickness = DividerDefaults.Thickness.plus(2.dp))
         Box {
             DataTable(
                 modifier = Modifier.fillMaxWidth().verticalScroll(state),
@@ -248,7 +268,7 @@ fun CombatTable(tournament: Tournament, competitors: Competitors, accept: Accept
                 )
             ) {
                 for (result in results) {
-                    val competitor = competitors.find { it.id == result.competitor }!!
+                    val competitor = competitors[result.competitor]!!
                     row {
                         cell { Text(competitor.registration.value) }
                         cell { Text(competitor.name.value) }

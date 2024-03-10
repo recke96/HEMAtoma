@@ -7,7 +7,7 @@
 package info.marozzo.hematoma.input.file
 
 import com.google.common.flogger.FluentLogger
-import info.marozzo.hematoma.contract.ErrorEvent
+import info.marozzo.hematoma.contract.ThrowableEvent
 import info.marozzo.hematoma.input.EventInputHandlerScope
 import info.marozzo.hematoma.utils.writeToFile
 import kotlinx.serialization.json.Json
@@ -27,7 +27,7 @@ data object SaveHandler {
         sideJob("write-file-$path") {
             Json.writeToFile(event, path, StandardOpenOption.TRUNCATE_EXISTING).onLeft {
                 flogger.atInfo().log("Error saving to file %s: %s", path, it)
-                postEvent(ErrorEvent(it))
+                postEvent(ThrowableEvent(it))
             }
         }
     }

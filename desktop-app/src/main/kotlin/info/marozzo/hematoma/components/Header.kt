@@ -28,7 +28,7 @@ import java.nio.file.Path
 @Composable
 fun Header(state: EventState, accept: AcceptFun, modifier: Modifier = Modifier) {
     Row(modifier.heightIn(24.dp, 32.dp).fillMaxWidth()) {
-        FileMenu(state.event.name, state.path != null, accept)
+        FileMenu(state.event.name.toString(), state.path != null, accept)
     }
 }
 

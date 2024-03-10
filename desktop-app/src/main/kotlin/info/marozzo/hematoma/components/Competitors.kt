@@ -29,13 +29,19 @@ import arrow.core.Option
 import arrow.core.getOrElse
 import info.marozzo.hematoma.contract.AddCompetitor
 import info.marozzo.hematoma.domain.Competitor
+import info.marozzo.hematoma.domain.CompetitorId
 import info.marozzo.hematoma.domain.CompetitorName
-import info.marozzo.hematoma.domain.Competitors
 import info.marozzo.hematoma.domain.RegistrationNumber
 import info.marozzo.hematoma.input.AcceptFun
+import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
-fun CompetitorSection(competitors: Competitors, accept: AcceptFun, modifier: Modifier = Modifier) = Column(modifier) {
+fun CompetitorSection(
+    competitors: ImmutableMap<CompetitorId, Competitor>,
+    accept: AcceptFun, modifier:
+    Modifier = Modifier
+) = Column(modifier) {
     val nextReg = remember(competitors) {
         RegistrationNumber(
             competitors.size.inc().toString()
@@ -50,12 +56,12 @@ fun CompetitorSection(competitors: Competitors, accept: AcceptFun, modifier: Mod
 }
 
 @Composable
-fun CompetitorsList(competitors: Competitors, modifier: Modifier = Modifier) {
+fun CompetitorsList(competitors: ImmutableMap<CompetitorId, Competitor>, modifier: Modifier = Modifier) {
     val state = rememberLazyListState()
     Box(modifier) {
         LazyColumn(state = state) {
-            items(competitors, key = { it.id }) {
-                CompetitorListItem(it, modifier = Modifier.fillMaxWidth())
+            items(competitors.keys.toImmutableList(), key = { it }) {
+                CompetitorListItem(competitors[it]!!, modifier = Modifier.fillMaxWidth())
             }
         }
         VerticalScrollbar(
@@ -66,12 +72,11 @@ fun CompetitorsList(competitors: Competitors, modifier: Modifier = Modifier) {
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
 fun CompetitorListItem(competitor: Competitor, modifier: Modifier = Modifier) = Column(modifier) {
     ListItem(
         leadingContent = { Text("${competitor.registration.value}.") },
         headlineContent = { Text(competitor.name.value) })
-    Divider()
+    HorizontalDivider()
 }
 
 @Composable

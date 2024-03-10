@@ -9,60 +9,51 @@ package info.marozzo.hematoma.domain
 import arrow.core.nel
 import arrow.core.raise.either
 import arrow.core.raise.ensure
-import arrow.core.raise.zipOrAccumulate
+import arrow.optics.dsl.index
 import arrow.optics.optics
+import arrow.optics.typeclasses.Index
 import info.marozzo.hematoma.domain.errors.Validated
 import info.marozzo.hematoma.domain.errors.ValidationError
+import info.marozzo.hematoma.serializers.CompetitorsSerializer
+import info.marozzo.hematoma.serializers.TournamentsSerializer
+import info.marozzo.hematoma.util.persistentMap
+import kotlinx.collections.immutable.PersistentMap
 import kotlinx.serialization.Serializable
+
+@JvmInline
+@Serializable
+value class EventName private constructor(private val value: String) {
+    companion object {
+        operator fun invoke(name: String): Validated<EventName> = either {
+            ensure(name.isNotBlank()) { ValidationError("Event name mustn't be empty").nel() }
+            EventName(name)
+        }
+    }
+
+    override fun toString(): String = value
+}
 
 @optics
 @Serializable
-data class Event(val name: String, val competitors: Competitors, val tournaments: Tournaments) {
-    companion object
-
-    fun addCompetitor(number: RegistrationNumber, name: CompetitorName): Validated<Event> = either {
-        val nextId = CompetitorId.next(competitors.map(Competitor::id))
-        val competitor = Competitor(nextId, number, name)
-
-        Event.competitors.modify(this@Event) {
-            it.add(competitor).bind()
-        }
-    }
+data class Event(
+    val name: EventName,
+    @Serializable(with = CompetitorsSerializer::class)
+    val competitors: PersistentMap<CompetitorId, Competitor>,
+    @Serializable(with = TournamentsSerializer::class)
+    val tournaments: PersistentMap<TournamentId, Tournament>
+) {
+    internal companion object
 
     fun registerCompetitorForTournament(competitor: CompetitorId, tournament: TournamentId): Validated<Event> = either {
-        zipOrAccumulate(
-            {
-                ensure(competitors.any { it.id == competitor }) {
-                    ValidationError(
-                        "No comppetitor with id $competitor",
-                        "competitor"
-                    )
-                }
-            },
-            {
-                ensure(tournaments.any { it.id == tournament }) {
-                    ValidationError(
-                        "No tournament with id $tournament",
-                        "tournament"
-                    )
-                }
-            }
-        ) { _, _ ->
-            Event.tournaments.modify(this@Event) {
-                it.registerCompetitor(tournament, competitor).bind()
-            }
-        }
+        Event.tournaments.index(Index.persistentMap(), tournament).registered.modifyNullable(this@Event) {
+            it.add(competitor)
+        } ?: raise(ValidationError("No tournament $tournament").nel())
     }
 
     fun registerCombatForTournament(tournament: TournamentId, combat: Combat): Validated<Event> = either {
-        ensure(tournaments.any { it.id == tournament }) {
-            ValidationError(
-                "No tournament with id $tournament",
-                "tournament"
-            ).nel()
-        }
-        Event.tournaments.modify(this@Event) {
-            it.registerCombat(tournament, combat).bind()
-        }
+        ensure(tournaments.containsKey(tournament)) { ValidationError("No tournament with id $tournament").nel() }
+        Event.tournaments.index(Index.persistentMap(), tournament).modifyNullable(this@Event) {
+            it.registerCombat(combat).bind()
+        } ?: raise(ValidationError("No tournament $tournament").nel())
     }
 }

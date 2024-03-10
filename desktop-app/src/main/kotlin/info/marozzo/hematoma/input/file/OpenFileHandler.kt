@@ -24,7 +24,7 @@ data object OpenFileHandler {
             Json.readFromFile<Event>(input.path).fold(
                 {
                     flogger.atInfo().log("Error reading file %s: %s", input.path, it)
-                    postEvent(ErrorEvent(it))
+                    postEvent(ThrowableEvent(it))
                 },
                 { postInput(OpenedFile(input.path, it)) }
             )

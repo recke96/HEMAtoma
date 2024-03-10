@@ -10,4 +10,5 @@ import arrow.core.EitherNel
 
 typealias Validated<T> = EitherNel<ValidationError, T>
 
-data class ValidationError(val message: String, val property: String) : DomainError
+@JvmInline
+value class ValidationError(val message: String) : DomainError
