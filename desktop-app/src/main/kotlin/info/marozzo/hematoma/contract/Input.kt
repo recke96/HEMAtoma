@@ -8,6 +8,8 @@ package info.marozzo.hematoma.contract
 
 import info.marozzo.hematoma.domain.*
 import info.marozzo.hematoma.domain.Event
+import info.marozzo.hematoma.domain.scoring.Hits
+import info.marozzo.hematoma.domain.scoring.Score
 import java.nio.file.Path
 
 sealed interface Input
@@ -26,6 +28,7 @@ data object Save : Input
 
 // Event management
 
+data class SetWinningThreshold(val tournament: TournamentId, val threshold: Score): Input
 data class AddCompetitor(val registration: RegistrationNumber, val name: CompetitorName) : Input
 data class AddCombat(
     val tournament: TournamentId,

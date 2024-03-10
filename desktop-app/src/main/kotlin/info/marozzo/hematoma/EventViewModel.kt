@@ -7,6 +7,7 @@
 package info.marozzo.hematoma
 
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.staticCompositionLocalOf
 import com.copperleaf.ballast.BallastViewModelConfiguration
 import com.copperleaf.ballast.EventHandlerScope
 import com.copperleaf.ballast.build
@@ -17,6 +18,7 @@ import info.marozzo.hematoma.contract.Event
 import info.marozzo.hematoma.contract.EventState
 import info.marozzo.hematoma.contract.Input
 import info.marozzo.hematoma.event.EventEventHandler
+import info.marozzo.hematoma.input.AcceptFun
 import info.marozzo.hematoma.input.EventInputHandler
 import info.marozzo.hematoma.utils.FluentLoggingInterceptor
 import kotlinx.coroutines.CoroutineScope
@@ -31,4 +33,6 @@ class EventViewModel(scope: CoroutineScope, snackbar: SnackbarHostState) : Basic
     eventHandler = EventEventHandler(snackbar),
     coroutineScope = scope
 )
+
+val LocalAccept = staticCompositionLocalOf<AcceptFun> { {} }
 
