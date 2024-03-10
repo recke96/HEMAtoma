@@ -39,7 +39,7 @@ data class FiorDellaSpadaScoring(
         private val DEFAULT_WINNING_THRESHOLD = Score(7)
     }
 
-    private val doubleHitThreshold = Hits(ceil(winningThreshold.value / MAX_AWARDED).toUInt() - 1U)
+    val doubleHitThreshold = Hits(ceil(winningThreshold.value / MAX_AWARDED).toUInt() - 1U)
 
     override fun resultOfCombat(combat: Combat): ImmutableMap<CompetitorId, Result> = with(combat) {
         when {

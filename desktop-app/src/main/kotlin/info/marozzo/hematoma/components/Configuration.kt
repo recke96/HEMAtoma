@@ -6,22 +6,113 @@
 
 package info.marozzo.hematoma.components
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.DividerDefaults
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.TextField
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.TooltipArea
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.onClick
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
 import info.marozzo.hematoma.contract.EventState
+import info.marozzo.hematoma.domain.Tournament
+import info.marozzo.hematoma.domain.scoring.FiorDellaSpadaScoring
+import info.marozzo.hematoma.domain.scoring.ScoringSettings
 
 @Composable
 fun ConfigurationScreen(state: EventState, modifier: Modifier = Modifier) =
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top)) {
+    Column(modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top)) {
         TextField(state.event.name.toString(), onValueChange = {}, enabled = false)
         HorizontalDivider(thickness = DividerDefaults.Thickness.plus(2.dp))
-
+        LazyColumn {
+            items(state.event.tournaments.values.toList()) {
+                TournamentConfigListItem(it, expandedByDefault = state.event.tournaments.keys.first() == it.id)
+                HorizontalDivider()
+            }
+        }
     }
 
+private object Rotation {
+    const val EXPANDED = 180f
+    const val CLOSED = -90f
+}
+
+@Composable
+@OptIn(ExperimentalFoundationApi::class)
+fun TournamentConfigListItem(
+    tournament: Tournament,
+    modifier: Modifier = Modifier,
+    expandedByDefault: Boolean = false,
+) {
+    val (expanded, setExpanded) = remember(expandedByDefault) { mutableStateOf(expandedByDefault) }
+
+    Column(modifier) {
+        ListItem(
+            headlineContent = { Text("${tournament.name} Settings") },
+            trailingContent = {
+                Icon(
+                    Icons.Default.ArrowDropDown,
+                    contentDescription = "Expand Tournament Settings",
+                    modifier = Modifier.rotate(if (expanded) Rotation.EXPANDED else Rotation.CLOSED)
+                )
+            },
+            modifier = Modifier.onClick { setExpanded(!expanded) }
+        )
+        AnimatedVisibility(expanded) {
+            Surface {
+                ScoringConfig(tournament.scoringSettings, modifier = Modifier.padding(start = 20.dp).fillMaxWidth())
+            }
+        }
+    }
+}
+
+@Composable
+fun ScoringConfig(settings: ScoringSettings, modifier: Modifier = Modifier) = when (settings) {
+    is FiorDellaSpadaScoring -> FiorDellaSpadaScoringConfig(settings, modifier)
+}
+
+@Composable
+@OptIn(ExperimentalFoundationApi::class)
+fun FiorDellaSpadaScoringConfig(settings: FiorDellaSpadaScoring, modifier: Modifier = Modifier) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top)) {
+        Text("Scoring", style = MaterialTheme.typography.titleSmall)
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.Start)) {
+            TooltipArea(
+                tooltip = {
+                    TextTooltip("When a competitor reaches or exceeds this score, the combat is finished")
+                }
+            ) {
+                TextField(
+                    settings.winningThreshold.toString(),
+                    onValueChange = {},
+                    label = { Text("Winning Threshold") },
+                    placeholder = { Text("Score") }
+                )
+            }
+            TooltipArea(
+                tooltip = {
+                    TextTooltip(
+                        "When a combat exceeds this amount of double hits," +
+                                " it is ended with a loosing score for both participants"
+                    )
+                }
+            ) {
+                TextField(
+                    settings.doubleHitThreshold.toString(),
+                    onValueChange = {},
+                    enabled = false,
+                    label = { Text("Double-Hit Threshold") }
+                )
+            }
+        }
+    }
+}
