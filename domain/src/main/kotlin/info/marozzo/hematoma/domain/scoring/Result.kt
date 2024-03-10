@@ -43,14 +43,6 @@ data class Result(
             conceded = Score.zero,
             doubleHits = Hits.none
         )
-        val doubleHit = Result(
-            matches = Matches.one,
-            wins = Matches.none,
-            losses = Matches.one,
-            scored = Score.zero,
-            conceded = Score.seven,
-            doubleHits = Hits.three
-        )
     }
 
     operator fun plus(other: Result) = Result(

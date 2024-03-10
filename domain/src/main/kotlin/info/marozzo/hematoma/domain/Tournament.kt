@@ -16,6 +16,7 @@ import arrow.optics.optics
 import info.marozzo.hematoma.domain.errors.Validated
 import info.marozzo.hematoma.domain.errors.ValidationError
 import info.marozzo.hematoma.domain.scoring.Result
+import info.marozzo.hematoma.domain.scoring.ScoringSettings
 import info.marozzo.hematoma.serializers.PersistentListSerializer
 import info.marozzo.hematoma.serializers.PersistentSetSerializer
 import kotlinx.collections.immutable.*
@@ -52,6 +53,7 @@ value class TournamentName private constructor(val value: String) {
 data class Tournament(
     val id: TournamentId,
     val name: TournamentName,
+    val scoringSettings: ScoringSettings,
     @Serializable(with = PersistentSetSerializer::class)
     val registered: PersistentSet<CompetitorId> = persistentSetOf(),
     @Serializable(with = PersistentListSerializer::class)
@@ -61,12 +63,11 @@ data class Tournament(
 
     fun getResults(): ImmutableMap<CompetitorId, Result> {
         return record.asSequence()
-            .map { it.getResults().toMap() }
+            .map { scoringSettings.resultOfCombat(it) }
             // Adding an empty result for each registered participant, so they appear in the statistics
             .plus(registered.associateWith { Result.empty })
-            .fold(mapOf<CompetitorId, Result>()) { acc, v ->
-                acc.combine(v, Result::plus)
-            }.toPersistentMap()
+            .fold(mapOf<CompetitorId, Result>()) { acc, v -> acc.combine(v, Result::plus) }
+            .toPersistentMap()
     }
 
     fun registerCombat(combat: Combat): Validated<Tournament> = either {

@@ -86,7 +86,7 @@ fun CombatRecord(
     Column(modifier, verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top)) {
         CombatInput(competitors, tournament, accept)
         HorizontalDivider(thickness = DividerDefaults.Thickness.plus(2.dp))
-        CombatRecordList(tournament.record, competitors)
+        CombatRecordList(tournament.record, tournament.scoringSettings, competitors)
     }
 }
 
@@ -184,6 +184,7 @@ fun CombatInput(
 @Composable
 fun CombatRecordList(
     combats: ImmutableList<Combat>,
+    settings: ScoringSettings,
     competitors: ImmutableMap<CompetitorId, Competitor>,
     modifier: Modifier = Modifier
 ) {
@@ -191,7 +192,7 @@ fun CombatRecordList(
     Box(modifier) {
         LazyColumn(state = state) {
             items(combats) {
-                CombatRecordListItem(it, competitors, modifier = Modifier.fillMaxWidth())
+                CombatRecordListItem(it, competitors, settings, modifier = Modifier.fillMaxWidth())
             }
         }
         VerticalScrollbar(
@@ -205,6 +206,7 @@ fun CombatRecordList(
 fun CombatRecordListItem(
     combat: Combat,
     competitors: ImmutableMap<CompetitorId, Competitor>,
+    settings: ScoringSettings,
     modifier: Modifier = Modifier
 ) =
     Column(modifier) {
@@ -215,11 +217,13 @@ fun CombatRecordListItem(
             headlineContent = {
                 Text(
                     "${combat.scoreA} : ${combat.scoreB} (${combat.doubleHits})",
-                    style = if (combat.doubleHits < Hits.three)
+                    style = if (settings.isPunished(combat)) {
+                        MaterialTheme.typography.bodyLarge.copy(
+                            textDecoration = TextDecoration.LineThrough
+                        )
+                    } else {
                         MaterialTheme.typography.bodyLarge
-                    else MaterialTheme.typography.bodyLarge.copy(
-                        textDecoration = TextDecoration.LineThrough
-                    )
+                    }
                 )
             }
         )

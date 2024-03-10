@@ -15,11 +15,10 @@ import kotlinx.serialization.Serializable
 
 @JvmInline
 @Serializable
-value class Score private constructor(private val value: Int) : Comparable<Score> {
+value class Score constructor(internal val value: Int) : Comparable<Score> {
 
     companion object {
         val zero = Score(0)
-        val seven = Score(7)
 
         fun parse(value: String): Validated<Score> = either {
             val score = ensureNotNull(value.toIntOrNull()) {
@@ -57,7 +56,7 @@ value class Hits(private val value: UInt) : Comparable<Hits> {
 
     companion object {
         val none = Hits(0U)
-        val three = Hits(3U)
+        val one = Hits(1U)
 
         fun parse(value: String): Validated<Hits> = either {
             val hits = ensureNotNull(value.toUIntOrNull()) {
