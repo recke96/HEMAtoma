@@ -31,7 +31,7 @@ data class EventState(
             )
         }
     ),
-    val screen: Screen = Screen.Competitors
+    val screen: Screen = Screen.Configuration
 ) {
     companion object
 }
