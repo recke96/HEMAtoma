@@ -9,8 +9,10 @@ package info.marozzo.hematoma.components
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Scoreboard
+import androidx.compose.material.icons.outlined.Build
 import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material.icons.outlined.Scoreboard
 import androidx.compose.material3.Icon
@@ -29,6 +31,16 @@ fun Navigation(screen: Screen, modifier: Modifier = Modifier) {
     NavigationRail(
         modifier = modifier.widthIn(48.dp, 64.dp).fillMaxHeight(),
     ) {
+        NavigationRailItem(
+            selected = screen == Screen.Configuration,
+            icon = {
+                Icon(
+                    if (screen == Screen.Configuration) Icons.Filled.Build else Icons.Outlined.Build,
+                    contentDescription = "Configure"
+                )
+            },
+            onClick = { accept(Goto(Screen.Configuration)) }
+        )
         NavigationRailItem(
             selected = screen == Screen.Competitors,
             icon = {

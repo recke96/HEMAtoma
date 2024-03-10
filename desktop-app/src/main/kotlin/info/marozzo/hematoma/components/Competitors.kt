@@ -37,7 +37,7 @@ import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
-fun CompetitorSection(
+fun CompetitorScreen(
     competitors: ImmutableMap<CompetitorId, Competitor>,
     modifier:
     Modifier = Modifier

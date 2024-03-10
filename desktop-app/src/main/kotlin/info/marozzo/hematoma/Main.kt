@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,10 +26,7 @@ import androidx.compose.ui.window.awaitApplication
 import androidx.compose.ui.zIndex
 import arrow.continuations.SuspendApp
 import com.google.common.flogger.FluentLogger
-import info.marozzo.hematoma.components.CompetitorSection
-import info.marozzo.hematoma.components.Header
-import info.marozzo.hematoma.components.Navigation
-import info.marozzo.hematoma.components.ScoringScreen
+import info.marozzo.hematoma.components.*
 import info.marozzo.hematoma.contract.EventState
 import info.marozzo.hematoma.contract.Save
 import info.marozzo.hematoma.contract.Screen
@@ -83,8 +79,8 @@ fun App(state: EventState) = MaterialTheme {
             Navigation(state.screen)
             AnimatedContent(state.screen) { current ->
                 when (current) {
-                    Screen.Configuration -> Text("Configuration")
-                    Screen.Competitors -> CompetitorSection(
+                    Screen.Configuration -> ConfigurationScreen(state, modifier = Modifier.fillMaxSize())
+                    Screen.Competitors -> CompetitorScreen(
                         state.event.competitors,
                         modifier = Modifier.fillMaxSize()
                     )
