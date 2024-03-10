@@ -6,13 +6,7 @@
 
 package info.marozzo.hematoma.domain.scoring
 
-import arrow.core.nel
-import arrow.core.raise.either
-import arrow.core.raise.ensure
 import arrow.optics.optics
-import info.marozzo.hematoma.domain.CompetitorId
-import info.marozzo.hematoma.domain.errors.Validated
-import info.marozzo.hematoma.domain.errors.ValidationError
 import kotlinx.serialization.Serializable
 
 @JvmInline
@@ -31,20 +25,27 @@ value class Matches(val value: UInt) : Comparable<Matches> {
 @optics
 @Serializable
 data class Result(
-    val competitor: CompetitorId,
-    val matches: Matches = Matches.none,
-    val wins: Matches = Matches.none,
-    val losses: Matches = Matches.none,
-    val scored: Score = Score.zero,
-    val conceded: Score = Score.zero,
-    val doubleHits: Hits = Hits.none
+    val matches: Matches,
+    val wins: Matches,
+    val losses: Matches,
+    val scored: Score,
+    val conceded: Score,
+    val doubleHits: Hits
 ) {
     val cut = scored / conceded
 
     companion object {
-        fun doubleHit(competitor: CompetitorId) = Result(
-            competitor,
+        val empty = Result(
+            matches = Matches.none,
+            wins = Matches.none,
+            losses = Matches.none,
+            scored = Score.zero,
+            conceded = Score.zero,
+            doubleHits = Hits.none
+        )
+        val doubleHit = Result(
             matches = Matches.one,
+            wins = Matches.none,
             losses = Matches.one,
             scored = Score.zero,
             conceded = Score.seven,
@@ -52,20 +53,12 @@ data class Result(
         )
     }
 
-    operator fun plus(other: Result): Validated<Result> = either {
-        ensure(competitor == other.competitor) {
-            ValidationError(
-                "Can't combine results of different competitors: $competitor, ${other.competitor}"
-            ).nel()
-        }
-        Result(
-            competitor,
-            matches + other.matches,
-            wins + other.wins,
-            losses + other.losses,
-            scored + other.scored,
-            conceded + other.conceded,
-            doubleHits + other.doubleHits
-        )
-    }
+    operator fun plus(other: Result) = Result(
+        matches + other.matches,
+        wins + other.wins,
+        losses + other.losses,
+        scored + other.scored,
+        conceded + other.conceded,
+        doubleHits + other.doubleHits
+    )
 }

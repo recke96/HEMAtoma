@@ -11,7 +11,8 @@ import info.marozzo.hematoma.domain.scoring.Hits
 import info.marozzo.hematoma.domain.scoring.Matches
 import info.marozzo.hematoma.domain.scoring.Result
 import info.marozzo.hematoma.domain.scoring.Score
-import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.serialization.Serializable
 
 @optics
@@ -25,11 +26,10 @@ data class Combat(
 ) {
     companion object
 
-    fun getResults(): CombatResults = when {
-        doubleHits >= Hits.three -> CombatResults(Result.doubleHit(a), Result.doubleHit(b))
-        else -> CombatResults(
-            Result(
-                a,
+    fun getResults(): ImmutableMap<CompetitorId, Result> = when {
+        doubleHits >= Hits.three -> persistentMapOf(a to Result.doubleHit, b to Result.doubleHit)
+        else -> persistentMapOf(
+            a to Result(
                 Matches.one,
                 if (scoreA > scoreB) Matches.one else Matches.none,
                 if (scoreA < scoreB) Matches.one else Matches.none,
@@ -37,8 +37,7 @@ data class Combat(
                 scoreB,
                 doubleHits
             ),
-            Result(
-                b,
+            b to Result(
                 Matches.one,
                 if (scoreB > scoreA) Matches.one else Matches.none,
                 if (scoreB < scoreA) Matches.one else Matches.none,
@@ -48,8 +47,6 @@ data class Combat(
             )
         )
     }
-
-    data class CombatResults(val a: Result, val b: Result) : Iterable<Result> by persistentListOf(a, b)
 }
 
 

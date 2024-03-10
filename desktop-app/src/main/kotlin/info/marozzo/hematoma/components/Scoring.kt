@@ -24,6 +24,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import arrow.atomic.Atomic
+import arrow.atomic.update
+import arrow.collectors.Characteristics
+import arrow.collectors.Collector
+import arrow.collectors.collect
 import arrow.core.Option
 import arrow.core.none
 import arrow.core.raise.option
@@ -32,14 +37,8 @@ import com.seanproctor.datatable.DataColumn
 import com.seanproctor.datatable.material3.DataTable
 import info.marozzo.hematoma.contract.AddCombat
 import info.marozzo.hematoma.contract.EventState
-import info.marozzo.hematoma.domain.Combat
-import info.marozzo.hematoma.domain.Competitor
-import info.marozzo.hematoma.domain.CompetitorId
-import info.marozzo.hematoma.domain.Tournament
-import info.marozzo.hematoma.domain.scoring.CUT
-import info.marozzo.hematoma.domain.scoring.Hits
-import info.marozzo.hematoma.domain.scoring.Result
-import info.marozzo.hematoma.domain.scoring.Score
+import info.marozzo.hematoma.domain.*
+import info.marozzo.hematoma.domain.scoring.*
 import info.marozzo.hematoma.input.AcceptFun
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
@@ -64,7 +63,7 @@ fun ScoringScreen(state: EventState, accept: AcceptFun, modifier: Modifier = Mod
                         modifier = Modifier.fillMaxSize()
                     )
 
-                    1 -> CombatTable(
+                    1 -> ResultsTable(
                         state.event.tournaments.values.single(),
                         state.event.competitors,
                         accept,
@@ -228,23 +227,21 @@ fun CombatRecordListItem(
     }
 
 @Composable
-fun CombatTable(
+fun ResultsTable(
     tournament: Tournament,
     competitors: ImmutableMap<CompetitorId, Competitor>,
     accept: AcceptFun,
     modifier: Modifier = Modifier
 ) {
     val state = rememberScrollState()
-    val comparator = remember(competitors) {
-        compareBy(Result::cut)
-            .thenComparing(compareByDescending(Result::doubleHits))
-            .thenComparing(Result::wins)
-            .thenComparing { r ->
-                competitors[r.competitor]?.name?.value ?: ""
-            }.reversed()
+    val results = remember(tournament) { tournament.getResults() }
+    val competitorResults = remember(results) {
+        results.map { (competitorId, result) ->
+            CompetitorResult.from(competitors[competitorId]!!, result)
+        }.sortedWith(CompetitorResultComparator)
     }
-    val results = remember(tournament) {
-        tournament.getResults().values.sortedWith(comparator)
+    val combinedResult = remember(results) {
+        results.values.collect(statsCollector)
     }
 
     Column(modifier, verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top)) {
@@ -274,11 +271,10 @@ fun CombatTable(
                     }
                 )
             ) {
-                for (result in results) {
-                    val competitor = competitors[result.competitor]!!
+                for (result in competitorResults) {
                     row {
-                        cell { Text(competitor.registration.value) }
-                        cell { Text(competitor.name.value) }
+                        cell { Text(result.registration.value) }
+                        cell { Text(result.name.value) }
                         cell { Text(result.scored.toString()) }
                         cell { Text(result.conceded.toString()) }
                         cell { Text(result.cut.toString()) }
@@ -286,36 +282,30 @@ fun CombatTable(
                     }
                 }
                 row {
-                    cell { }
-                    cell { Text("Summary", fontWeight = FontWeight.Bold) }
-                    cell {
-                        val scored = results.map(Result::scored).reduceOrNull(Score::plus)?.toString() ?: ""
-                        Text(
-                            "Tot. $scored",
-                            fontWeight = FontWeight.Bold,
-                        )
-                    }
-                    cell {
-                        val conceded = results.map(Result::conceded).reduceOrNull(Score::plus)?.toString() ?: ""
-                        Text(
-                            "Tot. $conceded",
-                            fontWeight = FontWeight.Bold,
-                        )
-                    }
-                    cell {
-                        val avgCut = CUT(results.map(Result::cut).map(CUT::value).average())
-                        Text(
-                            "Avg. $avgCut",
-                            fontWeight = FontWeight.Bold,
-                        )
-                    }
-                    cell {
-                        val doubleHits =
-                            results.map(Result::doubleHits).reduceOrNull(Hits::plus)?.run(Hits::half)?.toString() ?: ""
-                        Text(
-                            "Tot. $doubleHits",
-                            fontWeight = FontWeight.Bold,
-                        )
+                    with(combinedResult) {
+                        cell { }
+                        cell { Text("Summary", fontWeight = FontWeight.Bold) }
+                        cell {
+                            Text(
+                                "Tot. $scored",
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
+                        cell {
+                            Text(
+                                "Tot. $conceded",
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
+                        cell {
+
+                        }
+                        cell {
+                            Text(
+                                "Tot. ${doubleHits.half()}",
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
                     }
                 }
             }
@@ -327,4 +317,44 @@ fun CombatTable(
     }
 }
 
-private fun Competitor.display() = "${registration.value}. ${name.value}"
+private data class CompetitorResult(
+    val registration: RegistrationNumber,
+    val name: CompetitorName,
+    val matches: Matches,
+    val wins: Matches,
+    val losses: Matches,
+    val scored: Score,
+    val conceded: Score,
+    val cut: CUT,
+    val doubleHits: Hits
+) {
+    companion object {
+        fun from(competitor: Competitor, result: Result) = CompetitorResult(
+            competitor.registration,
+            competitor.name,
+            result.matches,
+            result.wins,
+            result.losses,
+            result.scored,
+            result.conceded,
+            result.cut,
+            result.doubleHits
+        )
+    }
+
+}
+
+
+val statsCollector = Collector.nonSuspendOf<Atomic<Result>, Result, Result>(
+    supply = { Atomic(Result.empty) },
+    accumulate = { acc, value -> acc.update { it + value } },
+    finish = { it.get() },
+    characteristics = Characteristics.CONCURRENT_UNORDERED
+)
+
+private val CompetitorResultComparator = compareByDescending(CompetitorResult::cut)
+    .thenComparing(CompetitorResult::doubleHits)
+    .thenComparing(compareByDescending(CompetitorResult::wins))
+    .thenComparing(compareBy { it.name.value })
+
+fun Competitor.display() = "${registration.value}. ${name.value}"
