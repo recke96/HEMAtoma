@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -121,6 +122,13 @@ fun FiorDellaSpadaScoringConfig(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions {
                         accept(SetWinningThreshold(tournamentId, parsedInput.getOrNull()!!))
+                    },
+                    modifier = Modifier.onFocusChanged {
+                        if (!it.isFocused) parsedInput.onRight { thresh ->
+                            accept(
+                                SetWinningThreshold(tournamentId, thresh)
+                            )
+                        } else Unit
                     }
                 )
             }
