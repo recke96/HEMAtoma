@@ -52,7 +52,7 @@ compose.desktop {
 
             windows {
                 console = false
-                upgradeUuid = "{31E152a4-C1A7-4465-9891-5CC18E54851B}"
+                upgradeUuid = "31E152a4-C1A7-4465-9891-5CC18E54851B"
             }
         }
     }
