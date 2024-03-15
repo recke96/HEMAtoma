@@ -63,7 +63,7 @@ jobs:
           bump_version_scheme: ${{ inputs.bump }}
           use_github_release_notes: true
       - name: Upload Release Artifacts
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.release.outputs.tag_name }}
           files: |
