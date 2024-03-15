@@ -58,6 +58,8 @@ jobs:
       - id: release
         name: Create Release
         uses: rymndhng/release-on-push-action@v0.28.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           release_name: HEMAtoma <RELEASE_VERSION>
           bump_version_scheme: ${{ inputs.bump }}
