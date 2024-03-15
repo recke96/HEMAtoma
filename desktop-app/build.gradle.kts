@@ -1,8 +1,12 @@
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.kotlin.compose)
 }
+
+version = "0.2.0"
 
 kotlin {
     jvmToolchain(21)
@@ -18,7 +22,7 @@ dependencies {
     implementation(compose.materialIconsExtended)
     implementation(libs.filepicker)
     implementation(libs.datatable)
-    
+
     implementation(libs.bundles.arrow)
     ksp(libs.arrow.optics.ksp)
 
@@ -30,7 +34,7 @@ dependencies {
 
     implementation(libs.flogger)
     runtimeOnly(libs.flogger.backend)
-    
+
     detektPlugins(libs.detekt.compose)
     detektPlugins(libs.detekt.arrow)
 }
@@ -38,6 +42,19 @@ dependencies {
 compose.desktop {
     application {
         mainClass = "info.marozzo.hematoma.MainKt"
+
+        nativeDistributions {
+            targetFormats(TargetFormat.Deb, TargetFormat.Exe)
+            packageName = rootProject.name
+            description = "Tournament planner for HEMA tournaments of the club 'Fior della Spada'"
+            copyright = "© 2024 Jakob Ecker. All rights reserved."
+            licenseFile = rootProject.file("LICENCE")
+
+            windows {
+                console = false
+                upgradeUuid = "{31E152a4-C1A7-4465-9891-5CC18E54851B}"
+            }
+        }
     }
 }
 
