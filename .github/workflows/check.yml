@@ -30,9 +30,6 @@ jobs:
           dependency-graph: generate-and-submit
       - name: Check
         run: ./gradlew check --continue
-      - name: Merge SARIF
-        if: success() || failure()
-        run: ./gradlew mergeSarif
       - name: Upload SARIF
         uses: github/codeql-action/upload-sarif@v3
         if: success() || failure()
