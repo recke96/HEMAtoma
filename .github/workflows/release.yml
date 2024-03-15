@@ -57,7 +57,7 @@ jobs:
         run: ls -R ${{ github.workspace }}
       - id: release
         name: Create Release
-        uses: rymndhng/release-on-push-action@v0.9.3
+        uses: rymndhng/release-on-push-action@v0.28.0
         with:
           name: HEMAtoma <RELEASE_VERSION>
           bump_version_scheme: ${{ inputs.bump }}
