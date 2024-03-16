@@ -35,8 +35,10 @@ import java.awt.Dimension
 private const val FOREGROUND = 10f
 private val logger = FluentLogger.forEnclosingClass()!!
 
+val version = object {}::class.java.`package`.implementationVersion!!
+
 fun main(args: Array<String>) = SuspendApp {
-    logger.atInfo().log("Start HEMAtoma %s", object {}::class.java.`package`.implementationVersion)
+    logger.atInfo().log("Start HEMAtoma %s", version)
     awaitApplication {
         val coroutineScope = rememberCoroutineScope()
         val snackbar = remember { SnackbarHostState() }
