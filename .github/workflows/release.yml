@@ -31,7 +31,6 @@ jobs:
           use_github_release_notes: true
     outputs:
       tag_name: ${{ steps.release.outputs.tag_name }}
-      version: ${{ steps.release.outputs.version }}
 
   package:
     needs: version
@@ -55,7 +54,7 @@ jobs:
       - name: Build & Package
         run: ./gradlew packageDistributionForCurrentOS --no-daemon
         env:
-          RELEASE_VERSION: ${{ needs.version.outputs.version }}
+          RELEASE_VERSION: ${{ needs.version.outputs.tag_name }}
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
