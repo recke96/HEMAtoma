@@ -74,9 +74,6 @@ jobs:
           pattern: dist-*
           merge-multiple: true
           path: ${{ github.workspace }}/packages
-      - name: Display
-        run: ls -R ${{ github.workspace }}
-
       - name: Upload Release Artifacts
         uses: softprops/action-gh-release@v2
         with:
