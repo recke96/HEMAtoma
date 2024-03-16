@@ -14,7 +14,27 @@ on:
           - major
 
 jobs:
+  version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: read
+    steps:
+      - id: release
+        name: Create Release
+        uses: rymndhng/release-on-push-action@v0.28.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          release_name: HEMAtoma <RELEASE_VERSION>
+          bump_version_scheme: ${{ inputs.bump }}
+          use_github_release_notes: true
+    outputs:
+      tag_name: ${{ steps.release.outputs.tag_name }}
+      version: ${{ steps.release.outputs.version }}
+
   package:
+    needs: version
     strategy:
       matrix:
         variant:
@@ -33,7 +53,9 @@ jobs:
         with:
           gradle-version: wrapper
       - name: Build & Package
-        run: ./gradlew packageDistributionForCurrentOS
+        run: ./gradlew packageDistributionForCurrentOS --no-daemon
+        env:
+          RELEASE_VERSION: ${{ jobs.version.outputs.version }}
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -41,11 +63,10 @@ jobs:
           path: ${{ github.workspace }}/desktop-app/build/compose/binaries/main/${{ matrix.variant.package }}/*.${{ matrix.variant.package }}
 
   release:
-    needs: [package]
+    needs: package
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: read
     steps:
       - name: Download Artifact
         uses: actions/download-artifact@v4
@@ -55,19 +76,11 @@ jobs:
           path: ${{ github.workspace }}/packages
       - name: Display
         run: ls -R ${{ github.workspace }}
-      - id: release
-        name: Create Release
-        uses: rymndhng/release-on-push-action@v0.28.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          release_name: HEMAtoma <RELEASE_VERSION>
-          bump_version_scheme: ${{ inputs.bump }}
-          use_github_release_notes: true
+
       - name: Upload Release Artifacts
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.release.outputs.tag_name }}
+          tag_name: ${{ jobs.version.outputs.tag_name }}
           files: |
             ${{ github.workspace }}/packages/*.deb
             ${{ github.workspace }}/packages/*.exe
