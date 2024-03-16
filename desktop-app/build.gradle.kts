@@ -6,8 +6,6 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
-version = "0.2.0"
-
 kotlin {
     jvmToolchain(21)
 }
@@ -46,6 +44,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Deb, TargetFormat.Exe)
             packageName = rootProject.name
+            version = System.getenv("RELEASE_VERSION") ?: "0.0.0"
             description = "Tournament planner for HEMA tournaments of the club 'Fior della Spada'"
             copyright = "© 2024 Jakob Ecker. All rights reserved."
             licenseFile = rootProject.file("LICENCE")
