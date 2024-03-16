@@ -55,7 +55,7 @@ jobs:
       - name: Build & Package
         run: ./gradlew packageDistributionForCurrentOS --no-daemon
         env:
-          RELEASE_VERSION: ${{ jobs.version.outputs.version }}
+          RELEASE_VERSION: ${{ needs.version.outputs.version }}
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -63,7 +63,7 @@ jobs:
           path: ${{ github.workspace }}/desktop-app/build/compose/binaries/main/${{ matrix.variant.package }}/*.${{ matrix.variant.package }}
 
   release:
-    needs: package
+    needs: [version, package]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -77,7 +77,7 @@ jobs:
       - name: Upload Release Artifacts
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ jobs.version.outputs.tag_name }}
+          tag_name: ${{ needs.version.outputs.tag_name }}
           files: |
             ${{ github.workspace }}/packages/*.deb
             ${{ github.workspace }}/packages/*.exe
