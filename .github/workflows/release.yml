@@ -30,6 +30,7 @@ jobs:
           bump_version_scheme: ${{ inputs.bump }}
           use_github_release_notes: true
     outputs:
+      tag_name: ${{ steps.release.outputs.tag_name }}
       version: ${{ steps.release.outputs.version }}
 
   package:
@@ -79,7 +80,7 @@ jobs:
       - name: Upload Release Artifacts
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.release.outputs.tag_name }}
+          tag_name: ${{ jobs.version.outputs.tag_name }}
           files: |
             ${{ github.workspace }}/packages/*.deb
             ${{ github.workspace }}/packages/*.exe
