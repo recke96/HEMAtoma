@@ -36,7 +36,7 @@ private const val FOREGROUND = 10f
 private val logger = FluentLogger.forEnclosingClass()!!
 
 fun main(args: Array<String>) = SuspendApp {
-    logger.atInfo().log("Start HEMAtoma")
+    logger.atInfo().log("Start HEMAtoma %s", object {}::class.java.`package`.implementationVersion)
     awaitApplication {
         val coroutineScope = rememberCoroutineScope()
         val snackbar = remember { SnackbarHostState() }
