@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       bump:
-        description: Which part of the version to bump
+        description: Release kind
         required: true
         default: patch
         type: choice
@@ -61,4 +61,4 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.version.outputs.tag_name }}
-          files: ${{ github.workspace }}/desktop-app/build/compose/binaries/main/${{ matrix.variant.package }}/*.${{ matrix.variant.package }}
+          files: ./desktop-app/build/compose/binaries/main/${{ matrix.variant.package }}/*.${{ matrix.variant.package }}
