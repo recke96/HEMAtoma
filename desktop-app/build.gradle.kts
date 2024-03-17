@@ -6,6 +6,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+version = System.getenv("RELEASE_VERSION")?.trimStart('v') ?: "0.0.0"
+
 kotlin {
     jvmToolchain(21)
 }
@@ -37,6 +39,16 @@ dependencies {
     detektPlugins(libs.detekt.arrow)
 }
 
+tasks.withType<Jar>().configureEach {
+    manifest {
+        attributes(
+            "Name" to "info/marozzo/hematoma/",
+            "Implementation-Title" to "info.marozzo.hematoma",
+            "Implementation-Version" to version,
+        )
+    }
+}
+
 compose.desktop {
     application {
         mainClass = "info.marozzo.hematoma.MainKt"
@@ -44,7 +56,6 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Deb, TargetFormat.Exe)
             packageName = rootProject.name
-            version = System.getenv("RELEASE_VERSION")?.trimStart('v') ?: "0.0.0"
             description = "Tournament planner for HEMA tournaments of the club 'Fior della Spada'"
             copyright = "© 2024 Jakob Ecker. All rights reserved."
             licenseFile = rootProject.file("LICENCE")
