@@ -54,6 +54,9 @@ compose.desktop {
         mainClass = "info.marozzo.hematoma.MainKt"
 
         nativeDistributions {
+
+            modules("jdk.unsupported")
+
             targetFormats(TargetFormat.Deb, TargetFormat.Exe)
             packageName = rootProject.name
             description = "Tournament planner for HEMA tournaments of the club 'Fior della Spada'"
