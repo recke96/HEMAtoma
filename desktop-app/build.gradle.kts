@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.kotlin.compose)
-    id("dev.hydraulic.conveyor") version "1.5"
+    alias(libs.plugins.conveyor)
 }
 
 version = System.getenv("RELEASE_VERSION")?.trimStart('v') ?: "0.1.5"
