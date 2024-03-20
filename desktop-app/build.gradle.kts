@@ -1,12 +1,14 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
+
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.kotlin.compose)
+    id("dev.hydraulic.conveyor") version "1.5"
 }
 
-version = System.getenv("RELEASE_VERSION")?.trimStart('v') ?: "0.0.0"
+version = System.getenv("RELEASE_VERSION")?.trimStart('v') ?: "0.1.5"
 
 kotlin {
     jvmToolchain(21)
@@ -15,9 +17,8 @@ kotlin {
 dependencies {
     implementation(project(":domain"))
 
-    implementation(compose.desktop.currentOs) {
-        exclude(compose.material)
-    }
+    "linuxAmd64"(compose.desktop.linux_x64)
+    "windowsAmd64"(compose.desktop.windows_x64)
     implementation(compose.material3)
     implementation(compose.materialIconsExtended)
     implementation(libs.filepicker)
@@ -39,13 +40,9 @@ dependencies {
     detektPlugins(libs.detekt.arrow)
 }
 
-tasks.withType<Jar>().configureEach {
-    manifest {
-        attributes(
-            "Name" to "info/marozzo/hematoma/",
-            "Implementation-Title" to "info.marozzo.hematoma",
-            "Implementation-Version" to version,
-        )
+configurations.all {
+    attributes {
+        attribute(Attribute.of("ui", String::class.java), "awt")
     }
 }
 
@@ -55,7 +52,7 @@ compose.desktop {
 
         nativeDistributions {
 
-            modules("jdk.unsupported")
+            modules("jdk.unsupported", "sun.misc")
 
             targetFormats(TargetFormat.Deb, TargetFormat.Exe)
             packageName = rootProject.name

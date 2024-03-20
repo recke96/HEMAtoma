@@ -35,7 +35,7 @@ import java.awt.Dimension
 private const val FOREGROUND = 10f
 private val logger = FluentLogger.forEnclosingClass()!!
 
-val version = object {}::class.java.`package`.implementationVersion!!
+val version = System.getProperty("app.version") ?: "dev"
 
 fun main(args: Array<String>) = SuspendApp {
     logger.atInfo().log("Start HEMAtoma %s", version)
