@@ -18,8 +18,11 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.loadSvgPainter
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.awaitApplication
@@ -31,6 +34,9 @@ import info.marozzo.hematoma.contract.EventState
 import info.marozzo.hematoma.contract.Save
 import info.marozzo.hematoma.contract.Screen
 import java.awt.Dimension
+import java.nio.file.Paths
+import kotlin.io.path.exists
+import kotlin.io.path.inputStream
 
 private const val FOREGROUND = 10f
 private val logger = FluentLogger.forEnclosingClass()!!
@@ -42,12 +48,13 @@ fun main(args: Array<String>) = SuspendApp {
     awaitApplication {
         val coroutineScope = rememberCoroutineScope()
         val snackbar = remember { SnackbarHostState() }
+        val icon = rememberAppIcon()
         val vm = remember(coroutineScope) { EventViewModel(coroutineScope, snackbar) }
         val state by vm.observeStates().collectAsState()
 
         CompositionLocalProvider(LocalAccept provides vm::trySend) {
 
-            Window(onCloseRequest = this::exitApplication, title = "HEMAtoma", onPreviewKeyEvent = {
+            Window(onCloseRequest = this::exitApplication, title = "HEMAtoma", icon = icon,  onPreviewKeyEvent = {
                 if (it.isCtrlPressed && it.key == Key.S && it.type == KeyEventType.KeyDown) {
                     vm.trySend(Save)
                     true
@@ -95,4 +102,12 @@ fun App(state: EventState) = MaterialTheme {
     }
 }
 
+@Composable
+fun rememberAppIcon(density: Density = LocalDensity.current): Painter? = remember {
+    System.getProperty("app.dir")
+        ?.let { Paths.get(it, "icon.svg") }
+        ?.takeIf { it.exists() }
+        ?.inputStream()
+        ?.use { loadSvgPainter(it, density) }
+}
 
