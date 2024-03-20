@@ -1,6 +1,3 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-
-
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.ksp)
@@ -49,22 +46,6 @@ configurations.all {
 compose.desktop {
     application {
         mainClass = "info.marozzo.hematoma.MainKt"
-
-        nativeDistributions {
-
-            modules("jdk.unsupported", "sun.misc")
-
-            targetFormats(TargetFormat.Deb, TargetFormat.Exe)
-            packageName = rootProject.name
-            description = "Tournament planner for HEMA tournaments of the club 'Fior della Spada'"
-            copyright = "© 2024 Jakob Ecker. All rights reserved."
-            licenseFile = rootProject.file("LICENCE")
-
-            windows {
-                console = false
-                upgradeUuid = "31E152a4-C1A7-4465-9891-5CC18E54851B"
-            }
-        }
     }
 }
 
