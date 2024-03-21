@@ -44,7 +44,7 @@ jobs:
         env:
           RELEASE_VERSION: ${{ steps.release.outputs.tag_name }}
       - name: Package
-        uses: hydraulic-software/conveyor/actions/build@v12.0
+        uses: hydraulic-software/conveyor/actions/build@v12.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_VERSION: ${{ steps.release.outputs.tag_name }}
