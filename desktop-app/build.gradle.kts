@@ -1,12 +1,11 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.conveyor)
 }
 
-version = System.getenv("RELEASE_VERSION")?.trimStart('v') ?: "0.0.0"
+version = System.getenv("RELEASE_VERSION")?.trimStart('v') ?: "0.1.5"
 
 kotlin {
     jvmToolchain(21)
@@ -15,9 +14,8 @@ kotlin {
 dependencies {
     implementation(project(":domain"))
 
-    implementation(compose.desktop.currentOs) {
-        exclude(compose.material)
-    }
+    "linuxAmd64"(compose.desktop.linux_x64)
+    "windowsAmd64"(compose.desktop.windows_x64)
     implementation(compose.material3)
     implementation(compose.materialIconsExtended)
     implementation(libs.filepicker)
@@ -39,35 +37,15 @@ dependencies {
     detektPlugins(libs.detekt.arrow)
 }
 
-tasks.withType<Jar>().configureEach {
-    manifest {
-        attributes(
-            "Name" to "info/marozzo/hematoma/",
-            "Implementation-Title" to "info.marozzo.hematoma",
-            "Implementation-Version" to version,
-        )
+configurations.all {
+    attributes {
+        attribute(Attribute.of("ui", String::class.java), "awt")
     }
 }
 
 compose.desktop {
     application {
         mainClass = "info.marozzo.hematoma.MainKt"
-
-        nativeDistributions {
-
-            modules("jdk.unsupported")
-
-            targetFormats(TargetFormat.Deb, TargetFormat.Exe)
-            packageName = rootProject.name
-            description = "Tournament planner for HEMA tournaments of the club 'Fior della Spada'"
-            copyright = "© 2024 Jakob Ecker. All rights reserved."
-            licenseFile = rootProject.file("LICENCE")
-
-            windows {
-                console = false
-                upgradeUuid = "31E152a4-C1A7-4465-9891-5CC18E54851B"
-            }
-        }
     }
 }
 
