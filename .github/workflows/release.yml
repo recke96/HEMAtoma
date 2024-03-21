@@ -48,6 +48,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          conveyor_version: 13.1
           agree_to_license: 1
           command: make copied-site
           signing_key: ${{ secrets.SIGNING_KEY }}
