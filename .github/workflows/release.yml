@@ -47,6 +47,7 @@ jobs:
         uses: hydraulic-software/conveyor/actions/build@v12.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_VERSION: ${{ steps.release.outputs.tag_name }}
         with:
           conveyor_version: 13.1
           agree_to_license: 1
