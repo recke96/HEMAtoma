@@ -14,7 +14,7 @@ on:
           - major
 
 jobs:
-  version:
+  release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -42,9 +42,9 @@ jobs:
       - name: Build
         run: ./gradlew jar --no-daemon
         env:
-          RELEASE_VERSION: ${{ needs.version.outputs.tag_name }}
+          RELEASE_VERSION: ${{ steps.release.outputs.tag_name }}
       - name: Package
-        uses: hydraulic-software/conveyor/actions/build@v12
+        uses: hydraulic-software/conveyor/actions/build@v12.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
