@@ -64,7 +64,23 @@ jobs:
           done
       - name: Upload Download Page
         uses: actions/upload-pages-artifact@v3
-      - name: Deploy Pages
+
+  deploy:
+    needs: release
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    # Specify runner + deployment step
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v4
 
 
