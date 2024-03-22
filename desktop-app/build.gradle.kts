@@ -5,8 +5,6 @@ plugins {
     alias(libs.plugins.conveyor)
 }
 
-version = System.getenv("RELEASE_VERSION")?.trimStart('v') ?: "dev"
-
 kotlin {
     jvmToolchain(21)
 }

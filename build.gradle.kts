@@ -11,6 +11,8 @@ plugins {
     alias(libs.plugins.detekt)
 }
 
+version = System.getenv("RELEASE_VERSION") ?: "0.0.0"
+
 val mergeSarif by tasks.registering(ReportMergeTask::class) {
     output = layout.buildDirectory.file("reports/detekt/merged.sarif")
 }

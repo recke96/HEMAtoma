@@ -21,15 +21,12 @@ jobs:
       pull-requests: read
     steps:
       - uses: actions/checkout@v4
-      - id: release
-        name: Create Release
-        uses: rymndhng/release-on-push-action@v0.28.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Get next version
+        id: version
+        uses: reecetech/version-increment@2023.10.1
         with:
-          release_name: HEMAtoma <RELEASE_VERSION>
-          bump_version_scheme: ${{ inputs.bump }}
-          use_github_release_notes: true
+          scheme: semver
+          increment: ${{ inputs.bump }}
       - name: Setup JDK 21
         uses: actions/setup-java@v4
         with:
@@ -42,12 +39,12 @@ jobs:
       - name: Build
         run: ./gradlew jar --no-daemon
         env:
-          RELEASE_VERSION: ${{ steps.release.outputs.tag_name }}
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
       - name: Package
         uses: hydraulic-software/conveyor/actions/build@v13.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_VERSION: ${{ steps.release.outputs.tag_name }}
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
         with:
           conveyor_version: 13.1
           agree_to_license: 1
