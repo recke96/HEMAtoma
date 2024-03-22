@@ -53,4 +53,22 @@ jobs:
           agree_to_license: 1
           command: make copied-site
           signing_key: ${{ secrets.SIGNING_KEY }}
+      - name: Configure Pages
+        uses: actions/configure-pages@v4
+      - name: Prepare Download Site
+        run: |
+          mkdir _site
+          mv output/download.html _site/index.html
+          mv output/icon.svg _site/icon.svg
+      - name: Fix Permissions
+        run: |
+          chmod -v -R +rX "_site/" | while read line; do
+            echo "::warning title=Invalid file permissions automatically fixed::$line"
+          done
+      - name: Upload Download Page
+        uses: actions/upload-pages-artifact@v3
+      - name: Deploy Pages
+        uses: actions/deploy-pages@v4
+
+
 
