@@ -50,7 +50,7 @@ jobs:
           agree_to_license: 1
           command: make copied-site
           signing_key: ${{ secrets.SIGNING_KEY }}
-      - run: ls -la
+      - run: ls -la output
       - name: Configure Pages
         uses: actions/configure-pages@v4
       - name: Prepare Download Site
