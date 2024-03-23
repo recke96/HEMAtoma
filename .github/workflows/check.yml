@@ -31,6 +31,7 @@ jobs:
       - name: Check
         run: ./gradlew check --continue
       - name: Summarize Detekt
+        if: success() || failure()s
         run: |
           find \
           domain/build/reports/detekt/ \
