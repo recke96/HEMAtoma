@@ -97,7 +97,6 @@ fun App(state: EventState) = MaterialTheme {
                     Screen.Scoring -> ScoringScreen(state, modifier = Modifier.fillMaxSize())
                 }
             }
-
         }
     }
 }

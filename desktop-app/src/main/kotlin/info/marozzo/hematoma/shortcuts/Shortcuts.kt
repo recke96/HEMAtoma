@@ -32,7 +32,8 @@ enum class ModifierKey(private val isModifier: (KeyEvent) -> Boolean) : KeyEvent
     override fun plus(other: KeyEventMatcher): KeyEventMatcher = CombinedMatcher(persistentListOf(this, other))
 }
 
-data class KeyMatch(private val key: Key) : KeyEventMatcher {
+@JvmInline
+value class KeyMatch(private val key: Key) : KeyEventMatcher {
     override fun matches(evt: KeyEvent): Boolean = evt.key == key
     override fun plus(other: KeyEventMatcher): KeyEventMatcher = CombinedMatcher(persistentListOf(this, other))
 }
@@ -40,9 +41,11 @@ data class KeyMatch(private val key: Key) : KeyEventMatcher {
 operator fun Key.plus(matcher: KeyEventMatcher): KeyEventMatcher =
     CombinedMatcher(persistentListOf(KeyMatch(this), matcher))
 
-operator fun KeyEventMatcher.plus(key: Key): KeyEventMatcher = key + this
+operator fun KeyEventMatcher.plus(key: Key): KeyEventMatcher =
+    CombinedMatcher(persistentListOf(this, KeyMatch(key)))
 
-class CombinedMatcher(private val matchers: PersistentList<KeyEventMatcher>) : KeyEventMatcher {
+@JvmInline
+value class CombinedMatcher(private val matchers: PersistentList<KeyEventMatcher>) : KeyEventMatcher {
     override fun matches(evt: KeyEvent): Boolean = matchers.all { it.matches(evt) }
     override fun plus(other: KeyEventMatcher): KeyEventMatcher = CombinedMatcher(matchers.add(other))
 }
