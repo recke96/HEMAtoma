@@ -30,6 +30,13 @@ jobs:
           dependency-graph: generate-and-submit
       - name: Check
         run: ./gradlew check --continue
+      - name: Summarize Detekt
+        run: |
+          find \
+          domain/build/reports/detekt/ \
+          desktop-app/build/reports/detekt/ \
+          -name "*.md" \
+          -exec cat {} >> $GITHUB_STEP_SUMMARY;
       - name: Upload SARIF
         uses: github/codeql-action/upload-sarif@v3
         if: success() || failure()
