@@ -25,13 +25,13 @@ import info.marozzo.hematoma.contract.SaveAs
 @Composable
 fun Header(state: EventState, modifier: Modifier = Modifier) {
     Row(modifier.heightIn(24.dp, 32.dp).fillMaxWidth()) {
-        FileMenu(state.event.name.toString(), state.path != null)
+        FileMenu(state.path != null)
     }
 }
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-private fun FileMenu(name: String, hasPath: Boolean, modifier: Modifier = Modifier) {
+private fun FileMenu(hasPath: Boolean, modifier: Modifier = Modifier) {
     val (expanded, setExpanded) = remember { mutableStateOf(false) }
     val dismiss = { setExpanded(false) }
     ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = setExpanded, modifier) {
