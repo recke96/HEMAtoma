@@ -19,7 +19,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.input.key.*
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.loadSvgPainter
 import androidx.compose.ui.unit.Density
@@ -31,8 +30,9 @@ import arrow.continuations.SuspendApp
 import com.google.common.flogger.FluentLogger
 import info.marozzo.hematoma.components.*
 import info.marozzo.hematoma.contract.EventState
-import info.marozzo.hematoma.contract.Save
 import info.marozzo.hematoma.contract.Screen
+import info.marozzo.hematoma.shortcuts.handler
+import info.marozzo.hematoma.shortcuts.shortcuts
 import java.awt.Dimension
 import java.nio.file.Paths
 import kotlin.io.path.exists
@@ -55,14 +55,12 @@ fun main(args: Array<String>) = SuspendApp {
 
         CompositionLocalProvider(LocalAccept provides vm::trySend) {
 
-            Window(onCloseRequest = this::exitApplication, title = "HEMAtoma", icon = icon, onPreviewKeyEvent = {
-                if (it.isCtrlPressed && it.key == Key.S && it.type == KeyEventType.KeyDown) {
-                    vm.trySend(Save)
-                    true
-                } else {
-                    false
-                }
-            }) {
+            Window(
+                title = "HEMAtoma",
+                icon = icon,
+                onPreviewKeyEvent = shortcuts.handler(vm::trySend),
+                onCloseRequest = this::exitApplication,
+            ) {
                 with(LocalDensity.current) {
                     window.minimumSize = Dimension(1240.dp.roundToPx(), 200.dp.roundToPx())
                 }
