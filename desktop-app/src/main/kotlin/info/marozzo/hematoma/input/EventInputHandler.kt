@@ -23,6 +23,7 @@ typealias AcceptFun = (Input) -> Unit
 class EventInputHandler : InputHandler<Input, Event, EventState> {
     override suspend fun EventInputHandlerScope.handleInput(input: Input) = when (input) {
         is Goto -> GotoHandler.handle(input)
+        is Open -> OpenFileHandler.handle()
         is OpenFile -> OpenFileHandler.handle(input)
         is OpenedFile -> OpenFileHandler.handle(input)
         is SaveAs -> SaveAsHandler.handle(input)

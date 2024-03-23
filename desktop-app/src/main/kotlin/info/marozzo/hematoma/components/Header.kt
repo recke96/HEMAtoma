@@ -17,10 +17,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
-import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import info.marozzo.hematoma.LocalAccept
 import info.marozzo.hematoma.contract.EventState
-import info.marozzo.hematoma.contract.OpenFile
+import info.marozzo.hematoma.contract.Open
 import info.marozzo.hematoma.contract.Save
 import info.marozzo.hematoma.contract.SaveAs
 import java.nio.file.Path
@@ -56,20 +55,11 @@ private fun FileMenu(name: String, hasPath: Boolean, modifier: Modifier = Modifi
 @Composable
 private fun OpenMenuItem(modifier: Modifier = Modifier, onDone: () -> Unit = {}) {
     val accept = LocalAccept.current
-    val userDir = remember { System.getProperty("user.home") }
-    val (showFilePicker, setShowFilePicker) = remember { mutableStateOf(false) }
-
-    DropdownMenuItem(text = { Text("Open") }, onClick = { setShowFilePicker(true) }, modifier = modifier)
-    FilePicker(
-        showFilePicker,
-        initialDirectory = userDir,
-        fileExtensions = listOf("json"),
-        title = "Open Event-File"
-    ) { file ->
-        setShowFilePicker(false)
-        file?.also { accept(OpenFile(Path.of(it.path))) }
-        onDone()
-    }
+    DropdownMenuItem(
+        text = { Text("Open") },
+        onClick = { accept(Open); onDone() },
+        modifier = modifier
+    )
 }
 
 @Composable
