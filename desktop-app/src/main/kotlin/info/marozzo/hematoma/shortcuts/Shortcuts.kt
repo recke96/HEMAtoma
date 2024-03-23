@@ -6,7 +6,15 @@
 
 package info.marozzo.hematoma.shortcuts
 
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.*
+import androidx.compose.ui.unit.dp
 import info.marozzo.hematoma.contract.Input
 import info.marozzo.hematoma.contract.Open
 import info.marozzo.hematoma.contract.Save
@@ -68,3 +76,12 @@ fun ImmutableList<KeyEventShortcut>.handler(accept: AcceptFun): (KeyEvent) -> Bo
     }
 }
 
+@Composable
+fun ShortcutLabel(text: String, modifier: Modifier = Modifier) =
+    Surface(modifier, shape = RoundedCornerShape(8.dp), elevation = 2.dp) {
+        Text(
+            text = text,
+            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+            style = MaterialTheme.typography.caption
+        )
+    }

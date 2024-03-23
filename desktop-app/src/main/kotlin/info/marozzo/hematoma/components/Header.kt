@@ -21,6 +21,7 @@ import info.marozzo.hematoma.contract.EventState
 import info.marozzo.hematoma.contract.Open
 import info.marozzo.hematoma.contract.Save
 import info.marozzo.hematoma.contract.SaveAs
+import info.marozzo.hematoma.shortcuts.ShortcutLabel
 
 @Composable
 fun Header(state: EventState, modifier: Modifier = Modifier) {
@@ -32,6 +33,7 @@ fun Header(state: EventState, modifier: Modifier = Modifier) {
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun FileMenu(hasPath: Boolean, modifier: Modifier = Modifier) {
+    val accept = LocalAccept.current
     val (expanded, setExpanded) = remember { mutableStateOf(false) }
     val dismiss = { setExpanded(false) }
     ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = setExpanded, modifier) {
@@ -43,40 +45,25 @@ private fun FileMenu(hasPath: Boolean, modifier: Modifier = Modifier) {
             Text("File")
         }
         DropdownMenu(expanded, onDismissRequest = dismiss, modifier = Modifier.exposedDropdownSize(false)) {
-            OpenMenuItem(onDone = dismiss)
-            SaveAsMenuItem(onDone = dismiss)
-            SaveMenuItem(hasPath, onDone = dismiss)
+            DropdownMenuItem(
+                text = { Text("Open") },
+                trailingIcon = { ShortcutLabel("Ctrl + O") },
+                onClick = { dismiss(); accept(Open) },
+                modifier = modifier
+            )
+            DropdownMenuItem(
+                text = { Text("Save As") },
+                trailingIcon = { ShortcutLabel("Ctrl + Alt + S") },
+                onClick = { dismiss(); accept(SaveAs) },
+                modifier = modifier
+            )
+            DropdownMenuItem(
+                text = { Text("Save") },
+                trailingIcon = { ShortcutLabel("Ctrl + S") },
+                onClick = { dismiss(); accept(Save) },
+                enabled = hasPath,
+                modifier = modifier
+            )
         }
     }
-}
-
-@Composable
-private fun OpenMenuItem(modifier: Modifier = Modifier, onDone: () -> Unit = {}) {
-    val accept = LocalAccept.current
-    DropdownMenuItem(
-        text = { Text("Open") },
-        onClick = { accept(Open); onDone() },
-        modifier = modifier
-    )
-}
-
-@Composable
-private fun SaveAsMenuItem(modifier: Modifier = Modifier, onDone: () -> Unit = {}) {
-    val accept = LocalAccept.current
-    DropdownMenuItem(
-        text = { Text("Save As") },
-        onClick = { accept(SaveAs); onDone() },
-        modifier = modifier
-    )
-}
-
-@Composable
-private fun SaveMenuItem(hasPath: Boolean, modifier: Modifier = Modifier, onDone: () -> Unit = {}) {
-    val accept = LocalAccept.current
-    DropdownMenuItem(
-        text = { Text("Save") },
-        onClick = { accept(Save); onDone() },
-        enabled = hasPath,
-        modifier = modifier
-    )
 }
