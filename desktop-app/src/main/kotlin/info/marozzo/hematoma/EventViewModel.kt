@@ -25,12 +25,16 @@ import kotlinx.coroutines.CoroutineScope
 
 typealias EventEventHandlerScope = EventHandlerScope<Input, Event, EventState>
 
-class EventViewModel(scope: CoroutineScope, snackbar: SnackbarHostState) : BasicViewModel<Input, Event, EventState>(
+class EventViewModel(
+    scope: CoroutineScope,
+    snackbar: SnackbarHostState,
+    filePicker: FilePickerHostState
+) : BasicViewModel<Input, Event, EventState>(
     config = BallastViewModelConfiguration.Builder().apply {
         interceptors += FluentLoggingInterceptor<Input, Event, EventState>()
         inputStrategy = FifoInputStrategy()
     }.withViewModel(EventState(), EventInputHandler(), "HEMAtoma").build(),
-    eventHandler = EventEventHandler(snackbar),
+    eventHandler = EventEventHandler(snackbar, filePicker),
     coroutineScope = scope
 )
 

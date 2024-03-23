@@ -16,25 +16,22 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
-import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import info.marozzo.hematoma.LocalAccept
 import info.marozzo.hematoma.contract.EventState
-import info.marozzo.hematoma.contract.OpenFile
+import info.marozzo.hematoma.contract.Open
 import info.marozzo.hematoma.contract.Save
 import info.marozzo.hematoma.contract.SaveAs
-import java.nio.file.Path
 
 @Composable
 fun Header(state: EventState, modifier: Modifier = Modifier) {
     Row(modifier.heightIn(24.dp, 32.dp).fillMaxWidth()) {
-        FileMenu(state.event.name.toString(), state.path != null)
+        FileMenu(state.path != null)
     }
 }
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-private fun FileMenu(name: String, hasPath: Boolean, modifier: Modifier = Modifier) {
+private fun FileMenu(hasPath: Boolean, modifier: Modifier = Modifier) {
     val (expanded, setExpanded) = remember { mutableStateOf(false) }
     val dismiss = { setExpanded(false) }
     ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = setExpanded, modifier) {
@@ -47,7 +44,7 @@ private fun FileMenu(name: String, hasPath: Boolean, modifier: Modifier = Modifi
         }
         DropdownMenu(expanded, onDismissRequest = dismiss, modifier = Modifier.exposedDropdownSize(false)) {
             OpenMenuItem(onDone = dismiss)
-            SaveAsMenuItem(name, onDone = dismiss)
+            SaveAsMenuItem(onDone = dismiss)
             SaveMenuItem(hasPath, onDone = dismiss)
         }
     }
@@ -56,34 +53,21 @@ private fun FileMenu(name: String, hasPath: Boolean, modifier: Modifier = Modifi
 @Composable
 private fun OpenMenuItem(modifier: Modifier = Modifier, onDone: () -> Unit = {}) {
     val accept = LocalAccept.current
-    val userDir = remember { System.getProperty("user.home") }
-    val (showFilePicker, setShowFilePicker) = remember { mutableStateOf(false) }
-
-    DropdownMenuItem(text = { Text("Open") }, onClick = { setShowFilePicker(true) }, modifier = modifier)
-    FilePicker(
-        showFilePicker,
-        initialDirectory = userDir,
-        fileExtensions = listOf("json"),
-        title = "Open Event-File"
-    ) { file ->
-        setShowFilePicker(false)
-        file?.also { accept(OpenFile(Path.of(it.path))) }
-        onDone()
-    }
+    DropdownMenuItem(
+        text = { Text("Open") },
+        onClick = { accept(Open); onDone() },
+        modifier = modifier
+    )
 }
 
 @Composable
-private fun SaveAsMenuItem(name: String, modifier: Modifier = Modifier, onDone: () -> Unit = {}) {
+private fun SaveAsMenuItem(modifier: Modifier = Modifier, onDone: () -> Unit = {}) {
     val accept = LocalAccept.current
-    val userDir = remember { System.getProperty("user.home") }
-    val (showFilePicker, setShowFilePicker) = remember { mutableStateOf(false) }
-
-    DropdownMenuItem(text = { Text("Save As") }, onClick = { setShowFilePicker(true) }, modifier = modifier)
-    DirectoryPicker(showFilePicker, initialDirectory = userDir, title = "Save Event in") { file ->
-        setShowFilePicker(false)
-        file?.also { accept(SaveAs(Path.of(it, "$name.json"))) }
-        onDone()
-    }
+    DropdownMenuItem(
+        text = { Text("Save As") },
+        onClick = { accept(SaveAs); onDone() },
+        modifier = modifier
+    )
 }
 
 @Composable

@@ -48,13 +48,14 @@ fun main(args: Array<String>) = SuspendApp {
     awaitApplication {
         val coroutineScope = rememberCoroutineScope()
         val snackbar = remember { SnackbarHostState() }
+        val filePicker = remember { FilePickerHostState() }
         val icon = rememberAppIcon()
-        val vm = remember(coroutineScope) { EventViewModel(coroutineScope, snackbar) }
+        val vm = remember(coroutineScope) { EventViewModel(coroutineScope, snackbar, filePicker) }
         val state by vm.observeStates().collectAsState()
 
         CompositionLocalProvider(LocalAccept provides vm::trySend) {
 
-            Window(onCloseRequest = this::exitApplication, title = "HEMAtoma", icon = icon,  onPreviewKeyEvent = {
+            Window(onCloseRequest = this::exitApplication, title = "HEMAtoma", icon = icon, onPreviewKeyEvent = {
                 if (it.isCtrlPressed && it.key == Key.S && it.type == KeyEventType.KeyDown) {
                     vm.trySend(Save)
                     true
@@ -71,6 +72,7 @@ fun main(args: Array<String>) = SuspendApp {
                         hostState = snackbar,
                         modifier = Modifier.align(Alignment.BottomEnd).zIndex(FOREGROUND)
                     )
+                    FilePickerHost(filePicker)
                     App(state)
                 }
             }
