@@ -29,8 +29,8 @@ data object SaveAsHandler {
                 extensions = listOf("json")
             ) {
                 when (it) {
-                    is PickerResult.File -> SaveAt(it.file.resolve("$name.json"))
-                    is PickerResult.Files ->  error("Unexpected result for single file request")
+                    is PickerResult.File -> SaveAt(it.file.resolve("$name.json"), overwrite = true)
+                    is PickerResult.Files -> error("Unexpected result for single file request")
                     is PickerResult.Dismissed -> null
                 }
             }
@@ -41,7 +41,11 @@ data object SaveAsHandler {
     suspend fun handle(input: SaveAt) {
         val (_, event) = getCurrentState()
         sideJob("write-file-${input.path}") {
-            Json.writeToFile(event, input.path, StandardOpenOption.CREATE_NEW).fold(
+            Json.writeToFile(
+                event,
+                input.path,
+                if (input.overwrite) StandardOpenOption.TRUNCATE_EXISTING else StandardOpenOption.CREATE_NEW
+            ).fold(
                 {
                     flogger.atInfo().log("Error saving to file %s: %s", input.path, it)
                     postEvent(ThrowableEvent(it))

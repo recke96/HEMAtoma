@@ -25,7 +25,7 @@ data class OpenFile(val path: Path) : Input
 data class OpenedFile(val path: Path, val event: Event) : Input
 data object Save : Input
 data object SaveAs : Input
-data class SaveAt(val path: Path) : Input
+data class SaveAt(val path: Path, val overwrite: Boolean) : Input
 data class SavedAs(val path: Path) : Input
 
 // Event management
