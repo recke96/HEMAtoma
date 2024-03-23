@@ -27,6 +27,15 @@ class EventEventHandler(
             else Unit
         }
 
+        is RequestSaveLocation -> {
+            val result = event.toInput(
+                filePicker.pickDirectory(event.title, event.initialDirectory)
+            )
+
+            if (result != null) postInput(result)
+            else Unit
+        }
+
         is ErrorEvent -> snackbar.showSnackbar(event.msg, withDismissAction = true).discard()
         is ThrowableEvent -> snackbar.showSnackbar(
             event.throwable.message ?: "An exception occurred",

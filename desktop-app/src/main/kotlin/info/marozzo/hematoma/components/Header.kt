@@ -16,13 +16,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 import info.marozzo.hematoma.LocalAccept
 import info.marozzo.hematoma.contract.EventState
 import info.marozzo.hematoma.contract.Open
 import info.marozzo.hematoma.contract.Save
 import info.marozzo.hematoma.contract.SaveAs
-import java.nio.file.Path
 
 @Composable
 fun Header(state: EventState, modifier: Modifier = Modifier) {
@@ -46,7 +44,7 @@ private fun FileMenu(name: String, hasPath: Boolean, modifier: Modifier = Modifi
         }
         DropdownMenu(expanded, onDismissRequest = dismiss, modifier = Modifier.exposedDropdownSize(false)) {
             OpenMenuItem(onDone = dismiss)
-            SaveAsMenuItem(name, onDone = dismiss)
+            SaveAsMenuItem(onDone = dismiss)
             SaveMenuItem(hasPath, onDone = dismiss)
         }
     }
@@ -63,17 +61,13 @@ private fun OpenMenuItem(modifier: Modifier = Modifier, onDone: () -> Unit = {})
 }
 
 @Composable
-private fun SaveAsMenuItem(name: String, modifier: Modifier = Modifier, onDone: () -> Unit = {}) {
+private fun SaveAsMenuItem(modifier: Modifier = Modifier, onDone: () -> Unit = {}) {
     val accept = LocalAccept.current
-    val userDir = remember { System.getProperty("user.home") }
-    val (showFilePicker, setShowFilePicker) = remember { mutableStateOf(false) }
-
-    DropdownMenuItem(text = { Text("Save As") }, onClick = { setShowFilePicker(true) }, modifier = modifier)
-    DirectoryPicker(showFilePicker, initialDirectory = userDir, title = "Save Event in") { file ->
-        setShowFilePicker(false)
-        file?.also { accept(SaveAs(Path.of(it, "$name.json"))) }
-        onDone()
-    }
+    DropdownMenuItem(
+        text = { Text("Save As") },
+        onClick = { accept(SaveAs); onDone() },
+        modifier = modifier
+    )
 }
 
 @Composable

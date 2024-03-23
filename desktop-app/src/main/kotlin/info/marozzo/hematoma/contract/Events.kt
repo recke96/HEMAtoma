@@ -20,3 +20,10 @@ data class RequestFileEvent(
     val extensions: List<String> = emptyList(),
     val toInput: (PickerResult) -> Input?
 ) : Event
+
+data class RequestSaveLocation(
+    val title: String?,
+    val initialDirectory: Path? = null,
+    val extensions: List<String> = emptyList(),
+    val toInput: (PickerResult) -> Input?
+) : Event
