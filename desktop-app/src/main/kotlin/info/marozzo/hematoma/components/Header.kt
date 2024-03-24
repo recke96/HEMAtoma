@@ -49,20 +49,17 @@ private fun FileMenu(hasPath: Boolean, modifier: Modifier = Modifier) {
                 text = { Text("Open") },
                 trailingIcon = { ShortcutLabel("Ctrl + O") },
                 onClick = { dismiss(); accept(Open) },
-                modifier = modifier
             )
             DropdownMenuItem(
                 text = { Text("Save As") },
                 trailingIcon = { ShortcutLabel("Ctrl + Alt + S") },
                 onClick = { dismiss(); accept(SaveAs) },
-                modifier = modifier
             )
             DropdownMenuItem(
                 text = { Text("Save") },
                 trailingIcon = { ShortcutLabel("Ctrl + S") },
                 onClick = { dismiss(); accept(Save) },
                 enabled = hasPath,
-                modifier = modifier
             )
         }
     }
