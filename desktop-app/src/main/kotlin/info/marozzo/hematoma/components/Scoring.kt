@@ -46,7 +46,7 @@ import kotlinx.collections.immutable.ImmutableMap
 
 @Composable
 fun ScoringScreen(state: EventState, modifier: Modifier = Modifier) {
-    val (tab, setTab) = remember { mutableStateOf(0) }
+    val (tab, setTab) = remember { mutableIntStateOf(0) }
 
     Column(modifier) {
         TabRow(selectedTabIndex = tab) {

@@ -70,4 +70,6 @@ style:
 
 Compose:
   CompositionLocalAllowlist:
-    allowedCompositionLocals: ["LocalAccept"]
+    allowedCompositionLocals: [ "LocalAccept" ]
+  Material2:
+    active: true
