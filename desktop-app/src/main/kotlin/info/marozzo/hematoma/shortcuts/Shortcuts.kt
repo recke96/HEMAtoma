@@ -78,7 +78,11 @@ fun ImmutableList<KeyEventShortcut>.handler(accept: AcceptFun): (KeyEvent) -> Bo
 
 @Composable
 fun ShortcutLabel(text: String, modifier: Modifier = Modifier) =
-    Surface(modifier = modifier, shape = RoundedCornerShape(8.dp), color = MaterialTheme.colorScheme.secondaryContainer) {
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(8.dp),
+        color = MaterialTheme.colorScheme.secondaryContainer
+    ) {
         Text(
             text = text,
             modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
