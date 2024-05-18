@@ -14,7 +14,7 @@ file-picker = "3.1.0"
 data-table = "0.5.1"
 flogger = "0.8"
 detekt = "1.23.6"
-detekt-compose = "0.4.0"
+detekt-compose = "0.4.1"
 detekt-arrow = "0.4.0"
 conveyor = "1.10"
 
