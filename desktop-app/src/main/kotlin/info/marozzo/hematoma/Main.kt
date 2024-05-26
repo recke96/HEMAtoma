@@ -43,7 +43,7 @@ private val logger = FluentLogger.forEnclosingClass()!!
 
 val version = System.getProperty("app.version") ?: "dev"
 
-fun main(args: Array<String>) = SuspendApp {
+fun main() = SuspendApp {
     logger.atInfo().log("Start HEMAtoma %s", version)
     awaitApplication {
         val coroutineScope = rememberCoroutineScope()
