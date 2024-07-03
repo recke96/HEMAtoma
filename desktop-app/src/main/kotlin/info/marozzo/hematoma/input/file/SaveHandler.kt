@@ -8,35 +8,15 @@ package info.marozzo.hematoma.input.file
 
 import com.copperleaf.ballast.postInput
 import com.google.common.flogger.FluentLogger
-import info.marozzo.hematoma.PickerResult
 import info.marozzo.hematoma.contract.*
 import info.marozzo.hematoma.input.EventInputHandlerScope
 import info.marozzo.hematoma.utils.writeToFile
 import kotlinx.serialization.json.Json
-import java.nio.file.Path
 import java.nio.file.StandardOpenOption
 
 data object SaveHandler {
 
     private val flogger = FluentLogger.forEnclosingClass()!!
-
-    context(EventInputHandlerScope)
-    suspend fun handleSaveAs() {
-        val name = getCurrentState().event.name
-        postEvent(
-            RequestSaveLocation(
-                title = "Save As",
-                initialDirectory = System.getProperty("user.home")?.let(Path::of),
-                extensions = listOf("json")
-            ) {
-                when (it) {
-                    is PickerResult.File -> SaveAt(it.file.resolve("$name.json"), overwrite = false)
-                    is PickerResult.Files -> error("Unexpected result for single file request")
-                    is PickerResult.Dismissed -> null
-                }
-            }
-        )
-    }
 
     context(EventInputHandlerScope)
     suspend fun handleSave() {
