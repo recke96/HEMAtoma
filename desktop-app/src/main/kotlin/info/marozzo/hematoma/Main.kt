@@ -48,9 +48,8 @@ fun main() = SuspendApp {
     awaitApplication {
         val coroutineScope = rememberCoroutineScope()
         val snackbar = remember { SnackbarHostState() }
-        val filePicker = remember { FilePickerHostState() }
         val icon = rememberAppIcon()
-        val vm = remember(coroutineScope) { EventViewModel(coroutineScope, snackbar, filePicker) }
+        val vm = remember(coroutineScope) { EventViewModel(coroutineScope, snackbar) }
         val state by vm.observeStates().collectAsState()
 
         CompositionLocalProvider(LocalAccept provides vm::trySend) {
@@ -70,7 +69,6 @@ fun main() = SuspendApp {
                         hostState = snackbar,
                         modifier = Modifier.align(Alignment.BottomEnd).zIndex(FOREGROUND)
                     )
-                    FilePickerHost(filePicker)
                     App(state)
                 }
             }

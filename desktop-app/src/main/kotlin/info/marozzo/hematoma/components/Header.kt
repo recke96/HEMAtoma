@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import info.marozzo.hematoma.LocalAccept
 import info.marozzo.hematoma.contract.EventState
-import info.marozzo.hematoma.contract.Open
+import info.marozzo.hematoma.contract.OpenFile
 import info.marozzo.hematoma.contract.Save
 import info.marozzo.hematoma.contract.SaveAs
 import info.marozzo.hematoma.shortcuts.ShortcutLabel
@@ -45,10 +45,11 @@ private fun FileMenu(hasPath: Boolean, modifier: Modifier = Modifier) {
             Text("File")
         }
         DropdownMenu(expanded, onDismissRequest = dismiss, modifier = Modifier.exposedDropdownSize(false)) {
+
             DropdownMenuItem(
                 text = { Text("Open") },
                 trailingIcon = { ShortcutLabel("Ctrl + O") },
-                onClick = { dismiss(); accept(Open) },
+                onClick = { dismiss(); accept(OpenFile) },
             )
             DropdownMenuItem(
                 text = { Text("Save As") },

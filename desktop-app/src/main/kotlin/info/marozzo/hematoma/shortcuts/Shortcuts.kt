@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.unit.dp
 import info.marozzo.hematoma.contract.Input
-import info.marozzo.hematoma.contract.Open
+import info.marozzo.hematoma.contract.OpenFile
 import info.marozzo.hematoma.contract.Save
 import info.marozzo.hematoma.contract.SaveAs
 import info.marozzo.hematoma.input.AcceptFun
@@ -62,8 +62,8 @@ data class KeyEventShortcut(val matcher: KeyEventMatcher, val inputFactory: () -
 
 val shortcuts = persistentListOf(
     KeyEventShortcut(ModifierKey.Ctrl + Key.S) { Save },
-    KeyEventShortcut(ModifierKey.Ctrl + ModifierKey.Alt + Key.S) { SaveAs },
-    KeyEventShortcut(ModifierKey.Ctrl + Key.O) { Open }
+    KeyEventShortcut(ModifierKey.Ctrl + ModifierKey.Shift + Key.S){ SaveAs },
+    KeyEventShortcut(ModifierKey.Ctrl + Key.O) { OpenFile }
 )
 
 fun ImmutableList<KeyEventShortcut>.handler(accept: AcceptFun): (KeyEvent) -> Boolean = { evt ->

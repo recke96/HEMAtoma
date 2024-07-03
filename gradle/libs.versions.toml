@@ -10,7 +10,7 @@ kotlinx-immutable-collections = "0.3.7"
 arrow = "1.2.4"
 arrow-suspendapp = "0.4.0"
 ballast = "4.2.1"
-file-picker = "3.1.0"
+file-kit = "0.6.1"
 data-table = "0.5.1"
 flogger = "0.8"
 detekt = "1.23.6"
@@ -31,7 +31,7 @@ arrow-optics-ksp = { group = "io.arrow-kt", name = "arrow-optics-ksp-plugin", ve
 arrow-collectors = { group = "io.arrow-kt", name = "arrow-collectors", version.ref = "arrow" }
 arrow-suspendapp = { group = "io.arrow-kt", name = "suspendapp", version.ref = "arrow-suspendapp" }
 ballast-core = { group = "io.github.copper-leaf", name = "ballast-core", version.ref = "ballast" }
-filepicker = { group = "com.darkrockstudios", name = "mpfilepicker", version.ref = "file-picker" }
+filekit = { group = "io.github.vinceglb", name = "filekit-compose", version.ref = "file-kit" }
 datatable = { group = "com.seanproctor", name = "data-table-material3", version.ref = "data-table" }
 flogger = { group = "com.google.flogger", name = "flogger", version.ref = "flogger" }
 flogger-backend = { group = "com.google.flogger", name = "flogger-system-backend", version.ref = "flogger" }

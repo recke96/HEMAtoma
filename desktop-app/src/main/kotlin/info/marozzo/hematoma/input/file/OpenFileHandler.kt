@@ -8,13 +8,14 @@ package info.marozzo.hematoma.input.file
 
 import arrow.optics.copy
 import com.google.common.flogger.FluentLogger
-import info.marozzo.hematoma.PickerResult
 import info.marozzo.hematoma.contract.*
 import info.marozzo.hematoma.domain.Event
 import info.marozzo.hematoma.input.EventInputHandlerScope
 import info.marozzo.hematoma.utils.readFromFile
+import io.github.vinceglb.filekit.core.FileKit
+import io.github.vinceglb.filekit.core.PickerType
+import io.github.vinceglb.filekit.core.pickFile
 import kotlinx.serialization.json.Json
-import java.nio.file.Path
 
 data object OpenFileHandler {
 
@@ -22,30 +23,18 @@ data object OpenFileHandler {
 
     context(EventInputHandlerScope)
     suspend fun handle() {
-        postEvent(
-            RequestFileEvent(
+        sideJob("open") {
+            val file = FileKit.pickFile(
                 title = "Open Event",
-                initialDirectory = System.getProperty("user.home")?.let(Path::of),
-                extensions = listOf("json")
-            ) {
-                when (it) {
-                    is PickerResult.File -> OpenFile(it.file)
-                    is PickerResult.Files -> error("Unexpected result for single file request")
-                    is PickerResult.Dismissed -> null
-                }
-            }
-        )
-    }
+                type = PickerType.File(extensions = listOf("json")),
+            )?.file?.toPath() ?: return@sideJob
 
-    context(EventInputHandlerScope)
-    suspend fun handle(input: OpenFile) {
-        sideJob("read-file-${input.path}") {
-            Json.readFromFile<Event>(input.path).fold(
+            Json.readFromFile<Event>(file).fold(
                 {
-                    flogger.atInfo().log("Error reading file %s: %s", input.path, it)
+                    flogger.atWarning().withCause(it).log("Error reading file %s", file)
                     postEvent(ThrowableEvent(it))
                 },
-                { postInput(OpenedFile(input.path, it)) }
+                { postInput(OpenedFile(file, it)) }
             )
         }
     }
