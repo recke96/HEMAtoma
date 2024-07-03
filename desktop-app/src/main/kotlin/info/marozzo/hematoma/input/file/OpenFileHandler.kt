@@ -12,6 +12,9 @@ import info.marozzo.hematoma.contract.*
 import info.marozzo.hematoma.domain.Event
 import info.marozzo.hematoma.input.EventInputHandlerScope
 import info.marozzo.hematoma.utils.readFromFile
+import io.github.vinceglb.filekit.core.FileKit
+import io.github.vinceglb.filekit.core.PickerType
+import io.github.vinceglb.filekit.core.pickFile
 import kotlinx.serialization.json.Json
 
 data object OpenFileHandler {
@@ -19,14 +22,19 @@ data object OpenFileHandler {
     private val flogger = FluentLogger.forEnclosingClass()!!
 
     context(EventInputHandlerScope)
-    suspend fun handle(input: OpenFile) {
-        sideJob("read-file-${input.path}") {
-            Json.readFromFile<Event>(input.path).fold(
+    suspend fun handle() {
+        sideJob("open") {
+            val file = FileKit.pickFile(
+                title = "Open Event",
+                type = PickerType.File(extensions = listOf("json")),
+            )?.file?.toPath() ?: return@sideJob
+
+            Json.readFromFile<Event>(file).fold(
                 {
-                    flogger.atInfo().log("Error reading file %s: %s", input.path, it)
+                    flogger.atWarning().withCause(it).log("Error reading file %s", file)
                     postEvent(ThrowableEvent(it))
                 },
-                { postInput(OpenedFile(input.path, it)) }
+                { postInput(OpenedFile(file, it)) }
             )
         }
     }

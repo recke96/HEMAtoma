@@ -20,10 +20,10 @@ data class Goto(val screen: Screen) : Input
 
 // File operations
 
-data class OpenFile(val path: Path) : Input
+data object OpenFile : Input
 data class OpenedFile(val path: Path, val event: Event) : Input
 data object Save : Input
-data class SaveAt(val path: Path, val overwrite: Boolean) : Input
+data object SaveAs : Input
 data class SavedAt(val path: Path) : Input
 
 // Event management

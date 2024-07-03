@@ -6,11 +6,15 @@
 
 package info.marozzo.hematoma.input.file
 
-import com.copperleaf.ballast.postInput
 import com.google.common.flogger.FluentLogger
-import info.marozzo.hematoma.contract.*
+import info.marozzo.hematoma.contract.ErrorEvent
+import info.marozzo.hematoma.contract.EventState
+import info.marozzo.hematoma.contract.SavedAt
+import info.marozzo.hematoma.contract.path
 import info.marozzo.hematoma.input.EventInputHandlerScope
 import info.marozzo.hematoma.utils.writeToFile
+import io.github.vinceglb.filekit.core.FileKit
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.nio.file.StandardOpenOption
 
@@ -20,25 +24,31 @@ data object SaveHandler {
 
     context(EventInputHandlerScope)
     suspend fun handleSave() {
-        val path = getCurrentState().path
-        if (path != null) postInput(SaveAt(path, overwrite = true))
+        val (path, event, _) = getCurrentState()
+        if (path != null) {
+            sideJob("save") {
+                Json.writeToFile(event, path, StandardOpenOption.TRUNCATE_EXISTING).onLeft {
+                    flogger.atWarning().withCause(it).log("Failed to write %s", path)
+                    postEvent(ErrorEvent("Failed to save file."))
+                }
+            }
+        }
     }
 
     context(EventInputHandlerScope)
-    suspend fun handle(input: SaveAt) {
+    suspend fun handle() {
         val (_, event) = getCurrentState()
-        sideJob("write-file-${input.path}") {
-            Json.writeToFile(
-                event,
-                input.path,
-                if (input.overwrite) StandardOpenOption.TRUNCATE_EXISTING else StandardOpenOption.CREATE_NEW
-            ).fold(
-                {
-                    flogger.atInfo().log("Error saving to file %s: %s", input.path, it)
-                    postEvent(ThrowableEvent(it))
-                },
-                { postInput(SavedAt(input.path)) }
+        sideJob("save-as") {
+            val file = FileKit.saveFile(
+                baseName = event.name.toString(),
+                extension = "json",
+                bytes = Json.encodeToString(event).toByteArray(),
             )
+            if (file == null) {
+                postEvent(ErrorEvent("Failed to save file."))
+            } else{
+                postInput(SavedAt(file.file.toPath()))
+            }
         }
     }
 
