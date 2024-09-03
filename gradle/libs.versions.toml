@@ -16,7 +16,7 @@ flogger = "0.8"
 detekt = "1.23.6"
 detekt-compose = "0.4.11"
 detekt-arrow = "0.4.0"
-conveyor = "1.10"
+conveyor = "1.11"
 
 [libraries]
 kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core-jvm", version.ref = "kotlinx-coroutines" }
