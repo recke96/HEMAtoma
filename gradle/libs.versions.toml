@@ -15,7 +15,7 @@ data-table = "0.8.1"
 flogger = "0.8"
 detekt = "1.23.7"
 detekt-compose = "0.4.12"
-detekt-arrow = "0.4.0"
+detekt-arrow = "0.5.0"
 conveyor = "1.11"
 
 [libraries]
