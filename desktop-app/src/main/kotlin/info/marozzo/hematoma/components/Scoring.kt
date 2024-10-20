@@ -251,22 +251,22 @@ fun ResultsTable(
             DataTable(
                 modifier = Modifier.fillMaxWidth().verticalScroll(state),
                 columns = listOf(
-                    DataColumn(alignment = Alignment.End) {
+                    DataColumn(alignment = Alignment.CenterEnd) {
                         Text("Nr.", fontWeight = FontWeight.Bold)
                     },
-                    DataColumn(alignment = Alignment.Start) {
+                    DataColumn(alignment = Alignment.CenterStart) {
                         Text("Name", fontWeight = FontWeight.Bold)
                     },
-                    DataColumn(alignment = Alignment.End) {
+                    DataColumn(alignment = Alignment.CenterEnd) {
                         Text("Scored", fontWeight = FontWeight.Bold)
                     },
-                    DataColumn(alignment = Alignment.End) {
+                    DataColumn(alignment = Alignment.CenterEnd) {
                         Text("Conceded", fontWeight = FontWeight.Bold)
                     },
-                    DataColumn(alignment = Alignment.End) {
+                    DataColumn(alignment = Alignment.CenterEnd) {
                         Text("CUT", fontWeight = FontWeight.Bold)
                     },
-                    DataColumn(alignment = Alignment.End) {
+                    DataColumn(alignment = Alignment.CenterEnd) {
                         Text("Double Hits", fontWeight = FontWeight.Bold)
                     }
                 )
