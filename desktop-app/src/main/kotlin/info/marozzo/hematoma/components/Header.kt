@@ -40,7 +40,7 @@ private fun FileMenu(hasPath: Boolean, modifier: Modifier = Modifier) {
         Button(
             onClick = { setExpanded(!expanded) },
             shape = RoundedCornerShape(0.dp),
-            modifier = Modifier.menuAnchor(),
+            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable),
         ) {
             Text("File")
         }
