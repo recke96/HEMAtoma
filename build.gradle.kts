@@ -46,7 +46,6 @@ allprojects {
     tasks.withType<KotlinCompile>().all {
         compilerOptions {
             allWarningsAsErrors = true
-            freeCompilerArgs.add("-Xcontext-receivers")
         }
     }
 }

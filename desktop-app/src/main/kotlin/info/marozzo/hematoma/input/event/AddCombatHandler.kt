@@ -18,8 +18,7 @@ object AddCombatHandler {
 
     private val flogger = FluentLogger.forEnclosingClass()!!
 
-    context(EventInputHandlerScope)
-    suspend fun handle(input: AddCombat) {
+    suspend fun EventInputHandlerScope.handle(input: AddCombat) {
         val event = getCurrentState().event
         event.registerCombatForTournament(
             input.tournament,

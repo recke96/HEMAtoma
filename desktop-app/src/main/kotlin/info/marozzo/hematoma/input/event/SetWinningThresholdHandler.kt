@@ -17,8 +17,7 @@ import info.marozzo.hematoma.input.EventInputHandlerScope
 object SetWinningThresholdHandler {
     private val flogger = FluentLogger.forEnclosingClass()!!
 
-    context(EventInputHandlerScope)
-    suspend fun handle(input: SetWinningThreshold) {
+    suspend fun EventInputHandlerScope.handle(input: SetWinningThreshold) {
         val event = getCurrentState().event
         event.setWinningThreshold(input.tournament, input.threshold).fold(
             { errs ->

@@ -13,8 +13,7 @@ import info.marozzo.hematoma.input.EventInputHandlerScope
 
 object GotoHandler {
 
-    context(EventInputHandlerScope)
-    suspend fun handle(input: Goto) {
+    suspend fun EventInputHandlerScope.handle(input: Goto) {
         updateState {
             EventState.screen.set(it, input.screen)
         }

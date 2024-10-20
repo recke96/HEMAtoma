@@ -68,7 +68,7 @@ fun Event.addCompetitor(number: RegistrationNumber, name: CompetitorName): Valid
         }
     ) { _, _ -> Competitor(nextId, number, name) }
 
-    Event.competitors.modify(this@Event) {
+    Event.competitors.modify(this@addCompetitor) {
         it.put(competitor.id, competitor)
     }
 }
