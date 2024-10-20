@@ -21,14 +21,14 @@ typealias AcceptFun = (Input) -> Unit
 
 class EventInputHandler : InputHandler<Input, Event, EventState> {
     override suspend fun EventInputHandlerScope.handleInput(input: Input) = when (input) {
-        is Goto -> GotoHandler.handle(input)
-        is OpenFile -> OpenFileHandler.handle()
-        is OpenedFile -> OpenFileHandler.handle(input)
-        is Save -> SaveHandler.handleSave()
-        is SaveAs -> SaveHandler.handle()
-        is SavedAt -> SaveHandler.handle(input)
-        is SetWinningThreshold -> SetWinningThresholdHandler.handle(input)
-        is AddCompetitor -> AddCompetitorHandler.handle(input)
-        is AddCombat -> AddCombatHandler.handle(input)
+        is Goto -> with(GotoHandler) { handle(input) }
+        is OpenFile -> with(OpenFileHandler) { handle() }
+        is OpenedFile -> with(OpenFileHandler) { handle(input) }
+        is Save -> with(SaveHandler) { handleSave() }
+        is SaveAs -> with(SaveHandler) { handle() }
+        is SavedAt -> with(SaveHandler) { handle(input) }
+        is SetWinningThreshold -> with(SetWinningThresholdHandler) { handle(input) }
+        is AddCompetitor -> with(AddCompetitorHandler) { handle(input) }
+        is AddCombat -> with(AddCombatHandler) { handle(input) }
     }
 }

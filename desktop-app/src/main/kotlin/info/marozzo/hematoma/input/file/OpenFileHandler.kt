@@ -21,8 +21,7 @@ data object OpenFileHandler {
 
     private val flogger = FluentLogger.forEnclosingClass()!!
 
-    context(EventInputHandlerScope)
-    suspend fun handle() {
+    suspend fun EventInputHandlerScope.handle() {
         sideJob("open") {
             val file = FileKit.pickFile(
                 title = "Open Event",
@@ -39,8 +38,7 @@ data object OpenFileHandler {
         }
     }
 
-    context(EventInputHandlerScope)
-    suspend fun handle(input: OpenedFile) {
+    suspend fun EventInputHandlerScope.handle(input: OpenedFile) {
         updateState {
             it.copy {
                 EventState.path set input.path

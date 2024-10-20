@@ -22,8 +22,7 @@ data object SaveHandler {
 
     private val flogger = FluentLogger.forEnclosingClass()!!
 
-    context(EventInputHandlerScope)
-    suspend fun handleSave() {
+    suspend fun EventInputHandlerScope.handleSave() {
         val (path, event, _) = getCurrentState()
         if (path != null) {
             sideJob("save") {
@@ -35,8 +34,7 @@ data object SaveHandler {
         }
     }
 
-    context(EventInputHandlerScope)
-    suspend fun handle() {
+    suspend fun EventInputHandlerScope.handle() {
         val (_, event) = getCurrentState()
         sideJob("save-as") {
             val file = FileKit.saveFile(
@@ -46,14 +44,13 @@ data object SaveHandler {
             )
             if (file == null) {
                 postEvent(ErrorEvent("Failed to save file."))
-            } else{
+            } else {
                 postInput(SavedAt(file.file.toPath()))
             }
         }
     }
 
-    context(EventInputHandlerScope)
-    suspend fun handle(input: SavedAt) {
+    suspend fun EventInputHandlerScope.handle(input: SavedAt) {
         updateState { EventState.path.set(it, input.path) }
     }
 }

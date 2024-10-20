@@ -23,8 +23,7 @@ object AddCompetitorHandler {
 
     private val flogger = FluentLogger.forEnclosingClass()!!
 
-    context(EventInputHandlerScope)
-    suspend fun handle(input: AddCompetitor) =
+    suspend fun EventInputHandlerScope.handle(input: AddCompetitor) =
         either {
             val original = getCurrentState().event
             val added = original.addCompetitor(input.registration, input.name).bind()
