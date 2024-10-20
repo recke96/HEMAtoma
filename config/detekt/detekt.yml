@@ -61,6 +61,8 @@ naming:
 complexity:
   LongMethod:
     threshold: 120
+  CyclomaticComplexMethod:
+    ignoreSingleWhenExpression: true
 
 style:
   UnusedPrivateMember:
