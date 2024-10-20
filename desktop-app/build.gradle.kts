@@ -19,6 +19,7 @@ dependencies {
     "windowsAmd64"(compose.desktop.windows_x64)
     implementation(compose.material3)
     implementation(compose.materialIconsExtended)
+    implementation(compose.components.resources)
     implementation(libs.filekit)
     implementation(libs.datatable)
 
@@ -48,6 +49,10 @@ compose.desktop {
     application {
         mainClass = "info.marozzo.hematoma.MainKt"
     }
+}
+
+compose.resources {
+    packageOfResClass = "info.marozzo.hematoma.resources"
 }
 
 detekt {
