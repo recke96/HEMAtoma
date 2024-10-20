@@ -132,7 +132,7 @@ fun CompetitorSelect(
         onExpandedChange = { setExpanded(it) },
     ) {
         TextField(
-            modifier = Modifier.menuAnchor(),
+            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable),
             singleLine = true,
             value = input,
             onValueChange = { setInput(it) },

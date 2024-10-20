@@ -7,6 +7,7 @@
 package info.marozzo.hematoma
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,8 +32,11 @@ import com.google.common.flogger.FluentLogger
 import info.marozzo.hematoma.components.*
 import info.marozzo.hematoma.contract.EventState
 import info.marozzo.hematoma.contract.Screen
+import info.marozzo.hematoma.resources.Res
+import info.marozzo.hematoma.resources.icon
 import info.marozzo.hematoma.shortcuts.handler
 import info.marozzo.hematoma.shortcuts.shortcuts
+import org.jetbrains.compose.resources.painterResource
 import java.awt.Dimension
 import java.nio.file.Paths
 import kotlin.io.path.exists
@@ -48,7 +52,7 @@ fun main() = SuspendApp {
     awaitApplication {
         val coroutineScope = rememberCoroutineScope()
         val snackbar = remember { SnackbarHostState() }
-        val icon = rememberAppIcon()
+        val icon = painterResource(Res.drawable.icon)
         val vm = remember(coroutineScope) { EventViewModel(coroutineScope, snackbar) }
         val state by vm.observeStates().collectAsState()
 
@@ -98,13 +102,3 @@ fun App(state: EventState) = MaterialTheme {
         }
     }
 }
-
-@Composable
-fun rememberAppIcon(density: Density = LocalDensity.current): Painter? = remember {
-    System.getProperty("app.dir")
-        ?.let { Paths.get(it, "icon.svg") }
-        ?.takeIf { it.exists() }
-        ?.inputStream()
-        ?.use { loadSvgPainter(it, density) }
-}
-
