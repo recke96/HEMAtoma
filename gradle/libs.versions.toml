@@ -2,7 +2,7 @@
 
 [versions]
 kotlin = "2.0.21"
-ksp = "2.0.10-1.0.24"
+ksp = "2.0.21-1.0.25"
 compose = "1.6.11"
 kotlinx-coroutines = "1.9.0"
 kotlinx-serialization = "1.7.3"
