@@ -8,7 +8,6 @@ kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.8.1"
 kotlinx-immutable-collections = "0.3.8"
 arrow = "2.1.0"
-arrow-suspendapp = "2.1.0"
 ballast = "4.2.1"
 file-kit = "0.8.8"
 data-table = "0.11.3"
@@ -29,7 +28,7 @@ arrow-fx-coroutines = { group = "io.arrow-kt", name = "arrow-fx-coroutines", ver
 arrow-optics = { group = "io.arrow-kt", name = "arrow-optics", version.ref = "arrow" }
 arrow-optics-ksp = { group = "io.arrow-kt", name = "arrow-optics-ksp-plugin", version.ref = "arrow" }
 arrow-collectors = { group = "io.arrow-kt", name = "arrow-collectors", version.ref = "arrow" }
-arrow-suspendapp = { group = "io.arrow-kt", name = "suspendapp", version.ref = "arrow-suspendapp" }
+arrow-suspendapp = { group = "io.arrow-kt", name = "suspendapp", version.ref = "arrow" }
 ballast-core = { group = "io.github.copper-leaf", name = "ballast-core", version.ref = "ballast" }
 filekit = { group = "io.github.vinceglb", name = "filekit-compose", version.ref = "file-kit" }
 datatable = { group = "com.seanproctor", name = "data-table-material3", version.ref = "data-table" }
