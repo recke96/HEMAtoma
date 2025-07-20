@@ -13,7 +13,7 @@ file-kit = "0.8.8"
 data-table = "0.11.4"
 flogger = "0.9"
 detekt = "1.23.8"
-detekt-compose = "0.4.22"
+detekt-compose = "0.4.24"
 detekt-arrow = "0.5.0"
 conveyor = "1.12"
 
