@@ -13,7 +13,9 @@ plugins {
 }
 
 val mergeSarif by tasks.registering(ReportMergeTask::class) {
-    output = layout.buildDirectory.file("reports/detekt/merged.sarif")
+    // Avoid the detekt reports directory to prevent overlapping outputs
+    val mergedDir = layout.buildDirectory.dir("reports/detekt-merged")
+    output.set(mergedDir.map { it.file("detekt.sarif") })
 }
 
 allprojects {
