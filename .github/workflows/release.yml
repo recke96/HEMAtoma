@@ -37,9 +37,7 @@ jobs:
         with:
           gradle-version: wrapper
       - name: Build
-        run: ./gradlew jar --no-daemon
-        env:
-          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+        run: ./gradlew jar -PreleaseVersion=${{ steps.version.outputs.version }}
       - name: Package
         uses: hydraulic-software/conveyor/actions/build@v19.0
         env:
