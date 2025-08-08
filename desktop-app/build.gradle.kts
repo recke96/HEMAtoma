@@ -15,8 +15,8 @@ kotlin {
 dependencies {
     implementation(project(":domain"))
 
-    "linuxAmd64"(compose.desktop.linux_x64)
-    "windowsAmd64"(compose.desktop.windows_x64)
+    linuxAmd64(compose.desktop.linux_x64)
+    windowsAmd64(compose.desktop.windows_x64)
     implementation(compose.material3)
     implementation(compose.materialIconsExtended)
     implementation(compose.components.resources)
@@ -39,9 +39,10 @@ dependencies {
     detektPlugins(libs.detekt.arrow)
 }
 
-configurations.all {
+val uiAttr = Attribute.of("ui", String::class.java)
+configurations.named { it in setOf("linuxAmd64", "windowsAmd64") }.configureEach {
     attributes {
-        attribute(Attribute.of("ui", String::class.java), "awt")
+        attribute(uiAttr, "awt")
     }
 }
 
