@@ -45,7 +45,7 @@ allprojects {
         input.from(tasks.withType<Detekt>().map { it.sarifReportFile })
     }
 
-    tasks.withType<KotlinCompile>().all {
+    tasks.withType<KotlinCompile>().configureEach {
         compilerOptions {
             allWarningsAsErrors = true
         }
