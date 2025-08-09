@@ -13,7 +13,7 @@
         "^\\s*(?<currentValue>\\d+)\\s*$"
       ],
       "datasourceTemplate": "java-version",
-      "depNameTemplate": "java?lts=true"
+      "depNameTemplate": "java"
     }
   ]
 }
