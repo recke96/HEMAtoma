@@ -10,11 +10,11 @@
         "/^\\.java-version$/"
       ],
       "matchStrings": [
-        "^\\s*(?<currentValue>\\d+)\\s*$"
+        "^\\s*(?<currentValue>.+)\\s*$"
       ],
       "datasourceTemplate": "java-version",
       "depNameTemplate": "java",
-      "versioningTemplate": "regex:^(?<major>\\d+)$"
+      "extractVersionTemplate": "^(?<version>\\d+)"
     }
   ]
 }
