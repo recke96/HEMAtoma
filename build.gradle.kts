@@ -1,6 +1,7 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektPlugin
 import io.gitlab.arturbosch.detekt.report.ReportMergeTask
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -29,7 +30,7 @@ allprojects {
     }
 
     tasks.withType<Detekt>().configureEach {
-        jvmTarget = "21"
+        jvmTarget = JvmTarget.JVM_21.target
         reports {
             sarif.required = true
         }
@@ -48,6 +49,7 @@ allprojects {
     tasks.withType<KotlinCompile>().configureEach {
         compilerOptions {
             allWarningsAsErrors = true
+            jvmTarget = JvmTarget.JVM_21
         }
     }
 }
