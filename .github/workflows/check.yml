@@ -25,6 +25,8 @@ jobs:
         with:
           gradle-version: wrapper
           dependency-graph: generate-and-submit
+      - name: Verify Gradle Tasks
+        run: ./gradlew tasks --warning-mode all
       - name: Check
         run: ./gradlew check --continue
       - name: Summarize Detekt
