@@ -14,7 +14,7 @@
       ],
       "datasourceTemplate": "java-version",
       "depNameTemplate": "java",
-      "versioningTemplate": "regex:^(?<major>\\\\d+)$"
+      "versioningTemplate": "regex:^(?<major>\\d+)$"
     }
   ]
 }
