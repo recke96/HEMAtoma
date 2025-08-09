@@ -6,11 +6,7 @@ plugins {
     alias(libs.plugins.conveyor)
 }
 
-version = System.getenv("RELEASE_VERSION") ?: "0.0.0"
-
-kotlin {
-    jvmToolchain(21)
-}
+version = providers.gradleProperty("releaseVersion").getOrElse("0.0.0")
 
 dependencies {
     implementation(project(":domain"))

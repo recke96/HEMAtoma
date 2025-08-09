@@ -4,10 +4,6 @@ plugins {
     alias(libs.plugins.kotlinx.serialization)
 }
 
-kotlin {
-    jvmToolchain(21)
-}
-
 dependencies {
     api(libs.bundles.arrow)
     ksp(libs.arrow.optics.ksp)

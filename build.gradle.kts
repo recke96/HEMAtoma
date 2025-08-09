@@ -1,6 +1,8 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektPlugin
 import io.gitlab.arturbosch.detekt.report.ReportMergeTask
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -18,6 +20,10 @@ val mergeSarif by tasks.registering(ReportMergeTask::class) {
     output.set(mergedDir.map { it.file("detekt.sarif") })
 }
 
+val javaVersionText = providers.fileContents(layout.projectDirectory.file(".java-version")).asText.map(String::trim)
+val javaVersionJvm = javaVersionText.map(JvmTarget::fromTarget)
+val javaVersionLanguage = javaVersionText.map(JavaLanguageVersion::of)
+
 allprojects {
     group = "info.marozzo.hematoma"
 
@@ -29,7 +35,7 @@ allprojects {
     }
 
     tasks.withType<Detekt>().configureEach {
-        jvmTarget = "21"
+        jvmTarget = javaVersionJvm.map(JvmTarget::target).get()
         reports {
             sarif.required = true
         }
@@ -45,9 +51,18 @@ allprojects {
         input.from(tasks.withType<Detekt>().map { it.sarifReportFile })
     }
 
-    tasks.withType<KotlinCompile>().all {
+    plugins.withId("org.jetbrains.kotlin.jvm") {
+        extensions.configure<KotlinJvmProjectExtension>() {
+            jvmToolchain {
+                languageVersion.set(javaVersionLanguage)
+            }
+        }
+    }
+
+    tasks.withType<KotlinCompile>().configureEach {
         compilerOptions {
             allWarningsAsErrors = true
+            jvmTarget.set(javaVersionJvm)
         }
     }
 }
