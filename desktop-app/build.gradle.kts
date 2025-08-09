@@ -8,10 +8,6 @@ plugins {
 
 version = providers.gradleProperty("releaseVersion").getOrElse("0.0.0")
 
-kotlin {
-    jvmToolchain(21)
-}
-
 dependencies {
     implementation(project(":domain"))
 
