@@ -27,7 +27,7 @@ jobs:
         with:
           scheme: semver
           increment: ${{ inputs.bump }}
-      - name: Setup JDK 21
+      - name: Setup JDK
         uses: actions/setup-java@v4
         with:
           java-version-file: .java-version
