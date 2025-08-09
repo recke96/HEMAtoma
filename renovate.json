@@ -13,7 +13,8 @@
         "^\\s*(?<currentValue>\\d+)\\s*$"
       ],
       "datasourceTemplate": "java-version",
-      "depNameTemplate": "java"
+      "depNameTemplate": "java",
+      "versioningTemplate": "regex:^(?<major>\\\\d+)$"
     }
   ]
 }
