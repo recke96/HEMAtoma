@@ -34,7 +34,7 @@ data class Result(
 ) {
     val cut = scored / conceded
 
-    companion object {
+    internal companion object {
         val empty = Result(
             matches = Matches.none,
             wins = Matches.none,
@@ -54,3 +54,5 @@ data class Result(
         doubleHits + other.doubleHits
     )
 }
+
+val EmptyResult = Result.empty

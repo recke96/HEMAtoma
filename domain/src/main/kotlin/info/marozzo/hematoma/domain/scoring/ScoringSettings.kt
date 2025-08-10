@@ -34,7 +34,7 @@ data class FiorDellaSpadaScoring(
     val winningThreshold: Score = DEFAULT_WINNING_THRESHOLD
 ) : ScoringSettings {
 
-    companion object {
+    internal companion object {
         private const val MAX_AWARDED = 3.0
         private val DEFAULT_WINNING_THRESHOLD = Score(7)
     }
