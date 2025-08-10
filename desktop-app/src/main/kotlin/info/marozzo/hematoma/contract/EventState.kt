@@ -33,7 +33,7 @@ data class EventState(
     ),
     val screen: Screen = Screen.Configuration
 ) {
-    companion object
+    internal companion object
 }
 
 enum class Screen {

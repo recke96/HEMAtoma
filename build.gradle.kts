@@ -61,7 +61,8 @@ allprojects {
 
     tasks.withType<KotlinCompile>().configureEach {
         compilerOptions {
-            allWarningsAsErrors = true
+            extraWarnings.set(true)
+            allWarningsAsErrors.set(true)
             jvmTarget.set(javaVersionJvm)
         }
     }

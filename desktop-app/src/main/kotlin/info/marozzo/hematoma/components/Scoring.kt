@@ -346,7 +346,7 @@ private data class CompetitorResult(
 
 
 val statsCollector = Collector.nonSuspendOf<Atomic<Result>, Result, Result>(
-    supply = { Atomic(Result.empty) },
+    supply = { Atomic(EmptyResult) },
     accumulate = { acc, value -> acc.update { it + value } },
     finish = { it.get() },
     characteristics = Characteristics.CONCURRENT_UNORDERED
