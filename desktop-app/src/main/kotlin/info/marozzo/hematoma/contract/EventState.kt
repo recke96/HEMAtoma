@@ -9,7 +9,6 @@ package info.marozzo.hematoma.contract
 import androidx.compose.runtime.Immutable
 import arrow.optics.optics
 import info.marozzo.hematoma.domain.*
-import info.marozzo.hematoma.domain.Event
 import info.marozzo.hematoma.domain.scoring.FiorDellaSpadaScoring
 import kotlinx.collections.immutable.persistentMapOf
 import java.nio.file.Path
