@@ -16,24 +16,30 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import info.marozzo.hematoma.LocalAccept
 import info.marozzo.hematoma.contract.EventState
-import info.marozzo.hematoma.contract.OpenFile
-import info.marozzo.hematoma.contract.Save
-import info.marozzo.hematoma.contract.SaveAs
-import info.marozzo.hematoma.shortcuts.ShortcutLabel
 
 @Composable
-fun Header(state: EventState, modifier: Modifier = Modifier) {
+fun Header(
+    state: EventState,
+    onSave: () -> Unit,
+    onSaveAs: () -> Unit,
+    onOpen: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Row(modifier.heightIn(24.dp, 32.dp).fillMaxWidth()) {
-        FileMenu(state.path != null)
+        FileMenu(state.path != null, onSave, onSaveAs, onOpen)
     }
 }
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-private fun FileMenu(hasPath: Boolean, modifier: Modifier = Modifier) {
-    val accept = LocalAccept.current
+private fun FileMenu(
+    hasPath: Boolean,
+    onSave: () -> Unit,
+    onSaveAs: () -> Unit,
+    onOpen: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     val (expanded, setExpanded) = remember { mutableStateOf(false) }
     val dismiss = { setExpanded(false) }
     ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = setExpanded, modifier) {
@@ -45,21 +51,20 @@ private fun FileMenu(hasPath: Boolean, modifier: Modifier = Modifier) {
             Text("File")
         }
         DropdownMenu(expanded, onDismissRequest = dismiss, modifier = Modifier.exposedDropdownSize(false)) {
-
             DropdownMenuItem(
                 text = { Text("Open") },
                 trailingIcon = { ShortcutLabel("Ctrl + O") },
-                onClick = { dismiss(); accept(OpenFile) },
+                onClick = { dismiss(); onOpen(); },
             )
             DropdownMenuItem(
                 text = { Text("Save As") },
                 trailingIcon = { ShortcutLabel("Ctrl + Alt + S") },
-                onClick = { dismiss(); accept(SaveAs) },
+                onClick = { dismiss(); onSaveAs(); },
             )
             DropdownMenuItem(
                 text = { Text("Save") },
                 trailingIcon = { ShortcutLabel("Ctrl + S") },
-                onClick = { dismiss(); accept(Save) },
+                onClick = { dismiss(); onSave(); },
                 enabled = hasPath,
             )
         }

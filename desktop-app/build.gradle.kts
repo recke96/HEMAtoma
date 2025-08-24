@@ -16,13 +16,15 @@ dependencies {
     implementation(compose.material3)
     implementation(compose.materialIconsExtended)
     implementation(compose.components.resources)
+    implementation(libs.compose.lifecycle)
+
     implementation(libs.filekit)
     implementation(libs.datatable)
 
     implementation(libs.bundles.arrow)
     ksp(libs.arrow.optics.ksp)
 
-    implementation(libs.bundles.ballast)
+    implementation(libs.bundles.orbit)
 
     implementation(libs.kotlinx.coroutines)
     implementation(libs.kotlinx.coroutines.swing)

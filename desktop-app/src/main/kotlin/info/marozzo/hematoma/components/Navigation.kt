@@ -21,13 +21,10 @@ import androidx.compose.material3.NavigationRailItem
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import info.marozzo.hematoma.LocalAccept
-import info.marozzo.hematoma.contract.Goto
 import info.marozzo.hematoma.contract.Screen
 
 @Composable
-fun Navigation(screen: Screen, modifier: Modifier = Modifier) {
-    val accept = LocalAccept.current
+fun Navigation(screen: Screen, onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier) {
     NavigationRail(
         modifier = modifier.widthIn(48.dp, 64.dp).fillMaxHeight(),
     ) {
@@ -39,7 +36,7 @@ fun Navigation(screen: Screen, modifier: Modifier = Modifier) {
                     contentDescription = "Configure"
                 )
             },
-            onClick = { accept(Goto(Screen.Configuration)) }
+            onClick = { onNavigate(Screen.Configuration) }
         )
         NavigationRailItem(
             selected = screen == Screen.Competitors,
@@ -49,7 +46,7 @@ fun Navigation(screen: Screen, modifier: Modifier = Modifier) {
                     contentDescription = "Competitors"
                 )
             },
-            onClick = { accept(Goto(Screen.Competitors)) }
+            onClick = { onNavigate(Screen.Competitors) }
         )
         NavigationRailItem(
             selected = screen == Screen.Scoring,
@@ -59,7 +56,7 @@ fun Navigation(screen: Screen, modifier: Modifier = Modifier) {
                     contentDescription = "Scoring"
                 )
             },
-            onClick = { accept(Goto(Screen.Scoring)) }
+            onClick = { onNavigate(Screen.Scoring) }
         )
     }
 }

@@ -52,7 +52,7 @@ comments:
   AbsentOrWrongFileLicense:
     active: true
     licenseTemplateFile: 'license.template'
-    licenseTemplateIsRegex: false
+    licenseTemplateIsRegex: true
 
 naming:
   FunctionNaming:
@@ -63,6 +63,8 @@ complexity:
     threshold: 120
   CyclomaticComplexMethod:
     ignoreSingleWhenExpression: true
+  LongParameterList:
+    ignoreAnnotated: [ 'Composable' ]
 
 style:
   UnusedPrivateMember:
@@ -71,7 +73,5 @@ style:
     active: false
 
 Compose:
-  CompositionLocalAllowlist:
-    allowedCompositionLocals: [ "LocalAccept" ]
   Material2:
     active: true

@@ -35,17 +35,15 @@ import arrow.core.raise.option
 import arrow.core.some
 import com.seanproctor.datatable.DataColumn
 import com.seanproctor.datatable.material3.DataTable
-import info.marozzo.hematoma.LocalAccept
-import info.marozzo.hematoma.contract.AddCombat
+import info.marozzo.hematoma.AddCombatParameters
 import info.marozzo.hematoma.contract.EventState
 import info.marozzo.hematoma.domain.*
 import info.marozzo.hematoma.domain.scoring.*
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 
-
 @Composable
-fun ScoringScreen(state: EventState, modifier: Modifier = Modifier) {
+fun ScoringScreen(state: EventState, onAddCombat: (AddCombatParameters) -> Unit, modifier: Modifier = Modifier) {
     val (tab, setTab) = remember { mutableIntStateOf(0) }
 
     Column(modifier) {
@@ -59,12 +57,14 @@ fun ScoringScreen(state: EventState, modifier: Modifier = Modifier) {
                     0 -> CombatRecord(
                         state.event.competitors,
                         state.event.tournaments.values.single(),
+                        onAddCombat,
                         modifier = Modifier.fillMaxSize()
                     )
 
                     1 -> ResultsTable(
                         state.event.tournaments.values.single(),
                         state.event.competitors,
+                        onAddCombat,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
@@ -78,10 +78,11 @@ fun ScoringScreen(state: EventState, modifier: Modifier = Modifier) {
 fun CombatRecord(
     competitors: ImmutableMap<CompetitorId, Competitor>,
     tournament: Tournament,
+    onAddCombat: (AddCombatParameters) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier, verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top)) {
-        CombatInput(competitors, tournament)
+        CombatInput(competitors, tournament, onAddCombat)
         HorizontalDivider(thickness = DividerDefaults.Thickness.plus(2.dp))
         CombatRecordList(tournament.record, tournament.scoringSettings, competitors)
     }
@@ -91,9 +92,9 @@ fun CombatRecord(
 fun CombatInput(
     competitors: ImmutableMap<CompetitorId, Competitor>,
     tournament: Tournament,
+    onAddCombat: (AddCombatParameters) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val accept = LocalAccept.current
     val competitorsOfTournament = remember(competitors, tournament.registered) {
         competitors.filterKeys { tournament.registered.contains(it) }.values
     }
@@ -158,7 +159,7 @@ fun CombatInput(
                     && parsedDoubleHits.isRight(),
             onClick = {
                 option {
-                    AddCombat(
+                    AddCombatParameters(
                         tournament.id,
                         competitorA.map(Competitor::id).bind(),
                         competitorB.map(Competitor::id).bind(),
@@ -166,7 +167,7 @@ fun CombatInput(
                         ignoreErrors { parsedScoreB.bind() },
                         ignoreErrors { parsedDoubleHits.bind() }
                     )
-                }.onSome(accept)
+                }.onSome(onAddCombat)
                 setCompetitorA(none())
                 setCompetitorB(none())
                 setScoreA("")
@@ -231,6 +232,7 @@ fun CombatRecordListItem(
 fun ResultsTable(
     tournament: Tournament,
     competitors: ImmutableMap<CompetitorId, Competitor>,
+    onAddCombat: (AddCombatParameters) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state = rememberScrollState()
@@ -245,7 +247,7 @@ fun ResultsTable(
     }
 
     Column(modifier, verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top)) {
-        CombatInput(competitors, tournament)
+        CombatInput(competitors, tournament, onAddCombat)
         HorizontalDivider(thickness = DividerDefaults.Thickness.plus(2.dp))
         Box {
             DataTable(

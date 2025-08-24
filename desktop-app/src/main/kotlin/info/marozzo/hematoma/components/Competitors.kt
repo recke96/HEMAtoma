@@ -27,8 +27,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.window.PopupProperties
 import arrow.core.Option
 import arrow.core.getOrElse
-import info.marozzo.hematoma.LocalAccept
-import info.marozzo.hematoma.contract.AddCompetitor
 import info.marozzo.hematoma.domain.Competitor
 import info.marozzo.hematoma.domain.CompetitorId
 import info.marozzo.hematoma.domain.CompetitorName
@@ -39,10 +37,9 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 fun CompetitorScreen(
     competitors: ImmutableMap<CompetitorId, Competitor>,
-    modifier:
-    Modifier = Modifier
+    onAddCompetitor: (registration: RegistrationNumber, name: CompetitorName) -> Unit,
+    modifier: Modifier = Modifier
 ) = Column(modifier) {
-    val accept = LocalAccept.current
     val nextReg = remember(competitors) {
         RegistrationNumber(
             competitors.size.inc().toString()
@@ -50,7 +47,7 @@ fun CompetitorScreen(
     }
     CompetitorNameInput(
         number = nextReg,
-        onSubmit = { accept(AddCompetitor(nextReg, it)) },
+        onSubmit = { onAddCompetitor(nextReg, it) },
         modifier = Modifier.fillMaxWidth()
     )
     CompetitorsList(competitors, modifier = Modifier.fillMaxWidth())

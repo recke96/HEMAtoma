@@ -4,11 +4,12 @@
 kotlin = "2.2.10"
 ksp = "2.2.10-2.0.2"
 compose = "1.8.2"
+compose-lifecycle = "2.9.2"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.9.0"
 kotlinx-immutable-collections = "0.4.0"
 arrow = "2.1.2"
-ballast = "4.2.1"
+orbit = "10.0.0"
 file-kit = "0.8.8"
 data-table = "0.11.4"
 flogger = "0.9"
@@ -23,13 +24,15 @@ kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-co
 kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinx-immutable-collections = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable-jvm", version.ref = "kotlinx-immutable-collections" }
+compose-lifecycle = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "compose-lifecycle" }
 arrow-core = { group = "io.arrow-kt", name = "arrow-core", version.ref = "arrow" }
 arrow-fx-coroutines = { group = "io.arrow-kt", name = "arrow-fx-coroutines", version.ref = "arrow" }
 arrow-optics = { group = "io.arrow-kt", name = "arrow-optics", version.ref = "arrow" }
 arrow-optics-ksp = { group = "io.arrow-kt", name = "arrow-optics-ksp-plugin", version.ref = "arrow" }
 arrow-collectors = { group = "io.arrow-kt", name = "arrow-collectors", version.ref = "arrow" }
 arrow-suspendapp = { group = "io.arrow-kt", name = "suspendapp", version.ref = "arrow" }
-ballast-core = { group = "io.github.copper-leaf", name = "ballast-core", version.ref = "ballast" }
+orbit-core = { group = "org.orbit-mvi", name = "orbit-core", version.ref = "orbit" }
+orbit-compose = { group = "org.orbit-mvi", name = "orbit-compose", version.ref = "orbit" }
 filekit = { group = "io.github.vinceglb", name = "filekit-compose", version.ref = "file-kit" }
 datatable = { group = "com.seanproctor", name = "data-table-material3", version.ref = "data-table" }
 flogger = { group = "com.google.flogger", name = "flogger", version.ref = "flogger" }
@@ -39,7 +42,7 @@ detekt-arrow = { group = "com.wolt.arrow.detekt", name = "rules", version.ref = 
 
 [bundles]
 arrow = ["arrow-core", "arrow-fx-coroutines", "arrow-optics", "arrow-suspendapp", "arrow-collectors"]
-ballast = ["ballast-core"]
+orbit = [ "orbit-core", "orbit-compose" ]
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
