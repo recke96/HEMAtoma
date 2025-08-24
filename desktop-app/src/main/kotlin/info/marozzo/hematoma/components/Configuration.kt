@@ -38,13 +38,21 @@ import info.marozzo.hematoma.domain.scoring.Score
 import info.marozzo.hematoma.domain.scoring.ScoringSettings
 
 @Composable
-fun ConfigurationScreen(state: EventState, modifier: Modifier = Modifier) =
+fun ConfigurationScreen(
+    state: EventState,
+    onSetWinningThreshold: (TournamentId, Score) -> Unit,
+    modifier: Modifier = Modifier
+) =
     Column(modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top)) {
         TextField(state.event.name.toString(), onValueChange = {}, enabled = false)
         HorizontalDivider(thickness = DividerDefaults.Thickness.plus(2.dp))
         LazyColumn {
             items(state.event.tournaments.values.toList()) {
-                TournamentConfigListItem(it, expandedByDefault = state.event.tournaments.keys.first() == it.id)
+                TournamentConfigListItem(
+                    it,
+                    onSetWinningThreshold,
+                    expandedByDefault = state.event.tournaments.keys.first() == it.id
+                )
                 HorizontalDivider()
             }
         }
@@ -59,8 +67,9 @@ private object Rotation {
 @OptIn(ExperimentalFoundationApi::class)
 fun TournamentConfigListItem(
     tournament: Tournament,
-    modifier: Modifier = Modifier,
+    onSetWinningThreshold: (TournamentId, Score) -> Unit,
     expandedByDefault: Boolean = false,
+    modifier: Modifier = Modifier,
 ) {
     val (expanded, setExpanded) = remember(expandedByDefault) { mutableStateOf(expandedByDefault) }
 
@@ -81,6 +90,7 @@ fun TournamentConfigListItem(
                 ScoringConfig(
                     tournament.id,
                     tournament.scoringSettings,
+                    onSetWinningThreshold,
                     modifier = Modifier.padding(start = 20.dp).fillMaxWidth()
                 )
             }
@@ -89,9 +99,14 @@ fun TournamentConfigListItem(
 }
 
 @Composable
-fun ScoringConfig(tournamentId: TournamentId, settings: ScoringSettings, modifier: Modifier = Modifier) =
+fun ScoringConfig(
+    tournamentId: TournamentId,
+    settings: ScoringSettings,
+    onSetWinningThreshold: (TournamentId, Score) -> Unit,
+    modifier: Modifier = Modifier
+) =
     when (settings) {
-        is FiorDellaSpadaScoring -> FiorDellaSpadaScoringConfig(tournamentId, settings, modifier)
+        is FiorDellaSpadaScoring -> FiorDellaSpadaScoringConfig(tournamentId, settings, onSetWinningThreshold, modifier)
     }
 
 @Composable
@@ -99,9 +114,9 @@ fun ScoringConfig(tournamentId: TournamentId, settings: ScoringSettings, modifie
 fun FiorDellaSpadaScoringConfig(
     tournamentId: TournamentId,
     settings: FiorDellaSpadaScoring,
+    onSetWinningThreshold: (TournamentId, Score) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val accept = LocalAccept.current
     val (input, setInput) = remember(settings.winningThreshold) { mutableStateOf(settings.winningThreshold.toString()) }
     val parsedInput = remember(input) { Score.parse(input) }
     Column(modifier, verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Top)) {
@@ -121,13 +136,11 @@ fun FiorDellaSpadaScoringConfig(
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions {
-                        accept(SetWinningThreshold(tournamentId, parsedInput.getOrNull()!!))
+                        onSetWinningThreshold(tournamentId, parsedInput.getOrNull()!!)
                     },
                     modifier = Modifier.onFocusChanged {
                         if (!it.isFocused) parsedInput.onRight { thresh ->
-                            accept(
-                                SetWinningThreshold(tournamentId, thresh)
-                            )
+                            onSetWinningThreshold(tournamentId, thresh)
                         } else Unit
                     }
                 )
