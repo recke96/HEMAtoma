@@ -16,19 +16,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import info.marozzo.hematoma.LocalAccept
 import info.marozzo.hematoma.contract.EventState
-import info.marozzo.hematoma.contract.OpenFile
-import info.marozzo.hematoma.contract.Save
-import info.marozzo.hematoma.contract.SaveAs
-import info.marozzo.hematoma.shortcuts.ShortcutLabel
 
 @Composable
 fun Header(
     state: EventState,
-    onSave: () -> Unit = {},
-    onSaveAs: () -> Unit = {},
-    onOpen: () -> Unit = {},
+    onSave: () -> Unit,
+    onSaveAs: () -> Unit,
+    onOpen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(modifier.heightIn(24.dp, 32.dp).fillMaxWidth()) {

@@ -6,34 +6,17 @@
 
 package info.marozzo.hematoma
 
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.runtime.staticCompositionLocalOf
 import arrow.core.getOrNone
 import arrow.core.nel
 import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
 import arrow.optics.copy
-import com.copperleaf.ballast.BallastViewModelConfiguration
-import com.copperleaf.ballast.EventHandlerScope
-import com.copperleaf.ballast.build
-import com.copperleaf.ballast.core.BasicViewModel
-import com.copperleaf.ballast.core.FifoInputStrategy
-import com.copperleaf.ballast.withViewModel
 import info.marozzo.hematoma.contract.*
-import info.marozzo.hematoma.domain.Combat
-import info.marozzo.hematoma.domain.CompetitorId
-import info.marozzo.hematoma.domain.CompetitorName
+import info.marozzo.hematoma.domain.*
 import info.marozzo.hematoma.domain.Event
-import info.marozzo.hematoma.domain.RegistrationNumber
-import info.marozzo.hematoma.domain.TournamentId
-import info.marozzo.hematoma.domain.addCompetitor
 import info.marozzo.hematoma.domain.errors.ValidationError
 import info.marozzo.hematoma.domain.scoring.Hits
 import info.marozzo.hematoma.domain.scoring.Score
-import info.marozzo.hematoma.event.EventEventHandler
-import info.marozzo.hematoma.input.AcceptFun
-import info.marozzo.hematoma.input.EventInputHandler
-import info.marozzo.hematoma.utils.FluentLoggingInterceptor
 import info.marozzo.hematoma.utils.readFromFile
 import info.marozzo.hematoma.utils.writeToFile
 import io.github.vinceglb.filekit.core.FileKit
@@ -46,26 +29,7 @@ import org.orbitmvi.orbit.container
 import org.orbitmvi.orbit.syntax.Syntax
 import java.nio.file.StandardOpenOption
 
-typealias SideEffect = info.marozzo.hematoma.contract.Event;
-typealias EventEventHandlerScope = EventHandlerScope<Input, SideEffect, EventState>
-
-@Deprecated("Use orbit instead")
-class EventViewModel(
-    scope: CoroutineScope,
-    snackbar: SnackbarHostState,
-) : BasicViewModel<Input, SideEffect, EventState>(
-    config = BallastViewModelConfiguration.Builder().apply {
-        interceptors += FluentLoggingInterceptor<Input, SideEffect, EventState>()
-        inputStrategy = FifoInputStrategy()
-    }.withViewModel(EventState(), EventInputHandler(), "HEMAtoma").build(),
-    eventHandler = EventEventHandler(snackbar),
-    coroutineScope = scope
-)
-
-@Deprecated("Use orbit instead")
-val LocalAccept = staticCompositionLocalOf<AcceptFun> { {} }
-
-class EventViewModel2(scope: CoroutineScope) : ContainerHost<EventState, SideEffect> {
+class EventViewModel(scope: CoroutineScope) : ContainerHost<EventState, SideEffect> {
 
     override val container = scope.container<EventState, SideEffect>(EventState())
 
@@ -80,7 +44,7 @@ class EventViewModel2(scope: CoroutineScope) : ContainerHost<EventState, SideEff
         )
         val path = file?.file?.toPath() ?: return@intent
 
-        Json.readFromFile<Event>(path).fold({ postSideEffect(ThrowableEvent(it)) }, {
+        Json.readFromFile<Event>(path).fold({ postSideEffect(ThrowableSideEffect(it)) }, {
             reduce {
                 state.copy {
                     EventState.path set path
@@ -93,12 +57,12 @@ class EventViewModel2(scope: CoroutineScope) : ContainerHost<EventState, SideEff
     fun save() = intent {
         val (path, event, _) = state
         if (path == null) {
-            postSideEffect(ErrorEvent("No file selected"))
+            postSideEffect(ErrorSideEffect("No file selected"))
             return@intent
         }
 
         Json.writeToFile(event, path, StandardOpenOption.TRUNCATE_EXISTING).onLeft {
-            postSideEffect(ThrowableEvent(it))
+            postSideEffect(ThrowableSideEffect(it))
         }
     }
 
@@ -113,7 +77,7 @@ class EventViewModel2(scope: CoroutineScope) : ContainerHost<EventState, SideEff
         )
 
         if (file == null) {
-            postSideEffect(ErrorEvent("Failed to save file."))
+            postSideEffect(ErrorSideEffect("Failed to save file."))
         } else {
             reduce { EventState.path.set(state, file.file.toPath()) }
         }
@@ -139,10 +103,14 @@ class EventViewModel2(scope: CoroutineScope) : ContainerHost<EventState, SideEff
     }
 
     fun addCombat(parameters: AddCombatParameters) = intent {
-        val (tournamentId, competitorA, competitorB, scoreA, scoreB, doubleHits) = parameters
         state.event.registerCombatForTournament(
-            tournamentId, Combat(
-                competitorA, competitorB, scoreA, scoreB, doubleHits
+            parameters.tournament,
+            Combat(
+                parameters.competitorA,
+                parameters.competitorB,
+                parameters.scoreA,
+                parameters.scoreB,
+                parameters.doubleHits
             )
         ).fold(
             { postErrors(it) },
@@ -160,7 +128,7 @@ class EventViewModel2(scope: CoroutineScope) : ContainerHost<EventState, SideEff
     suspend fun Syntax<EventState, SideEffect>.postErrors(errors: Iterable<ValidationError>) =
         errors.asSequence()
             .map(ValidationError::message)
-            .map(::ErrorEvent)
+            .map(::ErrorSideEffect)
             .forEach { postSideEffect(it) }
 }
 

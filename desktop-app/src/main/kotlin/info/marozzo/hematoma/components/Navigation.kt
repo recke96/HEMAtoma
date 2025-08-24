@@ -21,8 +21,6 @@ import androidx.compose.material3.NavigationRailItem
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import info.marozzo.hematoma.LocalAccept
-import info.marozzo.hematoma.contract.Goto
 import info.marozzo.hematoma.contract.Screen
 
 @Composable

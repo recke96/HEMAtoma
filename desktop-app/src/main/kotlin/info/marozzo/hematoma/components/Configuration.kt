@@ -28,9 +28,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import info.marozzo.hematoma.LocalAccept
 import info.marozzo.hematoma.contract.EventState
-import info.marozzo.hematoma.contract.SetWinningThreshold
 import info.marozzo.hematoma.domain.Tournament
 import info.marozzo.hematoma.domain.TournamentId
 import info.marozzo.hematoma.domain.scoring.FiorDellaSpadaScoring
@@ -68,8 +66,8 @@ private object Rotation {
 fun TournamentConfigListItem(
     tournament: Tournament,
     onSetWinningThreshold: (TournamentId, Score) -> Unit,
-    expandedByDefault: Boolean = false,
     modifier: Modifier = Modifier,
+    expandedByDefault: Boolean = false,
 ) {
     val (expanded, setExpanded) = remember(expandedByDefault) { mutableStateOf(expandedByDefault) }
 

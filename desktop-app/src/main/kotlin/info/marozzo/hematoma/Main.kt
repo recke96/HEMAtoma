@@ -33,10 +33,10 @@ import androidx.compose.ui.zIndex
 import arrow.continuations.SuspendApp
 import com.google.common.flogger.FluentLogger
 import info.marozzo.hematoma.components.*
-import info.marozzo.hematoma.contract.ErrorEvent
+import info.marozzo.hematoma.contract.ErrorSideEffect
 import info.marozzo.hematoma.contract.EventState
 import info.marozzo.hematoma.contract.Screen
-import info.marozzo.hematoma.contract.ThrowableEvent
+import info.marozzo.hematoma.contract.ThrowableSideEffect
 import info.marozzo.hematoma.domain.CompetitorName
 import info.marozzo.hematoma.domain.RegistrationNumber
 import info.marozzo.hematoma.domain.TournamentId
@@ -58,7 +58,7 @@ fun main() = SuspendApp {
     awaitApplication {
         val coroutineScope = rememberCoroutineScope()
         val icon = painterResource(Res.drawable.icon)
-        val vm = remember { EventViewModel2(coroutineScope) }
+        val vm = remember { EventViewModel(coroutineScope) }
 
 
         Window(
@@ -82,8 +82,8 @@ fun main() = SuspendApp {
                 val state by vm.collectAsState()
                 vm.collectSideEffect {
                     when (it) {
-                        is ErrorEvent -> snackbar.showSnackbar(it.msg, withDismissAction = true)
-                        is ThrowableEvent -> snackbar.showSnackbar(
+                        is ErrorSideEffect -> snackbar.showSnackbar(it.msg, withDismissAction = true)
+                        is ThrowableSideEffect -> snackbar.showSnackbar(
                             it.throwable.message ?: "An exception occurred",
                             withDismissAction = true
                         )
