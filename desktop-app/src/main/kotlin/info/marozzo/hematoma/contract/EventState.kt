@@ -31,13 +31,6 @@ data class EventState(
             )
         }
     ),
-    val screen: Screen = Screen.Configuration
 ) {
     internal companion object
-}
-
-enum class Screen {
-    Configuration,
-    Competitors,
-    Scoring
 }

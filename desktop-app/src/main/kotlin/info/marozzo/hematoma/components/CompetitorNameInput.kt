@@ -1,0 +1,45 @@
+/*
+ * Copyright Jakob Ecker, 2024
+ * Licensed under the EUPL-1.2-or-later
+ *
+ */
+
+package info.marozzo.hematoma.components
+
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
+import info.marozzo.hematoma.domain.CompetitorName
+import info.marozzo.hematoma.domain.RegistrationNumber
+
+
+@Composable
+fun CompetitorNameInput(number: RegistrationNumber, onSubmit: (CompetitorName) -> Unit, modifier: Modifier = Modifier) {
+    val (input, setInput) = remember { mutableStateOf("") }
+    val parsedInput = remember(input) { CompetitorName(input) }
+
+    TextField(
+        value = input,
+        onValueChange = { setInput(it) },
+        label = { Text("Add Competitor") },
+        placeholder = { Text("Name") },
+        leadingIcon = { Text("${number.value}.") },
+        isError = parsedInput.isLeft(),
+        modifier = modifier,
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions {
+            parsedInput
+                .onRight(onSubmit)
+                .onRight { setInput("") }
+        }
+    )
+}
+
+

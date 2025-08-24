@@ -6,7 +6,6 @@
 
 package info.marozzo.hematoma
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,39 +15,30 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.isCtrlPressed
-import androidx.compose.ui.input.key.isShiftPressed
-import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.*
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.awaitApplication
-import androidx.compose.ui.zIndex
 import arrow.continuations.SuspendApp
+import cafe.adriel.voyager.navigator.CurrentScreen
+import cafe.adriel.voyager.navigator.Navigator
 import com.google.common.flogger.FluentLogger
-import info.marozzo.hematoma.components.*
+import info.marozzo.hematoma.components.Header
+import info.marozzo.hematoma.components.Navigation
 import info.marozzo.hematoma.contract.ErrorSideEffect
-import info.marozzo.hematoma.contract.EventState
-import info.marozzo.hematoma.contract.Screen
 import info.marozzo.hematoma.contract.ThrowableSideEffect
-import info.marozzo.hematoma.domain.CompetitorName
-import info.marozzo.hematoma.domain.RegistrationNumber
-import info.marozzo.hematoma.domain.TournamentId
-import info.marozzo.hematoma.domain.scoring.Score
 import info.marozzo.hematoma.resources.Res
 import info.marozzo.hematoma.resources.icon
+import info.marozzo.hematoma.screens.ConfigurationScreen
 import org.jetbrains.compose.resources.painterResource
-import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 import java.awt.Dimension
 
-private const val FOREGROUND = 10f
 private val logger = FluentLogger.forEnclosingClass()!!
 
 val version = System.getProperty("app.version") ?: "dev"
@@ -56,56 +46,20 @@ val version = System.getProperty("app.version") ?: "dev"
 fun main() = SuspendApp {
     logger.atInfo().log("Start HEMAtoma %s", version)
     awaitApplication {
-        val coroutineScope = rememberCoroutineScope()
         val icon = painterResource(Res.drawable.icon)
-        val vm = remember { EventViewModel(coroutineScope) }
-
 
         Window(
             title = "HEMAtoma",
             icon = icon,
-            onPreviewKeyEvent = {
-                when (it.key) {
-                    Key.S if it.isCtrlPressed && it.isShiftPressed -> true.also { vm.saveAs() }
-                    Key.S if it.isCtrlPressed -> true.also { vm.save() }
-                    Key.O if it.isCtrlPressed -> true.also { vm.openFile() }
-                    else -> false
-                }
-            },
             onCloseRequest = this::exitApplication,
         ) {
-            with(LocalDensity.current) {
-                window.minimumSize = Dimension(1240.dp.roundToPx(), 200.dp.roundToPx())
-            }
-
-                val snackbar = remember { SnackbarHostState() }
-                val state by vm.collectAsState()
-                vm.collectSideEffect {
-                    when (it) {
-                        is ErrorSideEffect -> snackbar.showSnackbar(it.msg, withDismissAction = true)
-                        is ThrowableSideEffect -> snackbar.showSnackbar(
-                            it.throwable.message ?: "An exception occurred",
-                            withDismissAction = true
-                        )
-                    }
+            val density = LocalDensity.current
+            LaunchedEffect(density) {
+                with(density) {
+                    window.minimumSize = Dimension(1240.dp.roundToPx(), 200.dp.roundToPx())
                 }
-
-                Box(modifier = Modifier.fillMaxSize()) {
-                    SnackbarHost(
-                        hostState = snackbar,
-                        modifier = Modifier.align(Alignment.BottomEnd).zIndex(FOREGROUND)
-                    )
-                    App(
-                        state,
-                        vm::goto,
-                        vm::addCompetitor,
-                        vm::addCombat,
-                        vm::setWinningThreshold,
-                        vm::save,
-                        vm::saveAs,
-                        vm::openFile,
-                    )
             }
+            App()
         }
     }
 
@@ -114,35 +68,40 @@ fun main() = SuspendApp {
 
 @Composable
 @Suppress("ModifierMissing") // Is the top-level composable and has no use for modifier
-fun App(
-    state: EventState,
-    onNavigate: (Screen) -> Unit,
-    onAddCompetitor: (registration: RegistrationNumber, name: CompetitorName) -> Unit,
-    onAddCombat: (AddCombatParameters) -> Unit,
-    onSetWinningThreshold: (TournamentId, Score) -> Unit,
-    onSave: () -> Unit = {},
-    onSaveAs: () -> Unit = {},
-    onOpen: () -> Unit = {}
-) = MaterialTheme {
-    Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-        Header(state, onSave, onSaveAs, onOpen, modifier = Modifier.background(MaterialTheme.colorScheme.primary))
-        Row {
-            Navigation(state.screen, onNavigate)
-            AnimatedContent(state.screen) { current ->
-                when (current) {
-                    Screen.Configuration -> ConfigurationScreen(
-                        state,
-                        onSetWinningThreshold,
-                        modifier = Modifier.fillMaxSize()
-                    )
+fun App() {
+    val snackbar = remember { SnackbarHostState() }
 
-                    Screen.Competitors -> CompetitorScreen(
-                        state.event.competitors,
-                        onAddCompetitor,
-                        modifier = Modifier.fillMaxSize()
+    MaterialTheme {
+        Navigator(ConfigurationScreen()) {
+            val model = it.rememberNavigatorEventScreenModel()
+            model.collectSideEffect { effect ->
+                when (effect) {
+                    is ErrorSideEffect -> snackbar.showSnackbar(effect.msg, withDismissAction = true)
+                    is ThrowableSideEffect -> snackbar.showSnackbar(
+                        effect.throwable.message ?: "An exception occurred",
+                        withDismissAction = true
                     )
+                }
+            }
 
-                    Screen.Scoring -> ScoringScreen(state, onAddCombat, modifier = Modifier.fillMaxSize())
+            Box(modifier = Modifier.fillMaxSize().onKeyEvent({ evt ->
+                when (evt.key) {
+                    Key.S if evt.isCtrlPressed && evt.isShiftPressed -> true.also { model.saveAs() }
+                    Key.S if evt.isCtrlPressed -> true.also { model.save() }
+                    Key.O if evt.isCtrlPressed -> true.also { model.openFile() }
+                    else -> false
+                }
+            })) {
+                SnackbarHost(
+                    hostState = snackbar,
+                    modifier = Modifier.align(Alignment.BottomEnd)
+                )
+                Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Header(modifier = Modifier.background(MaterialTheme.colorScheme.primary))
+                    Row {
+                        Navigation()
+                        CurrentScreen()
+                    }
                 }
             }
         }
