@@ -12,22 +12,29 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import info.marozzo.hematoma.contract.EventState
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
+import info.marozzo.hematoma.rememberNavigatorEventScreenModel
+import org.orbitmvi.orbit.compose.collectAsState
 
 @Composable
-fun Header(
-    state: EventState,
-    onSave: () -> Unit,
-    onSaveAs: () -> Unit,
-    onOpen: () -> Unit,
-    modifier: Modifier = Modifier
-) {
+fun Header(modifier: Modifier = Modifier) {
+    val nav = LocalNavigator.currentOrThrow
+    val model = nav.rememberNavigatorEventScreenModel()
+    val state by model.collectAsState()
+
     Row(modifier.heightIn(24.dp, 32.dp).fillMaxWidth()) {
-        FileMenu(state.path != null, onSave, onSaveAs, onOpen)
+        FileMenu(
+            state.path != null,
+            model::save,
+            model::saveAs,
+            model::openFile,
+        )
     }
 }
 

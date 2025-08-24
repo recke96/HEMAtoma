@@ -6,14 +6,18 @@
 
 package info.marozzo.hematoma
 
+import androidx.compose.runtime.Composable
 import arrow.core.getOrNone
 import arrow.core.nel
 import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
 import arrow.optics.copy
+import cafe.adriel.voyager.core.model.ScreenModel
+import cafe.adriel.voyager.core.model.rememberNavigatorScreenModel
+import cafe.adriel.voyager.core.model.screenModelScope
+import cafe.adriel.voyager.navigator.Navigator
 import info.marozzo.hematoma.contract.*
 import info.marozzo.hematoma.domain.*
-import info.marozzo.hematoma.domain.Event
 import info.marozzo.hematoma.domain.errors.ValidationError
 import info.marozzo.hematoma.domain.scoring.Hits
 import info.marozzo.hematoma.domain.scoring.Score
@@ -22,20 +26,18 @@ import info.marozzo.hematoma.utils.writeToFile
 import io.github.vinceglb.filekit.core.FileKit
 import io.github.vinceglb.filekit.core.PickerType
 import io.github.vinceglb.filekit.core.pickFile
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.serialization.json.Json
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.container
 import org.orbitmvi.orbit.syntax.Syntax
 import java.nio.file.StandardOpenOption
 
-class EventViewModel(scope: CoroutineScope) : ContainerHost<EventState, SideEffect> {
+@Composable
+fun Navigator.rememberNavigatorEventScreenModel() = rememberNavigatorScreenModel { EventScreenModel() }
 
-    override val container = scope.container<EventState, SideEffect>(EventState())
+class EventScreenModel : ContainerHost<EventState, SideEffect>, ScreenModel {
 
-    fun goto(screen: Screen) = intent(registerIdling = false) {
-        reduce { EventState.screen.set(state, screen) }
-    }
+    override val container = screenModelScope.container<EventState, SideEffect>(EventState())
 
     fun openFile() = intent {
         val file = FileKit.pickFile(
@@ -55,7 +57,7 @@ class EventViewModel(scope: CoroutineScope) : ContainerHost<EventState, SideEffe
     }
 
     fun save() = intent {
-        val (path, event, _) = state
+        val (path, event) = state
         if (path == null) {
             postSideEffect(ErrorSideEffect("No file selected"))
             return@intent
@@ -67,7 +69,7 @@ class EventViewModel(scope: CoroutineScope) : ContainerHost<EventState, SideEffe
     }
 
     fun saveAs() = intent {
-        val (_, event, _) = state
+        val (_, event) = state
         val bytes = Json.encodeToString(event).toByteArray()
 
         val file = FileKit.saveFile(

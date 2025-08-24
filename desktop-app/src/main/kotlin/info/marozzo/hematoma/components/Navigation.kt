@@ -21,42 +21,48 @@ import androidx.compose.material3.NavigationRailItem
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import info.marozzo.hematoma.contract.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
+import info.marozzo.hematoma.screens.CompetitorsScreen
+import info.marozzo.hematoma.screens.ConfigurationScreen
+import info.marozzo.hematoma.screens.ScoringScreen
 
 @Composable
-fun Navigation(screen: Screen, onNavigate: (Screen) -> Unit, modifier: Modifier = Modifier) {
+fun Navigation(modifier: Modifier = Modifier) {
+    val nav = LocalNavigator.currentOrThrow
+
     NavigationRail(
         modifier = modifier.widthIn(48.dp, 64.dp).fillMaxHeight(),
     ) {
         NavigationRailItem(
-            selected = screen == Screen.Configuration,
+            selected = nav.lastItem is ConfigurationScreen,
             icon = {
                 Icon(
-                    if (screen == Screen.Configuration) Icons.Filled.Build else Icons.Outlined.Build,
+                    if (nav.lastItem is ConfigurationScreen) Icons.Filled.Build else Icons.Outlined.Build,
                     contentDescription = "Configure"
                 )
             },
-            onClick = { onNavigate(Screen.Configuration) }
+            onClick = { nav.replaceAll(ConfigurationScreen()) }
         )
         NavigationRailItem(
-            selected = screen == Screen.Competitors,
+            selected = nav.lastItem is CompetitorsScreen,
             icon = {
                 Icon(
-                    if (screen == Screen.Competitors) Icons.Filled.Groups else Icons.Outlined.Groups,
+                    if (nav.lastItem is CompetitorsScreen) Icons.Filled.Groups else Icons.Outlined.Groups,
                     contentDescription = "Competitors"
                 )
             },
-            onClick = { onNavigate(Screen.Competitors) }
+            onClick = { nav.replaceAll(CompetitorsScreen()) }
         )
         NavigationRailItem(
-            selected = screen == Screen.Scoring,
+            selected = nav.lastItem is ScoringScreen,
             icon = {
                 Icon(
-                    if (screen == Screen.Scoring) Icons.Filled.Scoreboard else Icons.Outlined.Scoreboard,
+                    if (nav.lastItem is ScoringScreen) Icons.Filled.Scoreboard else Icons.Outlined.Scoreboard,
                     contentDescription = "Scoring"
                 )
             },
-            onClick = { onNavigate(Screen.Scoring) }
+            onClick = { nav.replaceAll(ScoringScreen()) }
         )
     }
 }

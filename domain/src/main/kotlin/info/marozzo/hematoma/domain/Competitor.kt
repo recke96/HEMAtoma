@@ -31,7 +31,9 @@ value class CompetitorId private constructor(private val id: Long) {
 @JvmInline
 @Serializable
 value class RegistrationNumber private constructor(val value: String) {
+    override fun toString(): String = value
     companion object {
+
         operator fun invoke(number: String): Validated<RegistrationNumber> = either {
             ensure(number.isNotBlank()) { ValidationError("Registration number mustn't be blank").nel() }
             RegistrationNumber(number)
