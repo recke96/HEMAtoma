@@ -10,6 +10,7 @@ kotlinx-serialization = "1.9.0"
 kotlinx-immutable-collections = "0.4.0"
 arrow = "2.1.2"
 orbit = "10.0.0"
+voyager = "1.0.1"
 file-kit = "0.8.8"
 data-table = "0.11.4"
 flogger = "0.9"
@@ -33,6 +34,9 @@ arrow-collectors = { group = "io.arrow-kt", name = "arrow-collectors", version.r
 arrow-suspendapp = { group = "io.arrow-kt", name = "suspendapp", version.ref = "arrow" }
 orbit-core = { group = "org.orbit-mvi", name = "orbit-core", version.ref = "orbit" }
 orbit-compose = { group = "org.orbit-mvi", name = "orbit-compose", version.ref = "orbit" }
+voyager-nav = { group = "cafe.adriel.voyager", name = "voyager-navigator", version.ref = "voyager" }
+voyager-screenmodel = { group = "cafe.adriel.voyager", name = "voyager-screenmodel", version.ref = "voyager" }
+voyager-tab = { group = "cafe.adriel.voyager", name = "voyager-tab-navigator", version.ref = "voyager" }
 filekit = { group = "io.github.vinceglb", name = "filekit-compose", version.ref = "file-kit" }
 datatable = { group = "com.seanproctor", name = "data-table-material3", version.ref = "data-table" }
 flogger = { group = "com.google.flogger", name = "flogger", version.ref = "flogger" }
@@ -42,7 +46,8 @@ detekt-arrow = { group = "com.wolt.arrow.detekt", name = "rules", version.ref = 
 
 [bundles]
 arrow = ["arrow-core", "arrow-fx-coroutines", "arrow-optics", "arrow-suspendapp", "arrow-collectors"]
-orbit = [ "orbit-core", "orbit-compose" ]
+orbit = ["orbit-core", "orbit-compose"]
+voyager = ["voyager-nav", "voyager-screenmodel", "voyager-tab"]
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
