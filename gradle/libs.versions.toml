@@ -9,6 +9,7 @@ kotlinx-serialization = "1.9.0"
 kotlinx-immutable-collections = "0.4.0"
 arrow = "2.1.2"
 ballast = "4.2.1"
+orbit = "10.0.0"
 file-kit = "0.8.8"
 data-table = "0.11.4"
 flogger = "0.9"
@@ -30,6 +31,8 @@ arrow-optics-ksp = { group = "io.arrow-kt", name = "arrow-optics-ksp-plugin", ve
 arrow-collectors = { group = "io.arrow-kt", name = "arrow-collectors", version.ref = "arrow" }
 arrow-suspendapp = { group = "io.arrow-kt", name = "suspendapp", version.ref = "arrow" }
 ballast-core = { group = "io.github.copper-leaf", name = "ballast-core", version.ref = "ballast" }
+orbit-core = { group = "org.orbit-mvi", name = "orbit-core", version.ref = "orbit" }
+orbit-compose = { group = "org.orbit-mvi", name = "orbit-compose", version.ref = "orbit" }
 filekit = { group = "io.github.vinceglb", name = "filekit-compose", version.ref = "file-kit" }
 datatable = { group = "com.seanproctor", name = "data-table-material3", version.ref = "data-table" }
 flogger = { group = "com.google.flogger", name = "flogger", version.ref = "flogger" }
@@ -40,6 +43,7 @@ detekt-arrow = { group = "com.wolt.arrow.detekt", name = "rules", version.ref = 
 [bundles]
 arrow = ["arrow-core", "arrow-fx-coroutines", "arrow-optics", "arrow-suspendapp", "arrow-collectors"]
 ballast = ["ballast-core"]
+orbit = [ "orbit-core", "orbit-compose" ]
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

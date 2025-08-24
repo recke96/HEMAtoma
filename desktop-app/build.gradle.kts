@@ -23,6 +23,7 @@ dependencies {
     ksp(libs.arrow.optics.ksp)
 
     implementation(libs.bundles.ballast)
+    implementation(libs.bundles.orbit)
 
     implementation(libs.kotlinx.coroutines)
     implementation(libs.kotlinx.coroutines.swing)
