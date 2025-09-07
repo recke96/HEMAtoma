@@ -43,6 +43,7 @@ class EventScreenModel : ContainerHost<EventState, SideEffect>, ScreenModel {
 
     fun openFile() = intent {
         withIntent("openFile") {
+            Logger.info("Opening file")
 
             val file = FileKit.pickFile(
                 title = "Open Event",
@@ -72,6 +73,7 @@ class EventScreenModel : ContainerHost<EventState, SideEffect>, ScreenModel {
 
     fun save() = intent {
         withIntent("save") {
+            Logger.info("Saving file")
 
             val (path, event) = state
             if (path == null) {
@@ -89,6 +91,8 @@ class EventScreenModel : ContainerHost<EventState, SideEffect>, ScreenModel {
 
     fun saveAs() = intent {
         withIntent("saveAs") {
+            Logger.info("Saving file at user selected location")
+
             val (_, event) = state
 
             val file = FileKit.saveFile(
@@ -112,6 +116,8 @@ class EventScreenModel : ContainerHost<EventState, SideEffect>, ScreenModel {
 
     fun addCompetitor(registration: RegistrationNumber, name: CompetitorName) = intent {
         withIntent("addCompetitor") {
+            Logger.info("Adding competitor")
+
             either {
                 val orig = state.event
                 val added = orig.addCompetitor(registration, name).bind()
@@ -133,6 +139,8 @@ class EventScreenModel : ContainerHost<EventState, SideEffect>, ScreenModel {
 
     fun addCombat(parameters: AddCombatParameters) = intent {
         withIntent("addCombat") {
+            Logger.info("Adding competitor")
+
             state.event.registerCombatForTournament(
                 parameters.tournament,
                 Combat(
@@ -151,6 +159,8 @@ class EventScreenModel : ContainerHost<EventState, SideEffect>, ScreenModel {
 
     fun setWinningThreshold(tournament: TournamentId, threshold: Score) = intent {
         withIntent("setWinningThreshold") {
+            Logger.info("Adding competitor")
+
             state.event.setWinningThreshold(tournament, threshold).fold(
                 { postAndLogErrors(it) },
                 { reduce { EventState.event.set(state, it) } }
