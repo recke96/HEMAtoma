@@ -64,6 +64,7 @@ allprojects {
             extraWarnings.set(true)
             allWarningsAsErrors.set(true)
             jvmTarget.set(javaVersionJvm)
+            freeCompilerArgs.add("-Xcontext-parameters")
         }
     }
 }

@@ -19,6 +19,7 @@ dependencies {
     implementation(libs.compose.lifecycle)
 
     implementation(libs.filekit)
+    implementation(libs.directories)
     implementation(libs.datatable)
 
     implementation(libs.bundles.arrow)
@@ -31,8 +32,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.swing)
     implementation(libs.kotlinx.serialization.json)
 
-    implementation(libs.flogger)
-    runtimeOnly(libs.flogger.backend)
+    implementation(libs.bundles.tinylog)
 
     detektPlugins(libs.detekt.compose)
     detektPlugins(libs.detekt.arrow)

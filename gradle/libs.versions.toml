@@ -12,8 +12,9 @@ arrow = "2.1.2"
 orbit = "10.0.0"
 voyager = "1.0.1"
 file-kit = "0.8.8"
+directories = "26"
 data-table = "0.11.4"
-flogger = "0.9"
+tinylog = "2.7.0"
 detekt = "1.23.8"
 detekt-compose = "0.4.27"
 detekt-arrow = "0.5.0"
@@ -38,9 +39,11 @@ voyager-nav = { group = "cafe.adriel.voyager", name = "voyager-navigator", versi
 voyager-screenmodel = { group = "cafe.adriel.voyager", name = "voyager-screenmodel", version.ref = "voyager" }
 voyager-tab = { group = "cafe.adriel.voyager", name = "voyager-tab-navigator", version.ref = "voyager" }
 filekit = { group = "io.github.vinceglb", name = "filekit-compose", version.ref = "file-kit" }
+directories = { group = "dev.dirs", name = "directories", version.ref = "directories" }
 datatable = { group = "com.seanproctor", name = "data-table-material3", version.ref = "data-table" }
-flogger = { group = "com.google.flogger", name = "flogger", version.ref = "flogger" }
-flogger-backend = { group = "com.google.flogger", name = "flogger-system-backend", version.ref = "flogger" }
+tinylog-api = { group = "org.tinylog", name = "tinylog-api-kotlin", version.ref = "tinylog" }
+tinylog-impl = { group = "org.tinylog", name = "tinylog-impl", version.ref = "tinylog" }
+tinylog-slf4j = { group = "org.tinylog", name = "slf4j-tinylog", version.ref = "tinylog" }
 detekt-compose = { group = "io.nlopez.compose.rules", name = "detekt", version.ref = "detekt-compose" }
 detekt-arrow = { group = "com.wolt.arrow.detekt", name = "rules", version.ref = "detekt-arrow" }
 
@@ -48,6 +51,7 @@ detekt-arrow = { group = "com.wolt.arrow.detekt", name = "rules", version.ref = 
 arrow = ["arrow-core", "arrow-fx-coroutines", "arrow-optics", "arrow-suspendapp", "arrow-collectors"]
 orbit = ["orbit-core", "orbit-compose"]
 voyager = ["voyager-nav", "voyager-screenmodel", "voyager-tab"]
+tinylog = ["tinylog-api", "tinylog-impl", "tinylog-slf4j"]
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
