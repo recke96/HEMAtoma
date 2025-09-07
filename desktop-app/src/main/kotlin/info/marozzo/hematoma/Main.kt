@@ -28,7 +28,6 @@ import arrow.continuations.SuspendApp
 import arrow.fx.coroutines.resourceScope
 import cafe.adriel.voyager.navigator.CurrentScreen
 import cafe.adriel.voyager.navigator.Navigator
-import com.google.common.flogger.FluentLogger
 import info.marozzo.hematoma.components.Header
 import info.marozzo.hematoma.components.Navigation
 import info.marozzo.hematoma.contract.ErrorSideEffect
@@ -38,17 +37,16 @@ import info.marozzo.hematoma.resources.icon
 import info.marozzo.hematoma.screens.ConfigurationScreen
 import org.jetbrains.compose.resources.painterResource
 import org.orbitmvi.orbit.compose.collectSideEffect
+import org.tinylog.kotlin.Logger
 import java.awt.Dimension
 
-private val logger = FluentLogger.forEnclosingClass()!!
-
-val version = System.getProperty("app.version") ?: "dev"
+val version = lazy { System.getProperty("app.version") ?: "dev" }
 
 fun main() = SuspendApp {
     resourceScope {
         install(
-            acquire = { logger.atInfo().log("Start HEMAtoma %s", version) },
-            release = { _, _ -> logger.atInfo().log("Stop HEMAtoma %s", version) }
+            acquire = { Logger.info("Start HEMAtoma {}", { version.value }) },
+            release = { _, _ -> Logger.info("Stop HEMAtoma {}", { version.value }) }
         )
         awaitApplication {
             val icon = painterResource(Res.drawable.icon)
