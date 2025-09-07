@@ -17,6 +17,8 @@ import java.nio.file.Path
 import kotlin.coroutines.CoroutineContext
 import kotlin.io.path.listDirectoryEntries
 
+private val LOGFILES_TO_KEEP = 3
+
 context(coroutineScope: CoroutineScope, resourceScope: ResourceScope)
 suspend fun configureLogging(sessionId: String, dirs: ProjectDirectories) {
     val logFile = Path.of(dirs.dataLocalDir, "$sessionId.log").toAbsolutePath()
@@ -67,7 +69,7 @@ suspend fun configureLogging(sessionId: String, dirs: ProjectDirectories) {
         runCatching {
             logFile.parent.listDirectoryEntries("*.log")
                 .sortedByDescending { Files.getLastModifiedTime(it) }
-                .drop(3) // Keep the last 3 log files
+                .drop(LOGFILES_TO_KEEP) // Keep the last 3 log files
                 .forEach {
                     Logger.tag("MAINTENANCE").debug("Deleting old log file {}", it)
                     Files.deleteIfExists(it)
