@@ -36,32 +36,41 @@ import info.marozzo.hematoma.contract.ThrowableSideEffect
 import info.marozzo.hematoma.resources.Res
 import info.marozzo.hematoma.resources.icon
 import info.marozzo.hematoma.screens.ConfigurationScreen
+import info.marozzo.hematoma.utils.TinylogContext
 import info.marozzo.hematoma.utils.configureLogging
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.painterResource
 import org.orbitmvi.orbit.compose.collectSideEffect
 import java.awt.Dimension
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 
+@OptIn(ExperimentalUuidApi::class)
 fun main() = SuspendApp {
     resourceScope {
+        val sessionId = Uuid.random().toString()
         val dirs = ProjectDirectories.from("info.marozzo", "Fior della Spada", "HEMAtoma")
-        configureLogging(dirs)
+        configureLogging(sessionId, dirs)
 
-        awaitApplication {
-            val icon = painterResource(Res.drawable.icon)
+        withContext(CoroutineName("Main") + TinylogContext.of("sessionId" to sessionId)) {
+            awaitApplication {
+                val icon = painterResource(Res.drawable.icon)
 
-            Window(
-                title = "HEMAtoma",
-                icon = icon,
-                onCloseRequest = this::exitApplication,
-            ) {
-                val density = LocalDensity.current
-                LaunchedEffect(density) {
-                    with(density) {
-                        window.minimumSize = Dimension(1240.dp.roundToPx(), 200.dp.roundToPx())
+                Window(
+                    title = "HEMAtoma",
+                    icon = icon,
+                    onCloseRequest = this::exitApplication,
+                ) {
+                    val density = LocalDensity.current
+                    LaunchedEffect(density) {
+                        with(density) {
+                            window.minimumSize = Dimension(1240.dp.roundToPx(), 200.dp.roundToPx())
+                        }
                     }
+                    App()
                 }
-                App()
             }
         }
     }
