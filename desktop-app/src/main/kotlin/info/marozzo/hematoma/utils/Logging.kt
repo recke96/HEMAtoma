@@ -84,7 +84,6 @@ class TinylogContext private constructor(
 
     companion object Key : CoroutineContext.Key<TinylogContext> {
         fun of(vararg pairs: Pair<String, String>) = TinylogContext(mapOf(*pairs))
-        fun fromCurrent() = TinylogContext(ThreadContext.getMapping())
     }
 
     override val key: CoroutineContext.Key<TinylogContext> = Key
