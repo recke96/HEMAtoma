@@ -78,7 +78,8 @@ suspend fun configureLogging(sessionId: String, dirs: ProjectDirectories) {
     }
 }
 
-suspend fun <T> withIntent(intent: String, block: suspend CoroutineScope.() -> T) = withContext(TinylogContext.of("intent" to intent), block)
+suspend fun <T> withIntent(intent: String, block: suspend CoroutineScope.() -> T) =
+    withContext(TinylogContext.of("intent" to intent), block)
 
 class TinylogContext private constructor(
     private val values: Map<String, String>
