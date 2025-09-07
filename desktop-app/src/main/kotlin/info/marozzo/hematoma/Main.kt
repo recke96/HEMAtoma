@@ -28,6 +28,7 @@ import arrow.continuations.SuspendApp
 import arrow.fx.coroutines.resourceScope
 import cafe.adriel.voyager.navigator.CurrentScreen
 import cafe.adriel.voyager.navigator.Navigator
+import dev.dirs.ProjectDirectories
 import info.marozzo.hematoma.components.Header
 import info.marozzo.hematoma.components.Navigation
 import info.marozzo.hematoma.contract.ErrorSideEffect
@@ -35,19 +36,17 @@ import info.marozzo.hematoma.contract.ThrowableSideEffect
 import info.marozzo.hematoma.resources.Res
 import info.marozzo.hematoma.resources.icon
 import info.marozzo.hematoma.screens.ConfigurationScreen
+import info.marozzo.hematoma.utils.configureLogging
 import org.jetbrains.compose.resources.painterResource
 import org.orbitmvi.orbit.compose.collectSideEffect
-import org.tinylog.kotlin.Logger
 import java.awt.Dimension
 
-val version = lazy { System.getProperty("app.version") ?: "dev" }
 
 fun main() = SuspendApp {
     resourceScope {
-        install(
-            acquire = { Logger.info("Start HEMAtoma {}", { version.value }) },
-            release = { _, _ -> Logger.info("Stop HEMAtoma {}", { version.value }) }
-        )
+        val dirs = ProjectDirectories.from("info.marozzo", "Fior della Spada", "HEMAtoma")
+        configureLogging(dirs)
+
         awaitApplication {
             val icon = painterResource(Res.drawable.icon)
 

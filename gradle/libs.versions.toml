@@ -12,6 +12,7 @@ arrow = "2.1.2"
 orbit = "10.0.0"
 voyager = "1.0.1"
 file-kit = "0.8.8"
+directories = "26"
 data-table = "0.11.4"
 tinylog = "2.7.0"
 detekt = "1.23.8"
@@ -38,6 +39,7 @@ voyager-nav = { group = "cafe.adriel.voyager", name = "voyager-navigator", versi
 voyager-screenmodel = { group = "cafe.adriel.voyager", name = "voyager-screenmodel", version.ref = "voyager" }
 voyager-tab = { group = "cafe.adriel.voyager", name = "voyager-tab-navigator", version.ref = "voyager" }
 filekit = { group = "io.github.vinceglb", name = "filekit-compose", version.ref = "file-kit" }
+directories = { group = "dev.dirs", name = "directories", version.ref = "directories" }
 datatable = { group = "com.seanproctor", name = "data-table-material3", version.ref = "data-table" }
 tinylog-api = { group = "org.tinylog", name = "tinylog-api-kotlin", version.ref = "tinylog" }
 tinylog-impl = { group = "org.tinylog", name = "tinylog-impl", version.ref = "tinylog" }

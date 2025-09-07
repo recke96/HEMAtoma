@@ -19,6 +19,7 @@ dependencies {
     implementation(libs.compose.lifecycle)
 
     implementation(libs.filekit)
+    implementation(libs.directories)
     implementation(libs.datatable)
 
     implementation(libs.bundles.arrow)
