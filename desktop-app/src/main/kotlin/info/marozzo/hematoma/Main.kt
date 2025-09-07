@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.awaitApplication
 import arrow.continuations.SuspendApp
+import arrow.fx.coroutines.resourceScope
 import cafe.adriel.voyager.navigator.CurrentScreen
 import cafe.adriel.voyager.navigator.Navigator
 import com.google.common.flogger.FluentLogger
@@ -44,26 +45,29 @@ private val logger = FluentLogger.forEnclosingClass()!!
 val version = System.getProperty("app.version") ?: "dev"
 
 fun main() = SuspendApp {
-    logger.atInfo().log("Start HEMAtoma %s", version)
-    awaitApplication {
-        val icon = painterResource(Res.drawable.icon)
+    resourceScope {
+        install(
+            acquire = { logger.atInfo().log("Start HEMAtoma %s", version) },
+            release = { _, _ -> logger.atInfo().log("Stop HEMAtoma %s", version) }
+        )
+        awaitApplication {
+            val icon = painterResource(Res.drawable.icon)
 
-        Window(
-            title = "HEMAtoma",
-            icon = icon,
-            onCloseRequest = this::exitApplication,
-        ) {
-            val density = LocalDensity.current
-            LaunchedEffect(density) {
-                with(density) {
-                    window.minimumSize = Dimension(1240.dp.roundToPx(), 200.dp.roundToPx())
+            Window(
+                title = "HEMAtoma",
+                icon = icon,
+                onCloseRequest = this::exitApplication,
+            ) {
+                val density = LocalDensity.current
+                LaunchedEffect(density) {
+                    with(density) {
+                        window.minimumSize = Dimension(1240.dp.roundToPx(), 200.dp.roundToPx())
+                    }
                 }
+                App()
             }
-            App()
         }
     }
-
-    logger.atInfo().log("Stopping HEMAtoma")
 }
 
 @Composable
