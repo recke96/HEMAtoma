@@ -17,7 +17,7 @@ import java.nio.file.Path
 import kotlin.coroutines.CoroutineContext
 import kotlin.io.path.listDirectoryEntries
 
-private val LOGFILES_TO_KEEP = 3
+private const val LOGFILES_TO_KEEP = 3
 
 context(coroutineScope: CoroutineScope, resourceScope: ResourceScope)
 suspend fun configureLogging(sessionId: String, dirs: ProjectDirectories) {
