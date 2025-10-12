@@ -139,7 +139,7 @@ class EventScreenModel : ContainerHost<EventState, SideEffect>, ScreenModel {
 
     fun addCombat(parameters: AddCombatParameters) = intent {
         withIntent("addCombat") {
-            Logger.info("Adding competitor")
+            Logger.info("Adding combat")
 
             state.event.registerCombatForTournament(
                 parameters.tournament,
@@ -159,7 +159,7 @@ class EventScreenModel : ContainerHost<EventState, SideEffect>, ScreenModel {
 
     fun setWinningThreshold(tournament: TournamentId, threshold: Score) = intent {
         withIntent("setWinningThreshold") {
-            Logger.info("Adding competitor")
+            Logger.info("setting winning threshold for {} to {}", tournament, threshold)
 
             state.event.setWinningThreshold(tournament, threshold).fold(
                 { postAndLogErrors(it) },
