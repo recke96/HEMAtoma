@@ -1,7 +1,7 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
-kotlin = "2.2.20"
+kotlin = "2.2.21"
 ksp = "2.2.20-2.0.4"
 compose = "1.9.0"
 compose-lifecycle = "2.9.5"
