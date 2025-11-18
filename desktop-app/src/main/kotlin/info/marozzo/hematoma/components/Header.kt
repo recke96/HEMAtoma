@@ -53,7 +53,7 @@ private fun FileMenu(
         Button(
             onClick = { setExpanded(!expanded) },
             shape = RoundedCornerShape(0.dp),
-            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryNotEditable),
+            modifier = Modifier.menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable),
         ) {
             Text("File")
         }
