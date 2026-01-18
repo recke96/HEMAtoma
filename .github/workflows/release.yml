@@ -39,7 +39,7 @@ jobs:
       - name: Build
         run: ./gradlew jar -PreleaseVersion=${{ steps.version.outputs.version }}
       - name: Package
-        uses: hydraulic-software/conveyor/actions/build@v21.0
+        uses: hydraulic-software/conveyor/actions/build@v21.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_VERSION: ${{ steps.version.outputs.version }}
