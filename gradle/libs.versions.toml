@@ -18,7 +18,7 @@ tinylog = "2.7.0"
 detekt = "1.23.8"
 detekt-compose = "0.4.28"
 detekt-arrow = "0.5.0"
-conveyor = "1.12"
+conveyor = "1.13"
 
 [libraries]
 kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core-jvm", version.ref = "kotlinx-coroutines" }
