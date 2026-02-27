@@ -1,8 +1,29 @@
-# Ignore Gradle project-specific cache directory
-.gradle
+# Gradle
+.gradle/
+**/build/
+!gradle/wrapper/gradle-wrapper.jar
 
-# Ignore Gradle build output directory
-build
+# IntelliJ IDEA
+.idea/
+*.iml
 
-# Ignore conveyor output directory
-output
+# IntelliJ / JetBrains local files (covered by .idea/ ignore, but harmless if listed)
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/shelf/
+.idea/**/modules/
+.idea/**/httpRequests/
+.idea/**/dataSources/
+.idea/**/dataSources.local.xml
+
+# Kotlin / JVM
+.kotlin/
+*.class
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Conveyor (if you use it)
+output/
