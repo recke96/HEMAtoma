@@ -4,7 +4,7 @@
 kotlin = "2.3.21"
 ksp = "2.3.9"
 compose = "1.11.1"
-compose-lifecycle = "2.10.0"
+compose-lifecycle = "2.11.0"
 kotlinx-coroutines = "1.11.0"
 kotlinx-serialization = "1.11.0"
 kotlinx-immutable-collections = "0.4.0"
